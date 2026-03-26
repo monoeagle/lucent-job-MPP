@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify, request, g
 from app.core.auth import login_required, role_required
 from app.data.repositories.template_repository import TemplateRepository
 from app.domain.catalog import TemplateStatus
+from app.services.catalog_service import CatalogService
 from app.services.template_validator import TemplateValidator
 
 bp = Blueprint("catalog", __name__, url_prefix="/api/v1/catalog")
@@ -108,6 +109,58 @@ def list_categories():
     repo = _get_repo()
     categories = repo.get_categories()
     return jsonify(categories)
+
+
+@bp.route("/templates/<slug>/validate", methods=["POST"])
+@login_required
+def validate_template_params(slug):
+    repo = _get_repo()
+    template = repo.get_by_slug(slug, status="all")
+    if template is None:
+        return jsonify({"error": "Template not found"}), 404
+
+    data = request.get_json()
+    parameters = data.get("parameters", {})
+
+    service = CatalogService(repo)
+    violations = service.validate_parameters(
+        template.parameters, parameters, template.cross_parameter_rules or [],
+    )
+    return jsonify({
+        "valid": len(violations) == 0,
+        "violations": violations,
+        "warnings": [],
+    }), 200
+
+
+@bp.route("/templates/<slug>/resolve-options", methods=["POST"])
+@login_required
+def resolve_options(slug):
+    repo = _get_repo()
+    template = repo.get_by_slug(slug, status="all")
+    if template is None:
+        return jsonify({"error": "Template not found"}), 404
+
+    data = request.get_json()
+    parameter_key = data.get("parameter_key")
+    current_values = data.get("current_values", {})
+
+    # Find the parameter definition
+    param_def = None
+    for p in template.parameters:
+        if p["key"] == parameter_key:
+            param_def = p
+            break
+
+    if param_def is None:
+        return jsonify({"error": f"Parameter '{parameter_key}' not found"}), 400
+
+    service = CatalogService(repo)
+    state = service.resolve_dependency_state(
+        param_def.get("depends_on", []), current_values,
+    )
+    state["parameter_key"] = parameter_key
+    return jsonify(state), 200
 
 
 # --- Admin endpoints ---
