@@ -2,9 +2,7 @@ from app import create_app
 
 
 class TestStubUsersEndpoint:
-    def test_stub_users_returns_list(self):
-        app = create_app({"AUTH_MODE": "stub", "ENV": "development", "TESTING": "True"})
-        client = app.test_client()
+    def test_stub_users_returns_list(self, client):
         response = client.get("/api/v1/dev/auth/stub-users")
         assert response.status_code == 200
         data = response.get_json()

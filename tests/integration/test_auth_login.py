@@ -1,13 +1,6 @@
-from app import create_app
-
-
 class TestAuthLogin:
-    def setup_method(self):
-        app = create_app({"AUTH_MODE": "stub", "ENV": "development", "TESTING": "True"})
-        self.client = app.test_client()
-
-    def test_login_success(self):
-        response = self.client.post(
+    def test_login_success(self, client):
+        response = client.post(
             "/api/v1/auth/login",
             json={"username": "test-requester", "password": "stub-password"},
         )
@@ -18,22 +11,22 @@ class TestAuthLogin:
         assert data["user"]["roles"] == ["requester"]
         assert "expires_at" in data
 
-    def test_login_without_password(self):
-        response = self.client.post(
+    def test_login_without_password(self, client):
+        response = client.post(
             "/api/v1/auth/login",
             json={"username": "test-requester"},
         )
         assert response.status_code == 200
 
-    def test_login_empty_password(self):
-        response = self.client.post(
+    def test_login_empty_password(self, client):
+        response = client.post(
             "/api/v1/auth/login",
             json={"username": "test-requester", "password": ""},
         )
         assert response.status_code == 200
 
-    def test_login_unknown_user(self):
-        response = self.client.post(
+    def test_login_unknown_user(self, client):
+        response = client.post(
             "/api/v1/auth/login",
             json={"username": "unknown", "password": "stub-password"},
         )
@@ -41,8 +34,8 @@ class TestAuthLogin:
         data = response.get_json()
         assert data["error_code"] == "INVALID_CREDENTIALS"
 
-    def test_login_missing_username(self):
-        response = self.client.post(
+    def test_login_missing_username(self, client):
+        response = client.post(
             "/api/v1/auth/login",
             json={},
         )
@@ -50,15 +43,15 @@ class TestAuthLogin:
         data = response.get_json()
         assert data["error_code"] == "VALIDATION_FAILED"
 
-    def test_login_response_has_auth_mode_header(self):
-        response = self.client.post(
+    def test_login_response_has_auth_mode_header(self, client):
+        response = client.post(
             "/api/v1/auth/login",
             json={"username": "test-requester", "password": "stub-password"},
         )
         assert response.headers.get("X-Auth-Mode") == "stub"
 
-    def test_login_multi_role_user(self):
-        response = self.client.post(
+    def test_login_multi_role_user(self, client):
+        response = client.post(
             "/api/v1/auth/login",
             json={"username": "test-multi", "password": "stub-password"},
         )
