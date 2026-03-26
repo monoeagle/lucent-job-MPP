@@ -1,0 +1,158 @@
+# app/services/order_service.py
+from app.domain.order import OrderStatus, ItemValidationState
+from app.domain.catalog import DependencyRule
+
+
+class OrderService:
+    def __init__(self, order_repo, template_repo, catalog_service):
+        self.order_repo = order_repo
+        self.template_repo = template_repo
+        self.catalog_service = catalog_service
+
+    # ── helpers ──────────────────────────────────────────────────
+
+    def _get_order_for_requester(self, order_id: str, requester_id: str):
+        order = self.order_repo.get_by_id(order_id)
+        if order is None:
+            raise ValueError(f"Order '{order_id}' not found.")
+        if order.requester_id != requester_id:
+            raise PermissionError("No permission to access this order.")
+        return order
+
+    @staticmethod
+    def _assert_editable(order, allow_validated=False):
+        allowed = {OrderStatus.DRAFT}
+        if allow_validated:
+            allowed.add(OrderStatus.VALIDATED)
+        if order.status not in allowed:
+            raise ValueError("Order must be in draft status to perform this action.")
+
+    # ── public API ───────────────────────────────────────────────
+
+    def create_order(self, requester_id: str, title: str,
+                     business_reason: str | None = None,
+                     desired_date: str | None = None) -> dict:
+        stripped = title.strip() if title else ""
+        if len(stripped) < 3 or len(stripped) > 100:
+            raise ValueError("Order title must be between 3 and 100 characters.")
+        order = self.order_repo.create_order(requester_id, title, business_reason, desired_date)
+        return {"order": order}
+
+    def add_item(self, order_id: str, requester_id: str,
+                 template_slug: str, template_version: str,
+                 parameters: dict) -> dict:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order)
+
+        template = self.template_repo.get_by_slug_and_version(template_slug, template_version)
+        if template is None:
+            raise ValueError(f"Service template '{template_slug}@{template_version}' not found.")
+        if template.status == "disabled":
+            raise ValueError(f"Template '{template_slug}' is disabled and cannot be ordered.")
+
+        warning = None
+        if template.status == "deprecated":
+            warning = f"Template '{template_slug}' is deprecated. Consider using a newer version."
+
+        item = self.order_repo.add_item(
+            order_id, template_slug, template_version, template.display_name, parameters,
+        )
+        return {"item": item, "warning": warning}
+
+    def update_item(self, order_id: str, item_id: str,
+                    requester_id: str, parameters: dict) -> dict:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order, allow_validated=True)
+
+        item = self.order_repo.update_item_parameters(item_id, parameters)
+
+        if order.status == OrderStatus.VALIDATED:
+            self.order_repo.update_order_status(order_id, OrderStatus.DRAFT)
+
+        return {"item": item}
+
+    def remove_item(self, order_id: str, item_id: str, requester_id: str) -> None:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order)
+        self.order_repo.remove_item(item_id)
+
+    def validate_order(self, order_id: str, requester_id: str) -> dict:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order, allow_validated=True)
+
+        if not order.items:
+            raise ValueError("Order must have at least one items to validate.")
+
+        all_valid = True
+        item_results = []
+
+        for item in order.items:
+            template = self.template_repo.get_by_slug_and_version(
+                item.template_slug, item.template_version,
+            )
+            violations = self.catalog_service.validate_parameters(
+                template.parameters, item.parameters, template.cross_parameter_rules,
+            )
+            if violations:
+                state = ItemValidationState.INVALID
+                all_valid = False
+            else:
+                state = ItemValidationState.VALID
+
+            self.order_repo.update_item_validation(item.id, state, violations)
+            item_results.append({
+                "item_id": item.id,
+                "validation_state": state,
+                "violations": violations,
+            })
+
+        if all_valid:
+            self.order_repo.update_order_status(order_id, OrderStatus.VALIDATED)
+
+        return {
+            "status": OrderStatus.VALIDATED if all_valid else OrderStatus.DRAFT,
+            "items": item_results,
+        }
+
+    def submit_order(self, order_id: str, requester_id: str) -> dict:
+        order = self._get_order_for_requester(order_id, requester_id)
+        if order.status != OrderStatus.VALIDATED:
+            raise ValueError("Order must be validated before submission.")
+        if not order.business_reason or not order.business_reason.strip():
+            raise ValueError("A business_reason is required to submit an order.")
+
+        updated = self.order_repo.update_order_status(order_id, OrderStatus.SUBMITTED)
+        return {"order": updated}
+
+    def export_tofu(self, order_id: str, requester_id: str) -> dict:
+        order = self._get_order_for_requester(order_id, requester_id)
+        if order.status == OrderStatus.DRAFT:
+            raise ValueError("Cannot export a draft order.")
+
+        exported_items = []
+        for item in order.items:
+            template = self.template_repo.get_by_slug_and_version(
+                item.template_slug, item.template_version,
+            )
+            variables = {}
+            for p in template.parameters:
+                depends_on = p.get("depends_on", [])
+                if depends_on:
+                    dep_state = self.catalog_service.resolve_dependency_state(
+                        depends_on, item.parameters,
+                    )
+                    if not dep_state["is_visible"]:
+                        continue
+
+                key = p["key"]
+                if key in item.parameters:
+                    variables[p["tofu_variable_name"]] = item.parameters[key]
+
+            exported_items.append({
+                "template_slug": item.template_slug,
+                "template_version": item.template_version,
+                "module_source": template.tofu_module_source,
+                "variables": variables,
+            })
+
+        return {"order_id": order_id, "items": exported_items}
