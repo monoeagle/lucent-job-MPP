@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from app import create_app
 
@@ -8,6 +10,10 @@ def app():
         "AUTH_MODE": "stub",
         "ENV": "development",
         "TESTING": "True",
+        "DATABASE_URL": os.environ.get(
+            "TEST_DATABASE_URL",
+            "postgresql://mpp:mpp@localhost:5432/mpp_test"
+        ),
     })
     yield app
 
