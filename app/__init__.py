@@ -66,6 +66,9 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     from app.api.v1 import cmdb
     app.register_blueprint(cmdb.bp)
 
+    from app.api.v1 import context
+    app.register_blueprint(context.bp)
+
     return app
 
 
