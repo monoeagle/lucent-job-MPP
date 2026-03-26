@@ -22,6 +22,7 @@ class OrderModel(Base):
                         onupdate=lambda: datetime.now(timezone.utc))
     submitted_at = Column(DateTime(timezone=True), nullable=True)
     metadata_ = Column("metadata", JSONB, nullable=True, default=dict)
+    context = Column(JSONB, nullable=True)
 
     items = relationship("OrderItemModel", back_populates="order",
                          order_by="OrderItemModel.position",

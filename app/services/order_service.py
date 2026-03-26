@@ -4,10 +4,12 @@ from app.domain.catalog import DependencyRule
 
 
 class OrderService:
-    def __init__(self, order_repo, template_repo, catalog_service):
+    def __init__(self, order_repo, template_repo, catalog_service,
+                 context_service=None):
         self.order_repo = order_repo
         self.template_repo = template_repo
         self.catalog_service = catalog_service
+        self.context_service = context_service
 
     # ── helpers ──────────────────────────────────────────────────
 
@@ -31,11 +33,33 @@ class OrderService:
 
     def create_order(self, requester_id: str, title: str,
                      business_reason: str | None = None,
-                     desired_date: str | None = None) -> dict:
+                     desired_date: str | None = None,
+                     context: dict | None = None) -> dict:
         stripped = title.strip() if title else ""
         if len(stripped) < 3 or len(stripped) > 100:
             raise ValueError("Order title must be between 3 and 100 characters.")
-        order = self.order_repo.create_order(requester_id, title, business_reason, desired_date)
+
+        if context and self.context_service:
+            from app.services.context_service import ContextService
+            try:
+                self.context_service.resolve_context(
+                    location_id=context.get("location_id", ""),
+                    tenant_id=context.get("tenant_id", ""),
+                    security_zone_id=context.get("security_zone_id", ""),
+                    network_id=context.get("network_id"),
+                    user_id=requester_id,
+                )
+            except ContextService.ContextValidationError:
+                raise
+            except ContextService.CmdbUnavailableError:
+                raise
+
+        kwargs = {}
+        if context is not None:
+            kwargs["context"] = context
+        order = self.order_repo.create_order(
+            requester_id, title, business_reason, desired_date, **kwargs,
+        )
         return {"order": order}
 
     def add_item(self, order_id: str, requester_id: str,

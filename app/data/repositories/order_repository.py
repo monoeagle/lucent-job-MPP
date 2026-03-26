@@ -32,7 +32,8 @@ class OrderRepository:
 
     def create_order(self, requester_id: str, title: str,
                      business_reason: str | None = None,
-                     desired_date: str | None = None) -> OrderModel:
+                     desired_date: str | None = None,
+                     context: dict | None = None) -> OrderModel:
         order = OrderModel(
             id=str(uuid.uuid4()),
             order_number=self.get_next_order_number(),
@@ -41,6 +42,7 @@ class OrderRepository:
             title=title,
             business_reason=business_reason,
             desired_date=desired_date,
+            context=context,
         )
         self.session.add(order)
         self.session.commit()

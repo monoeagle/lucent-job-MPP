@@ -1,22 +1,33 @@
 from datetime import datetime, timezone
 
-from flask import Blueprint, jsonify, request, g
+from flask import Blueprint, jsonify, request, g, current_app
 
 from app.core.auth import login_required
 from app.core.errors import NotFoundError, ForbiddenError, ConflictError, ValidationError
 from app.data.repositories.order_repository import OrderRepository
 from app.data.repositories.template_repository import TemplateRepository
+from app.data.repositories.tenant_repository import TenantRepository
 from app.services.catalog_service import CatalogService
+from app.services.context_service import ContextService
 from app.services.order_service import OrderService
 
 bp = Blueprint("orders", __name__, url_prefix="/api/v1")
+
+
+def _get_context_service():
+    cmdb_client = getattr(current_app, "cmdb_client", None)
+    if cmdb_client is None:
+        return None
+    tenant_repo = TenantRepository(g.db_session)
+    return ContextService(cmdb_client, tenant_repo=tenant_repo)
 
 
 def _get_service() -> OrderService:
     repo = OrderRepository(g.db_session)
     template_repo = TemplateRepository(g.db_session)
     catalog_service = CatalogService(template_repo)
-    return OrderService(repo, template_repo, catalog_service)
+    context_service = _get_context_service()
+    return OrderService(repo, template_repo, catalog_service, context_service)
 
 
 def _get_repo() -> OrderRepository:
@@ -35,6 +46,7 @@ def _serialize_order(order) -> dict:
         "created_at": order.created_at.isoformat() if order.created_at else None,
         "updated_at": order.updated_at.isoformat() if order.updated_at else None,
         "submitted_at": order.submitted_at.isoformat() if order.submitted_at else None,
+        "context": order.context,
         "items": [_serialize_item(i) for i in order.items],
     }
 
@@ -67,6 +79,7 @@ def create_order():
     title = data.get("title", "")
     business_reason = data.get("business_reason")
     desired_date = data.get("desired_date")
+    context = data.get("context")
 
     service = _get_service()
     try:
@@ -75,7 +88,19 @@ def create_order():
             title=title,
             business_reason=business_reason,
             desired_date=desired_date,
+            context=context,
         )
+    except ContextService.ContextValidationError as e:
+        return jsonify({
+            "error_code": "CONTEXT_VALIDATION_FAILED",
+            "message": "Context validation failed.",
+            "violations": e.violations,
+        }), 400
+    except ContextService.CmdbUnavailableError:
+        return jsonify({
+            "error_code": "CMDB_UNAVAILABLE",
+            "message": "CMDB service is unavailable.",
+        }), 503
     except ValueError as e:
         raise ValidationError(str(e))
 
