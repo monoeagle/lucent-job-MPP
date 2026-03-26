@@ -51,6 +51,9 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     app.register_blueprint(catalog.bp)
     app.register_blueprint(catalog.admin_bp)
 
+    from app.api.v1 import orders
+    app.register_blueprint(orders.bp)
+
     return app
 
 
