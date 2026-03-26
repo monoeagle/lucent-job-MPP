@@ -133,6 +133,33 @@ def validate_template_params(slug):
     }), 200
 
 
+@bp.route("/templates/<slug>/diff", methods=["GET"])
+@role_required("approver", "admin")
+def diff_template_versions(slug):
+    from_version = request.args.get("from_version")
+    to_version = request.args.get("to_version")
+
+    if not from_version or not to_version:
+        return jsonify({"error": "from_version and to_version are required"}), 400
+
+    repo = _get_repo()
+    from_tmpl = repo.get_by_slug_and_version(slug, from_version)
+    to_tmpl = repo.get_by_slug_and_version(slug, to_version)
+
+    if from_tmpl is None or to_tmpl is None:
+        return jsonify({"error": "Version not found"}), 404
+
+    service = CatalogService(repo)
+    changes = service.compute_diff(from_tmpl, to_tmpl)
+
+    return jsonify({
+        "slug": slug,
+        "from_version": from_version,
+        "to_version": to_version,
+        "changes": changes,
+    }), 200
+
+
 @bp.route("/templates/<slug>/resolve-options", methods=["POST"])
 @login_required
 def resolve_options(slug):

@@ -86,6 +86,31 @@ class CatalogService:
 
         return violations
 
+    def compute_diff(self, from_template, to_template) -> dict:
+        from_params = {p["key"]: p for p in (from_template.parameters or [])}
+        to_params = {p["key"]: p for p in (to_template.parameters or [])}
+
+        added = [to_params[k] for k in to_params if k not in from_params]
+        removed = [from_params[k] for k in from_params if k not in to_params]
+
+        modified = []
+        for key in from_params:
+            if key in to_params and from_params[key] != to_params[key]:
+                modified.append({
+                    "key": key,
+                    "from": from_params[key],
+                    "to": to_params[key],
+                })
+
+        return {
+            "added_parameters": added,
+            "removed_parameters": removed,
+            "modified_parameters": modified,
+            "tofu_module_source_changed": (
+                from_template.tofu_module_source != to_template.tofu_module_source
+            ),
+        }
+
     def resolve_dependency_state(self, depends_on: list[dict],
                                   current_values: dict) -> dict:
         is_visible = True
