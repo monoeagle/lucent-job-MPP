@@ -227,6 +227,44 @@ def remove_item(order_id, item_id):
     return "", 204
 
 
+@bp.route("/orders/<order_id>/validate", methods=["POST"])
+@login_required
+def validate_order(order_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    service = _get_service()
+    try:
+        result = service.validate_order(order_id, g.current_user.username)
+    except ValueError as e:
+        raise ConflictError(str(e))
+
+    # Enrich item_results with item details
+    items_by_id = {i.id: i for i in order.items}
+    item_results = []
+    for r in result["items"]:
+        item = items_by_id.get(r["item_id"])
+        item_results.append({
+            "item_id": r["item_id"],
+            "template_slug": item.template_slug if item else None,
+            "template_version": item.template_version if item else None,
+            "position": item.position if item else None,
+            "validation_state": r["validation_state"],
+            "violations": r["violations"],
+        })
+
+    all_valid = result["status"] == "validated"
+    return jsonify({
+        "order_id": order_id,
+        "order_status": result["status"],
+        "all_valid": all_valid,
+        "item_results": item_results,
+    }), 200
+
+
 @bp.route("/orders/<order_id>/items/positions", methods=["PUT"])
 @login_required
 def reorder_items(order_id):
