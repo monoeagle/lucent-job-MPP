@@ -265,6 +265,61 @@ def validate_order(order_id):
     }), 200
 
 
+@bp.route("/orders/<order_id>/submit", methods=["POST"])
+@login_required
+def submit_order(order_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    service = _get_service()
+    try:
+        result = service.submit_order(order_id, g.current_user.username)
+    except ValueError as e:
+        raise ConflictError(str(e))
+
+    submitted = result["order"]
+    return jsonify({
+        "order_id": submitted.id,
+        "order_number": submitted.order_number,
+        "status": submitted.status,
+        "item_count": len(submitted.items),
+        "submitted_at": submitted.submitted_at.isoformat() if submitted.submitted_at else None,
+        "message": "Ihre Bestellung wurde erfolgreich eingereicht.",
+    }), 200
+
+
+@bp.route("/orders/<order_id>/status", methods=["GET"])
+@login_required
+def get_order_status(order_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    item_statuses = []
+    for item in order.items:
+        item_statuses.append({
+            "item_id": item.id,
+            "position": item.position,
+            "template_slug": item.template_slug,
+            "provisioning_status": "not_started",
+            "job_id": None,
+        })
+
+    return jsonify({
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "status": order.status,
+        "item_statuses": item_statuses,
+        "submitted_at": order.submitted_at.isoformat() if order.submitted_at else None,
+        "updated_at": order.updated_at.isoformat() if order.updated_at else None,
+    }), 200
+
+
 @bp.route("/orders/<order_id>/items/positions", methods=["PUT"])
 @login_required
 def reorder_items(order_id):
