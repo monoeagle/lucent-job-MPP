@@ -41,6 +41,8 @@ class OrderItemModel(Base):
     position = Column(Integer, nullable=False, default=1)
     validation_state = Column(String(20), nullable=False, default="unchecked")
     validation_errors = Column(JSONB, nullable=False, default=list)
+    provisioning_status = Column(String(20), nullable=False, default="not_started")
+    job_id = Column(String(100), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))

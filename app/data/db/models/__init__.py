@@ -5,3 +5,4 @@ from app.data.db.models.context_rule import (
     ContextRestrictionModel,
     UserTenantAssignmentModel,
 )
+from app.data.db.models.dispatch_log import DispatchLogModel
