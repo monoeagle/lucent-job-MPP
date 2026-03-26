@@ -68,6 +68,7 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
     from app.api.v1 import context
     app.register_blueprint(context.bp)
+    app.register_blueprint(context.admin_bp)
 
     return app
 
