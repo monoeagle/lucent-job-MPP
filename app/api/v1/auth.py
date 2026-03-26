@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app, g
 
+from app.core.auth import login_required, role_required
 from app.core.errors import ValidationError, AppError, NotFoundError
 from app.services.auth_service import AuthService
 
@@ -47,3 +48,21 @@ def stub_users():
         "static_password": "stub-password",
         "note": "Auth-Stub is active. Never use in production.",
     })
+
+
+@bp.route("/auth/me", methods=["GET"])
+@login_required
+def me():
+    user = g.current_user
+    return jsonify({
+        "username": user.username,
+        "display_name": user.display_name,
+        "email": user.email,
+        "roles": list(user.roles),
+    })
+
+
+@bp.route("/admin/health", methods=["GET"])
+@role_required("admin")
+def admin_health():
+    return jsonify({"status": "ok", "role": "admin"})
