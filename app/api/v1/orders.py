@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from flask import Blueprint, jsonify, request, g
 
 from app.core.auth import login_required
@@ -339,3 +341,83 @@ def reorder_items(order_id):
     # Re-fetch order to get updated positions
     order = repo.get_by_id(order_id)
     return jsonify(_serialize_order(order)), 200
+
+
+# ── Export endpoints ─────────────────────────────────────────
+
+_READONLY_STATUSES = {"provisioning", "done", "failed"}
+
+
+def _build_export_item(item, export_data):
+    """Build a single export item dict from order item + service export data."""
+    return {
+        "order_item_id": item.id,
+        "template_slug": item.template_slug,
+        "template_version": item.template_version,
+        "position": item.position,
+        "module_source": export_data["module_source"],
+        "variables": export_data["variables"],
+        "error": export_data.get("error"),
+    }
+
+
+@bp.route("/orders/<order_id>/export/tofu", methods=["GET"])
+@login_required
+def export_order_tofu(order_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    if order.status == "draft":
+        raise ConflictError("Cannot export a draft order.")
+
+    service = _get_service()
+    result = service.export_tofu(order_id, g.current_user.username)
+
+    readonly_notice = None
+    if order.status in _READONLY_STATUSES:
+        readonly_notice = f"Order is {order.status}. Export is read-only."
+
+    items = []
+    for item, export_data in zip(order.items, result["items"]):
+        items.append(_build_export_item(item, export_data))
+
+    return jsonify({
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "readonly_notice": readonly_notice,
+        "items": items,
+    }), 200
+
+
+@bp.route("/orders/<order_id>/items/<item_id>/export/tofu", methods=["GET"])
+@login_required
+def export_item_tofu(order_id, item_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    if order.status == "draft":
+        raise ConflictError("Cannot export a draft order.")
+
+    item = next((i for i in order.items if i.id == item_id), None)
+    if item is None:
+        raise NotFoundError("Item not found.")
+
+    service = _get_service()
+    result = service.export_tofu(order_id, g.current_user.username)
+
+    export_data = next(
+        (e for e in result["items"] if e["template_slug"] == item.template_slug
+         and e["template_version"] == item.template_version),
+        None,
+    )
+    if export_data is None:
+        raise NotFoundError("Export data not found for item.")
+
+    return jsonify(_build_export_item(item, export_data)), 200
