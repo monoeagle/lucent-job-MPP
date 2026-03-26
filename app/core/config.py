@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 VALID_AUTH_MODES = ("stub", "ldap")
+VALID_CMDB_MODES = ("stub", "live")
 
 
 class Config:
@@ -21,10 +22,20 @@ class Config:
             "TEST_DATABASE_URL",
             "postgresql://mpp:mpp@localhost:5432/mpp_test",
         )
+        self.CMDB_MODE = os.environ.get("CMDB_MODE", "stub")
+        self.CMDB_STUB_DATA_PATH = os.environ.get(
+            "CMDB_STUB_DATA_PATH", "./stubs/cmdb/"
+        )
 
         self._validate()
 
     def _validate(self):
+        if self.CMDB_MODE not in VALID_CMDB_MODES:
+            raise ValueError(
+                f"Unknown CMDB_MODE value: {self.CMDB_MODE}. "
+                f"Allowed: {', '.join(VALID_CMDB_MODES)}"
+            )
+
         if self.AUTH_MODE not in VALID_AUTH_MODES:
             raise ValueError(
                 f"Unknown AUTH_MODE value: {self.AUTH_MODE}. "

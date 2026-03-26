@@ -20,6 +20,8 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         JWT_SECRET=config.JWT_SECRET,
         STUB_TOKEN_TTL_SECONDS=config.STUB_TOKEN_TTL_SECONDS,
         DATABASE_URL=config.DATABASE_URL,
+        CMDB_MODE=config.CMDB_MODE,
+        CMDB_STUB_DATA_PATH=config.CMDB_STUB_DATA_PATH,
     )
 
     register_middleware(app)
@@ -41,6 +43,13 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         if session is not None:
             session.close()
 
+    # CMDB client
+    if app.config.get("CMDB_MODE") == "stub":
+        from app.data.clients.cmdb_client import CmdbStubClient
+        app.cmdb_client = CmdbStubClient(
+            data_path=app.config.get("CMDB_STUB_DATA_PATH", "./stubs/cmdb/")
+        )
+
     from app.api.v1 import health
     app.register_blueprint(health.bp)
 
@@ -53,6 +62,9 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
     from app.api.v1 import orders
     app.register_blueprint(orders.bp)
+
+    from app.api.v1 import cmdb
+    app.register_blueprint(cmdb.bp)
 
     return app
 
