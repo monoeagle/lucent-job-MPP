@@ -49,6 +49,7 @@ def create_app(config_overrides: dict | None = None) -> Flask:
 
     from app.api.v1 import catalog
     app.register_blueprint(catalog.bp)
+    app.register_blueprint(catalog.admin_bp)
 
     return app
 

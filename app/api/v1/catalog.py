@@ -2,10 +2,13 @@ from decimal import Decimal
 
 from flask import Blueprint, jsonify, request, g
 
-from app.core.auth import login_required
+from app.core.auth import login_required, role_required
 from app.data.repositories.template_repository import TemplateRepository
+from app.domain.catalog import TemplateStatus
+from app.services.template_validator import TemplateValidator
 
 bp = Blueprint("catalog", __name__, url_prefix="/api/v1/catalog")
+admin_bp = Blueprint("catalog_admin", __name__, url_prefix="/api/v1/admin/catalog")
 
 
 def _get_repo() -> TemplateRepository:
@@ -105,3 +108,47 @@ def list_categories():
     repo = _get_repo()
     categories = repo.get_categories()
     return jsonify(categories)
+
+
+# --- Admin endpoints ---
+
+@admin_bp.route("/templates", methods=["POST"])
+@role_required("admin")
+def register_template():
+    data = request.get_json()
+    validator = TemplateValidator()
+    errors = validator.validate_template(data)
+    if errors:
+        return jsonify({"error": "Validation failed", "details": errors}), 400
+
+    repo = _get_repo()
+    try:
+        template = repo.create(data)
+    except TemplateRepository.DuplicateTemplateError as e:
+        return jsonify({"error": str(e)}), 409
+
+    return jsonify(_template_to_dict(template)), 201
+
+
+@admin_bp.route("/templates/<template_id>/status", methods=["PATCH"])
+@role_required("admin")
+def update_template_status(template_id):
+    data = request.get_json()
+    new_status = data.get("status")
+
+    repo = _get_repo()
+    template = repo.get_by_id(template_id)
+    if template is None:
+        return jsonify({"error": "Template not found"}), 404
+
+    if not TemplateStatus.can_transition(template.status, new_status):
+        return jsonify({"error": f"Cannot transition from '{template.status}' to '{new_status}'"}), 409
+
+    deprecated_by = data.get("deprecated_by")
+    if new_status == "deprecated" and deprecated_by:
+        replacement = repo.get_by_id(deprecated_by)
+        if replacement is None or replacement.status != "active":
+            return jsonify({"error": "deprecated_by must reference an active template"}), 400
+
+    template = repo.update_status(template_id, new_status, deprecated_by=deprecated_by)
+    return jsonify(_template_to_dict(template)), 200
