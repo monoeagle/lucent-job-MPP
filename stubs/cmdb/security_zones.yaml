@@ -1,0 +1,12 @@
+- id: sz-low
+  name: LOW
+  level: 1
+  description: Interne Systeme, kein Internetzugang
+- id: sz-medium
+  name: MEDIUM
+  level: 2
+  description: DMZ, kontrollierter Zugang
+- id: sz-high
+  name: HIGH
+  level: 3
+  description: Management-Netz, eingeschränkter Zugang

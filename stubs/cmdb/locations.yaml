@@ -1,0 +1,12 @@
+- id: loc-berlin
+  name: Berlin HQ
+  code: BER
+  region: DE-NORTH
+- id: loc-munich
+  name: Munich DC
+  code: MUC
+  region: DE-SOUTH
+- id: loc-hamburg
+  name: Hamburg Edge
+  code: HAM
+  region: DE-NORTH

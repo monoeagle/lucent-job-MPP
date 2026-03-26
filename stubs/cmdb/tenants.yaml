@@ -1,0 +1,6 @@
+- id: ten-corp
+  name: Corporate IT
+  code: CORP
+- id: ten-dev
+  name: Development
+  code: DEV

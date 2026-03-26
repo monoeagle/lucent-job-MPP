@@ -1,0 +1,42 @@
+- id: net-ber-dmz
+  name: Berlin DMZ
+  cidr: "10.10.1.0/24"
+  type: dmz
+  location_id: loc-berlin
+  security_zone_id: sz-medium
+- id: net-ber-intern
+  name: Berlin Internal
+  cidr: "10.10.10.0/24"
+  type: internal
+  location_id: loc-berlin
+  security_zone_id: sz-low
+- id: net-ber-mgmt
+  name: Berlin Mgmt
+  cidr: "10.10.100.0/24"
+  type: mgmt
+  location_id: loc-berlin
+  security_zone_id: sz-high
+- id: net-muc-dmz
+  name: Munich DMZ
+  cidr: "10.20.1.0/24"
+  type: dmz
+  location_id: loc-munich
+  security_zone_id: sz-medium
+- id: net-muc-intern
+  name: Munich Internal
+  cidr: "10.20.10.0/24"
+  type: internal
+  location_id: loc-munich
+  security_zone_id: sz-low
+- id: net-ham-intern
+  name: Hamburg Internal
+  cidr: "10.30.10.0/24"
+  type: internal
+  location_id: loc-hamburg
+  security_zone_id: sz-low
+- id: net-ham-dmz
+  name: Hamburg DMZ
+  cidr: "10.30.1.0/24"
+  type: dmz
+  location_id: loc-hamburg
+  security_zone_id: sz-medium
