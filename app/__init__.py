@@ -25,11 +25,30 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     register_middleware(app)
     register_error_handlers(app)
 
+    from app.data.db.session import get_engine, get_session_factory
+    engine = get_engine(app.config["DATABASE_URL"])
+    app.session_factory = get_session_factory(engine)
+
+    @app.before_request
+    def open_session():
+        from flask import g
+        g.db_session = app.session_factory()
+
+    @app.teardown_appcontext
+    def close_session(exception=None):
+        from flask import g
+        session = g.pop("db_session", None)
+        if session is not None:
+            session.close()
+
     from app.api.v1 import health
     app.register_blueprint(health.bp)
 
     from app.api.v1 import auth
     app.register_blueprint(auth.bp)
+
+    from app.api.v1 import catalog
+    app.register_blueprint(catalog.bp)
 
     return app
 
