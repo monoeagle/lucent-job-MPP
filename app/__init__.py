@@ -86,6 +86,10 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     from app.api.v1 import admin
     app.register_blueprint(admin.bp)
 
+    from app.api.v1 import notifications
+    app.register_blueprint(notifications.admin_bp)
+    app.register_blueprint(notifications.bp)
+
     # GitLab client
     if app.config.get("GITLAB_URL"):
         from app.data.clients.gitlab_client import GitLabClient
