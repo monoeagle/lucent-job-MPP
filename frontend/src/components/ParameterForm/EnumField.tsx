@@ -12,7 +12,9 @@ export default function EnumField({ id, label, value, onChange, options, require
       </label>
       {description && <p className="text-xs text-gray-400 mb-1">{description}</p>}
       <select id={id} value={value ?? ''} onChange={(e) => onChange(e.target.value)}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm">
+        className={`w-full px-3 py-2 border rounded-md text-sm ${
+          required && !value ? 'border-red-400 bg-red-50' : 'border-gray-300'
+        }`}>
         <option value="">Bitte wählen...</option>
         {options.filter(o => o.enabled).map(o => (
           <option key={o.value} value={o.value}>{o.label}</option>
