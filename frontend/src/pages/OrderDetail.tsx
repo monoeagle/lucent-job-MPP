@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useAuthStore } from '../store/authStore'
 import type { OrderItem } from '../types/order'
 import { useOrder, useAddItem, useRemoveItem, useValidateOrder, useSubmitOrder, useDeleteOrder, useCreateGroup, useDeleteGroup } from '../hooks/useOrders'
 import { useOrderStatus } from '../hooks/useOrderStatus'
@@ -36,8 +37,11 @@ export default function OrderDetail() {
   const { data: templatesData } = useTemplates()
   const { data: templateDetail } = useTemplate(selectedSlug)
 
+  const user = useAuthStore((s) => s.user)
   const templates = templatesData?.data ?? []
   const isDraft = order?.status === 'draft'
+  const isAdmin = user?.roles.includes('admin') ?? false
+  const isEditable = isDraft || isAdmin
 
   const handleAddItem = () => {
     if (!selectedSlug || !templateDetail) return
@@ -114,7 +118,7 @@ export default function OrderDetail() {
       <div className="mt-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Positionen ({order.items.length})</h2>
-          {isDraft && (
+          {isEditable && (
             <div className="flex gap-2">
               <button onClick={() => setGroupDialogOpen(true)}
                 className="px-3 py-1.5 border border-gray-300 text-gray-700 rounded-md text-sm hover:bg-gray-50">
@@ -137,7 +141,7 @@ export default function OrderDetail() {
                 <GroupSection
                   key={group.id}
                   group={group}
-                  isDraft={isDraft}
+                  isDraft={isEditable}
                   onDeleteGroup={() => deleteGroup.mutate(group.id)}
                   onRemoveItem={(itemId) => removeItem.mutate(itemId)}
                   onCopyItem={(item) => handleCopyItem(item)}
@@ -160,9 +164,9 @@ export default function OrderDetail() {
                 <OrderItemCard
                   key={item.id}
                   item={item}
-                  readonly={!isDraft}
-                  onRemove={isDraft ? () => removeItem.mutate(item.id) : undefined}
-                  onCopy={isDraft ? () => handleCopyItem(item) : undefined}
+                  readonly={!isEditable}
+                  onRemove={isEditable ? () => removeItem.mutate(item.id) : undefined}
+                  onCopy={isEditable ? () => handleCopyItem(item) : undefined}
                 />
               ))}
           </div>
