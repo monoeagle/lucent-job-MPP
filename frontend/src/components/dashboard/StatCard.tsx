@@ -1,13 +1,14 @@
 interface Props {
   label: string
   value: number
+  color?: string
 }
 
-export default function StatCard({ label, value }: Props) {
+export default function StatCard({ label, value, color = 'text-blue-600' }: Props) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4">
-      <p className="text-sm text-gray-600 mb-2">{label}</p>
-      <p className="text-2xl font-semibold text-gray-900">{value}</p>
+      <p className={`text-3xl font-bold ${color}`}>{value}</p>
+      <p className="text-sm text-gray-500 mt-1">{label}</p>
     </div>
   )
 }
