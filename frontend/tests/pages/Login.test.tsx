@@ -48,7 +48,7 @@ describe('Login', () => {
         username: 'test-requester',
         password: '',
       })
-      expect(mockNavigate).toHaveBeenCalledWith('/orders')
+      expect(mockNavigate).toHaveBeenCalledWith('/dashboard')
     })
   })
 
