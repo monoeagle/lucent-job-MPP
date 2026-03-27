@@ -390,6 +390,22 @@ def submit_order(order_id):
             except Exception:
                 pass  # Dispatch failure should not block submit
 
+    # Send notification
+    from app.services.notification_service import NotificationService
+    try:
+        notif_service = NotificationService(g.db_session)
+        notif_service.create_event_notification(
+            event_type="order_submitted",
+            recipient_id=submitted.requester_id,
+            recipient_email=f"{submitted.requester_id}@marketplace.local",
+            context={
+                "order_number": submitted.order_number,
+                "title": submitted.title or "",
+            },
+        )
+    except Exception:
+        pass  # Notification failure should not block submit
+
     return jsonify({
         "order_id": submitted.id,
         "order_number": submitted.order_number,
