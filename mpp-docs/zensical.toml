@@ -1,0 +1,67 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# zensical.toml – MPP Dokumentation
+# ══════════════════════════════════════════════════════════════════════════════
+
+[project]
+site_name        = "MPP — Marketplace Portal"
+site_description = "IT-Service Marketplace Portal · Flask + React · TDD"
+site_author      = "Lucent Trails"
+copyright        = "Copyright &copy; 2026 Lucent Trails"
+
+docs_dir = "docs"
+site_dir = "site"
+
+extra_css = ["stylesheets/extra.css"]
+
+nav = [
+  { "Überblick" = "index.md" },
+  { "Grundlagen" = [
+    { "Installation"    = "grundlagen/installation.md" },
+    { "Schnellstart"    = "grundlagen/schnellstart.md" },
+    { "Architektur"     = "grundlagen/architektur.md" },
+  ]},
+  { "Referenz" = [
+    { "Datenmodell"     = "referenz/datenmodell.md" },
+    { "API-Referenz"    = "referenz/api-referenz.md" },
+    { "Services"        = "referenz/services.md" },
+    { "Frontend"        = "referenz/frontend.md" },
+  ]},
+  { "Entwicklung" = [
+    { "Projektstruktur" = "entwicklung/projektstruktur.md" },
+    { "Conventions"     = "entwicklung/conventions.md" },
+    { "Testing"         = "entwicklung/testing.md" },
+    { "Credentials"     = "entwicklung/credentials.md" },
+    { "Changelog"       = "entwicklung/changelog.md" },
+  ]},
+  { "Betrieb" = [
+    { "Stubs & Mocks"     = "betrieb/stubs-mocks.md" },
+    { "Troubleshooting"   = "betrieb/troubleshooting.md" },
+  ]},
+]
+
+[project.theme]
+language = "de"
+features = [
+  "navigation.tabs",
+  "navigation.tabs.sticky",
+  "navigation.sections",
+  "navigation.top",
+  "search.highlight",
+  "content.code.copy",
+]
+
+[[project.theme.palette]]
+media   = "(prefers-color-scheme: light)"
+scheme  = "default"
+primary = "custom"
+accent  = "custom"
+toggle.icon = "material/weather-night"
+toggle.name = "Dunkelmodus aktivieren"
+
+[[project.theme.palette]]
+media   = "(prefers-color-scheme: dark)"
+scheme  = "slate"
+primary = "custom"
+accent  = "custom"
+toggle.icon = "material/weather-sunny"
+toggle.name = "Hellmodus aktivieren"
