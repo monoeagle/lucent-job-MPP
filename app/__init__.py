@@ -93,6 +93,10 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     app.register_blueprint(notifications.admin_bp)
     app.register_blueprint(notifications.bp)
 
+    from app.api.v1 import subscriptions
+    app.register_blueprint(subscriptions.bp)
+    app.register_blueprint(subscriptions.admin_bp)
+
     from app.api.v1 import search
     app.register_blueprint(search.bp)
 
