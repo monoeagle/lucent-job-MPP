@@ -46,11 +46,15 @@ export default function ServiceRequest() {
     }
   }, [template])
 
-  const toggleView = () => {
-    const next = view === 'wizard' ? 'form' : 'wizard'
-    setView(next)
-    if (slug) localStorage.setItem(`mpp-view-${slug}`, next)
-  }
+  // Listen for view toggle from Header
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as 'wizard' | 'form'
+      setView(detail)
+    }
+    window.addEventListener('mpp-view-toggle', handler)
+    return () => window.removeEventListener('mpp-view-toggle', handler)
+  }, [])
 
   const handleSubmit = async () => {
     if (!template || !token) return
@@ -101,16 +105,6 @@ export default function ServiceRequest() {
 
   return (
     <div>
-      <div className="flex justify-end mb-6">
-        <button
-          data-testid="view-toggle"
-          onClick={toggleView}
-          className="px-3 py-1.5 border border-gray-300 rounded-md text-sm text-gray-600 hover:bg-gray-50"
-        >
-          {view === 'wizard' ? '≡ Formular-Ansicht' : '☰ Wizard-Ansicht'}
-        </button>
-      </div>
-
       {view === 'wizard' ? <WizardView {...viewProps} /> : <FormView {...viewProps} />}
     </div>
   )
