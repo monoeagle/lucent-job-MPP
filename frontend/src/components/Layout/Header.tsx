@@ -1,13 +1,10 @@
 import { useLocation } from 'react-router-dom'
 import GlobalSearch from '../dashboard/GlobalSearch'
 
-const ROUTE_CONFIG: Record<string, { title: string; showSearch?: boolean; showCount?: string }> = {
+const ROUTE_CONFIG: Record<string, { title: string; showSearch?: boolean }> = {
   '/dashboard': { title: 'Dashboard', showSearch: true },
-  '/shop': { title: 'Service Catalog', showCount: 'services' },
-  '/my-services': { title: 'My Services' },
-  '/my-requests': { title: 'My Requests' },
-  '/notifications': { title: 'Benachrichtigungen' },
-  '/reviews': { title: 'Review Requests' },
+  '/shop': { title: 'Service Catalog' },
+  '/workspace': { title: 'Workspace' },
   '/orders': { title: 'Meine Bestellungen' },
   '/admin': { title: 'Admin Dashboard' },
   '/admin/rules': { title: 'Regelverwaltung' },

@@ -7,15 +7,12 @@ import AppLayout from './components/Layout/AppLayout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Catalog from './pages/Catalog'
+import Workspace from './pages/Workspace'
 import OrderList from './pages/OrderList'
 import OrderNew from './pages/OrderNew'
 import OrderDetail from './pages/OrderDetail'
 import OrderExport from './pages/OrderExport'
 import ServiceRequest from './pages/ServiceRequest'
-import Approvals from './pages/Approvals'
-import MyServices from './pages/MyServices'
-import MyRequests from './pages/MyRequests'
-import Notifications from './pages/Notifications'
 import SubscriptionDetail from './pages/SubscriptionDetail'
 import AdminDashboard from './pages/admin/Dashboard'
 import Rules from './pages/admin/Rules'
@@ -47,27 +44,13 @@ function AppRoutes() {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/shop" element={<Catalog />} />
-        <Route path="/catalog" element={<Navigate to="/shop" replace />} />
+        <Route path="/shop/:slug/request" element={<ServiceRequest />} />
+        <Route path="/workspace" element={<Workspace />} />
         <Route path="/orders" element={<OrderList />} />
         <Route path="/orders/new" element={<OrderNew />} />
         <Route path="/orders/:orderId" element={<OrderDetail />} />
         <Route path="/orders/:orderId/export" element={<OrderExport />} />
-        <Route path="/shop/:slug/request" element={<ServiceRequest />} />
-        <Route path="/my-services" element={<MyServices />} />
-        <Route path="/my-requests" element={<MyRequests />} />
-        <Route path="/resources" element={<Navigate to="/my-services" replace />} />
-        <Route path="/notifications" element={<Notifications />} />
-        <Route path="/subscriptions" element={<Navigate to="/my-services?tab=subscriptions" replace />} />
         <Route path="/subscriptions/:id" element={<SubscriptionDetail />} />
-        <Route
-          path="/reviews"
-          element={
-            <ProtectedRoute requiredRoles={['approver', 'admin']}>
-              <Approvals />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/approvals" element={<Navigate to="/reviews" replace />} />
         <Route
           path="/admin"
           element={
@@ -92,6 +75,15 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        {/* Redirects from old paths */}
+        <Route path="/catalog" element={<Navigate to="/shop" replace />} />
+        <Route path="/my-services" element={<Navigate to="/workspace?tab=services" replace />} />
+        <Route path="/my-requests" element={<Navigate to="/workspace?tab=requests" replace />} />
+        <Route path="/notifications" element={<Navigate to="/workspace?tab=notifications" replace />} />
+        <Route path="/reviews" element={<Navigate to="/workspace?tab=reviews" replace />} />
+        <Route path="/approvals" element={<Navigate to="/workspace?tab=reviews" replace />} />
+        <Route path="/resources" element={<Navigate to="/workspace?tab=services" replace />} />
+        <Route path="/subscriptions" element={<Navigate to="/workspace?tab=services" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

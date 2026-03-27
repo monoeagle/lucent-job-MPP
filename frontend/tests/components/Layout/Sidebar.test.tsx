@@ -44,26 +44,14 @@ describe('Sidebar', () => {
       renderSidebar()
       expect(screen.getByText('Dashboard')).toBeInTheDocument()
       expect(screen.getByText('Shop')).toBeInTheDocument()
-      expect(screen.getByText('My Services')).toBeInTheDocument()
-      expect(screen.getByText('My Requests')).toBeInTheDocument()
-      expect(screen.getByText('Notifications')).toBeInTheDocument()
+      expect(screen.getByText('Workspace')).toBeInTheDocument()
     })
 
-    it('renders My Requests link', () => {
+    it('renders Workspace link', () => {
       renderSidebar()
-      const myRequests = screen.getByText('My Requests')
-      expect(myRequests).toBeInTheDocument()
-      expect(myRequests.closest('a')).toHaveAttribute('href', '/my-requests')
-    })
-
-    it('does not render Subscriptions as a nav item', () => {
-      renderSidebar()
-      expect(screen.queryByText('Subscriptions')).not.toBeInTheDocument()
-    })
-
-    it('hides Review Requests for regular user', () => {
-      renderSidebar()
-      expect(screen.queryByText('Review Requests')).not.toBeInTheDocument()
+      const workspace = screen.getByText('Workspace')
+      expect(workspace).toBeInTheDocument()
+      expect(workspace.closest('a')).toHaveAttribute('href', '/workspace')
     })
 
     it('hides admin section for regular user', () => {
@@ -73,7 +61,7 @@ describe('Sidebar', () => {
   })
 
   describe('role-based visibility', () => {
-    it('shows Review Requests for approver', () => {
+    it('shows Workspace for all users', () => {
       useAuthStore.setState({
         user: {
           username: 'approver',
@@ -83,7 +71,7 @@ describe('Sidebar', () => {
         },
       })
       renderSidebar()
-      expect(screen.getByText('Review Requests')).toBeInTheDocument()
+      expect(screen.getByText('Workspace')).toBeInTheDocument()
     })
 
     it('shows admin section for admin', () => {
