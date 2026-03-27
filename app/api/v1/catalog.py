@@ -111,6 +111,40 @@ def list_categories():
     return jsonify(categories)
 
 
+@bp.route("/templates/<slug>/parameter-layout", methods=["GET"])
+@login_required
+def parameter_layout(slug):
+    repo = _get_repo()
+    template = repo.get_by_slug(slug, status="all")
+    if template is None:
+        return jsonify({"error": "Template not found"}), 404
+
+    quantity = request.args.get("quantity", 1, type=int)
+
+    shared = []
+    per_instance = []
+    auto = []
+
+    for p in template.parameters:
+        pi = p.get("per_instance", False)
+        if quantity <= 1 or pi is False:
+            shared.append(p)
+        elif pi == "auto":
+            auto.append(p)
+        elif pi is True:
+            per_instance.append(p)
+        else:
+            shared.append(p)
+
+    return jsonify({
+        "slug": slug,
+        "quantity": quantity,
+        "shared_parameters": shared,
+        "per_instance_parameters": per_instance,
+        "auto_parameters": auto,
+    }), 200
+
+
 @bp.route("/templates/<slug>/validate", methods=["POST"])
 @login_required
 def validate_template_params(slug):

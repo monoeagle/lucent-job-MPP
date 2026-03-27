@@ -128,7 +128,7 @@ class OrderService:
             quantity = getattr(item, "quantity", 1) or 1
             instance_params_list = getattr(item, "instance_parameters", []) or []
             per_instance_defs = [p for p in template.parameters
-                                if p.get("per_instance")]
+                                if p.get("per_instance") is True]
 
             if quantity > 1 and per_instance_defs:
                 for inst_params in instance_params_list:
