@@ -16,8 +16,10 @@ export default function EnumField({ id, label, value, onChange, options, require
           required && !value ? 'border-red-400 bg-red-50' : 'border-gray-300'
         }`}>
         <option value="">Bitte wählen...</option>
-        {options.filter(o => o.enabled).map(o => (
-          <option key={o.value} value={o.value}>{o.label}</option>
+        {options.map(o => (
+          <option key={o.value} value={o.value} disabled={!o.enabled}>
+            {o.label}{!o.enabled ? ' (nicht verfügbar)' : ''}
+          </option>
         ))}
       </select>
       {errors?.map((e, i) => <p key={i} className="text-xs text-red-500 mt-0.5">{e}</p>)}

@@ -20,7 +20,7 @@ const mainItems: NavItem[] = [
   { to: '/shop', label: 'Shop', icon: '🛒', roles: null },
   { to: '/workspace', label: 'Bestellungen', icon: '📋', roles: null },
   { to: '/notifications', label: 'Notifications', icon: '🔔', roles: null },
-  { to: '/reviews', label: 'Review Requests', icon: '✅', roles: ['approver', 'admin'] },
+  { to: '/reviews', label: 'Review Requests', icon: '✅', roles: ['approver', 'admin', 'superadmin'] },
 ]
 
 const adminItems: NavItem[] = [
@@ -45,6 +45,7 @@ function NavItemLink({ item, collapsed, badge }: { item: NavItem; collapsed: boo
   return (
     <NavLink
       to={item.to}
+      end={item.to === '/admin'}
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
         `relative flex items-center gap-3 px-3 py-2 rounded-md text-sm ${

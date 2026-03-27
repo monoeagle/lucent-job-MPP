@@ -87,23 +87,22 @@ export default function ParameterForm({ parameters, values, onChange, errors, sh
 
   function filterOptions(p: ParameterDefinition) {
     if (p.type !== 'enum' || !p.constraints.options) return p.constraints.options ?? []
-    return p.constraints.options.filter(opt => {
-      if (!opt.enabled) return false
-      if (!opt.metadata) return true
-      // Filter by metadata matching current values
-      // e.g. metadata.security_areas=["sec1","sec2"] checks if values.security_area is in the list
-      // e.g. metadata.allowed_system_types=["dc"] checks if values.system_type is in the list
+    // Don't hide options — mark incompatible ones as disabled instead
+    return p.constraints.options.map(opt => {
+      if (!opt.enabled) return opt
+      if (!opt.metadata) return opt
+      let compatible = true
       for (const [metaKey, metaVal] of Object.entries(opt.metadata)) {
         if (Array.isArray(metaVal)) {
-          // Find which parameter this metadata refers to (by naming convention)
-          // metadata key like "security_areas" → parameter key "security_area"
-          // metadata key like "allowed_system_types" → parameter key "system_type"
           const paramKey = metaKey.replace(/s$/, '').replace('allowed_', '')
           const currentVal = values[paramKey]
-          if (currentVal && !metaVal.includes(currentVal)) return false
+          if (currentVal && !metaVal.includes(currentVal)) {
+            compatible = false
+            break
+          }
         }
       }
-      return true
+      return compatible ? opt : { ...opt, enabled: false }
     })
   }
 
