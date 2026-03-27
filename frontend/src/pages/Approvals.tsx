@@ -44,19 +44,25 @@ export default function Approvals() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['approvals'],
-    queryFn: () => approvalsApi.listPendingApprovals(token!),
+    queryFn: () => approvalsApi.listAllApprovals(token!),
     enabled: !!token,
   })
 
+  const invalidateAll = () => {
+    queryClient.invalidateQueries({ queryKey: ['approvals'] })
+    queryClient.invalidateQueries({ queryKey: ['pending-approvals-count'] })
+    queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
+  }
+
   const approveMutation = useMutation({
     mutationFn: (id: string) => approvalsApi.approve(token!, id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['approvals'] }),
+    onSuccess: invalidateAll,
   })
 
   const rejectMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       approvalsApi.reject(token!, id, reason),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['approvals'] }),
+    onSuccess: invalidateAll,
   })
 
   const allItems: ExtendedApproval[] = data?.items ?? []

@@ -91,11 +91,13 @@ class ApprovalRepository:
         )
 
     def list_pending_requests(self) -> list[ApprovalRequestModel]:
-        return (
-            self.session.query(ApprovalRequestModel)
-            .filter_by(status="pending")
-            .all()
-        )
+        return self.list_requests(status="pending")
+
+    def list_requests(self, status: str | None = None) -> list[ApprovalRequestModel]:
+        q = self.session.query(ApprovalRequestModel)
+        if status:
+            q = q.filter_by(status=status)
+        return q.order_by(ApprovalRequestModel.requested_at.desc()).all()
 
     def list_expired_requests(self, now) -> list[ApprovalRequestModel]:
         return (

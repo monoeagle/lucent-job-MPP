@@ -153,10 +153,11 @@ def list_approvals():
     order_repo = _get_order_repo()
     user = g.current_user
 
-    pending = repo.list_pending_requests()
+    status_filter = request.args.get("status")
+    all_requests = repo.list_requests(status=status_filter)
 
     results = []
-    for req in pending:
+    for req in all_requests:
         order = order_repo.get_by_id(req.order_id)
         if order is None:
             continue
