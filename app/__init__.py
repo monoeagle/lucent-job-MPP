@@ -86,6 +86,9 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     from app.api.v1 import admin
     app.register_blueprint(admin.bp)
 
+    from app.api.v1 import resources
+    app.register_blueprint(resources.bp)
+
     from app.api.v1 import notifications
     app.register_blueprint(notifications.admin_bp)
     app.register_blueprint(notifications.bp)

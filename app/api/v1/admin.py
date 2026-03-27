@@ -1,9 +1,12 @@
 from datetime import datetime, timezone
 
-from flask import Blueprint, jsonify, request, g
+from flask import Blueprint, jsonify, request, g, current_app
+from sqlalchemy import func
 
 from app.core.auth import role_required
 from app.data.repositories.audit_log_repository import AuditLogRepository
+from app.data.db.models.order import OrderModel, OrderItemModel
+from app.data.db.models.approval import ApprovalRequestModel
 from app.services.audit_service import AuditService
 
 bp = Blueprint("admin_audit", __name__, url_prefix="/api/v1")
@@ -68,3 +71,76 @@ def export_audit_log():
     service = _get_audit_service()
     entries = service.export_entries(filters)
     return jsonify([_serialize_entry(e) for e in entries]), 200
+
+
+@bp.route("/admin/dashboard", methods=["GET"])
+@role_required("admin")
+def admin_dashboard():
+    session = g.db_session
+
+    # Order counts by status
+    all_statuses = ["draft", "validated", "submitted", "pending_approval",
+                    "provisioning", "done", "failed"]
+    rows = (
+        session.query(OrderModel.status, func.count(OrderModel.id))
+        .group_by(OrderModel.status)
+        .all()
+    )
+    counts_map = dict(rows)
+    order_counts = {s: counts_map.get(s, 0) for s in all_statuses}
+
+    # Pending approvals
+    pending_approvals = (
+        session.query(func.count(ApprovalRequestModel.id))
+        .filter(ApprovalRequestModel.status == "pending")
+        .scalar()
+    )
+
+    # Active resources (done items in done orders)
+    active_resources = (
+        session.query(func.count(OrderItemModel.id))
+        .join(OrderModel, OrderItemModel.order_id == OrderModel.id)
+        .filter(
+            OrderModel.status == "done",
+            OrderItemModel.provisioning_status == "done",
+        )
+        .scalar()
+    )
+
+    # Recent orders (last 10)
+    recent = (
+        session.query(OrderModel)
+        .order_by(OrderModel.created_at.desc())
+        .limit(10)
+        .all()
+    )
+    recent_orders = [
+        {
+            "order_id": o.id,
+            "order_number": o.order_number,
+            "title": o.title,
+            "status": o.status,
+            "created_at": o.created_at.isoformat() if o.created_at else None,
+        }
+        for o in recent
+    ]
+
+    # System health
+    db_status = "ok"
+    try:
+        session.execute(func.now())
+    except Exception:
+        db_status = "unavailable"
+
+    cmdb_status = "ok" if hasattr(current_app, "cmdb_client") else "unavailable"
+
+    return jsonify({
+        "order_counts": order_counts,
+        "pending_approvals": pending_approvals,
+        "active_resources": active_resources,
+        "recent_orders": recent_orders,
+        "system_health": {
+            "database": db_status,
+            "cmdb": cmdb_status,
+        },
+    }), 200
