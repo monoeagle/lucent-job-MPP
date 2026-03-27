@@ -99,11 +99,34 @@ pages/ → hooks/ → api/ ← types/
 
 | System   | Produktion        | Entwicklung               |
 |----------|-------------------|---------------------------|
-| Auth     | LDAP/AD           | Auth-Stub (4 Dummy-User)  |
+| Auth     | LDAP/AD           | Auth-Stub (5 Dummy-User)  |
 | CMDB     | Unternehmens-CMDB | CMDB-Stub (YAML-Daten)    |
 | GitLab   | GitLab CI/CD      | GitLab-Mock (Simulation)  |
 
 Alle externen Systeme sind ueber konfigurierbare Modi austauschbar. Details unter [Stubs & Mocks](../betrieb/stubs-mocks.md).
+
+---
+
+## Rollen
+
+| Rolle       | Beschreibung                                                        |
+|-------------|---------------------------------------------------------------------|
+| requester   | Standard-Benutzer, bestellt Services                                |
+| approver    | Genehmigt/lehnt Bestellungen ab                                     |
+| admin       | Verwaltung von Regeln, Templates, Audit-Log, Dashboard              |
+| superadmin  | Erweiterte Admin-Rechte: DSGVO-Anonymisierung, Rules, Audit-Zugang |
+
+---
+
+## Subscriptions-Layer
+
+Subscriptions erweitern den Order-Lifecycle um Change- und Cancel-Operationen. Aenderungen an bestehenden Bestellungen durchlaufen denselben Approval-Workflow wie Neubestellungen.
+
+---
+
+## DSGVO-Anonymisierungs-Middleware
+
+Backend-Middleware fuer datenschutzkonforme Anonymisierung personenbezogener Daten. Per Admin-Toggle aktivierbar. Anonymisiert Benutzer-IDs, E-Mail-Adressen und Namen in API-Responses und Datenbank-Eintraegen.
 
 ---
 

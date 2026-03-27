@@ -1,6 +1,6 @@
 # API-Referenz
 
-Basis-Prefix: `/api/v1` — 76 Endpoints insgesamt.
+Basis-Prefix: `/api/v1` — 96 Endpoints insgesamt, verteilt auf 17 Module.
 
 ---
 
@@ -12,6 +12,7 @@ Basis-Prefix: `/api/v1` — 76 Endpoints insgesamt.
 | login      | Gueltiger JWT-Token (beliebige Rolle)                |
 | approver   | Rolle `approver` oder `admin`                        |
 | admin      | Rolle `admin`                                        |
+| superadmin | Rolle `superadmin` (DSGVO, erweiterte Admin-Rechte)  |
 
 ---
 
@@ -184,3 +185,71 @@ Basis-Prefix: `/api/v1` — 76 Endpoints insgesamt.
 |----|--------|-------------------------------|-------|---------------------------------------|
 | 76 | GET    | `/admin/notifications`        | admin | Alle Benachrichtigungen (Admin)       |
 | 77 | GET    | `/notifications`              | login | Eigene Benachrichtigungen             |
+| 78 | PATCH  | `/notifications/<id>/read`    | login | Benachrichtigung als gelesen markieren|
+
+---
+
+## Order Groups
+
+| #  | Method | Path                                          | Auth  | Beschreibung                          |
+|----|--------|-----------------------------------------------|-------|---------------------------------------|
+| 79 | POST   | `/orders/<id>/groups`                         | login | Gruppe erstellen                      |
+| 80 | GET    | `/orders/<id>/groups`                         | login | Gruppen auflisten                     |
+| 81 | PATCH  | `/orders/<id>/groups/<group_id>`              | login | Gruppe aktualisieren                  |
+| 82 | DELETE | `/orders/<id>/groups/<group_id>`              | login | Gruppe loeschen                       |
+
+---
+
+## Order Items (erweitert)
+
+| #  | Method | Path                                                   | Auth  | Beschreibung                           |
+|----|--------|--------------------------------------------------------|-------|----------------------------------------|
+| 83 | PATCH  | `/orders/<id>/items/<item_id>/quantity`                 | login | Menge aktualisieren                    |
+| 84 | PATCH  | `/orders/<id>/items/<item_id>/instance-parameters`     | login | Per-Instance-Parameter setzen          |
+
+---
+
+## Order Actions
+
+| #  | Method | Path                                          | Auth  | Beschreibung                          |
+|----|--------|-----------------------------------------------|-------|---------------------------------------|
+| 85 | POST   | `/orders/<id>/cancel`                         | login | Bestellung stornieren                 |
+| 86 | POST   | `/orders/<id>/change`                         | login | Aenderung an bestehender Bestellung   |
+
+---
+
+## Subscriptions
+
+| #  | Method | Path                                          | Auth  | Beschreibung                          |
+|----|--------|-----------------------------------------------|-------|---------------------------------------|
+| 87 | GET    | `/subscriptions`                              | login | Eigene Subscriptions auflisten        |
+| 88 | GET    | `/subscriptions/<id>`                         | login | Einzelne Subscription abrufen         |
+| 89 | POST   | `/subscriptions/<id>/change`                  | login | Aenderung beantragen                  |
+| 90 | POST   | `/subscriptions/<id>/cancel`                  | login | Kuendigung beantragen                 |
+
+---
+
+## Dashboard
+
+| #  | Method | Path                          | Auth  | Beschreibung                          |
+|----|--------|-------------------------------|-------|---------------------------------------|
+| 91 | GET    | `/dashboard/stats`            | login | Dashboard-Statistiken                 |
+
+---
+
+## Search
+
+| #  | Method | Path                          | Auth  | Beschreibung                          |
+|----|--------|-------------------------------|-------|---------------------------------------|
+| 92 | GET    | `/search`                     | login | Globale Suche ueber alle Entitaeten  |
+
+---
+
+## DSGVO
+
+| #  | Method | Path                                    | Auth       | Beschreibung                          |
+|----|--------|-----------------------------------------|------------|---------------------------------------|
+| 93 | POST   | `/admin/dsgvo/anonymize/<user_id>`      | superadmin | Benutzer anonymisieren                |
+| 94 | GET    | `/admin/dsgvo/status`                   | superadmin | DSGVO-Status abfragen                |
+| 95 | PUT    | `/admin/dsgvo/settings`                 | superadmin | DSGVO-Einstellungen aendern           |
+| 96 | GET    | `/admin/dsgvo/report/<user_id>`         | superadmin | DSGVO-Auskunft generieren             |

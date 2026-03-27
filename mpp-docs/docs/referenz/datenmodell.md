@@ -1,6 +1,6 @@
 # Datenmodell
 
-PostgreSQL mit SQLAlchemy 2.0 ORM. 9 Alembic-Migrationen. JSONB fuer flexible Parameter-Speicherung.
+PostgreSQL mit SQLAlchemy 2.0 ORM. 15 Tabellen. JSONB fuer flexible Parameter-Speicherung.
 
 ---
 
@@ -20,6 +20,9 @@ PostgreSQL mit SQLAlchemy 2.0 ORM. 9 Alembic-Migrationen. JSONB fuer flexible Pa
 | `audit_logs`               | Audit-Trail aller relevanten Aktionen           |
 | `notifications`            | E-Mail-Benachrichtigungen (Queue)               |
 | `credential_links`         | Einmal-Links fuer Zugangsdaten-Abruf            |
+| `subscriptions`            | Aktive Subscriptions aus provisionierten Orders  |
+| `group_subscriptions`      | Subscription-Zuordnung zu Order-Item-Groups      |
+| `order_item_groups`        | Gruppierung von Order-Items mit Mengenangabe     |
 
 ---
 
@@ -214,6 +217,39 @@ PostgreSQL mit SQLAlchemy 2.0 ORM. 9 Alembic-Migrationen. JSONB fuer flexible Pa
 | `accessed_at`   | DateTime(tz)  | Letzter Zugriff                   |
 | `is_consumed`   | Boolean       | Bereits abgerufen?                |
 
+### subscriptions
+
+| Spalte            | Typ           | Beschreibung                      |
+|-------------------|---------------|-----------------------------------|
+| `id`              | String(36) PK | UUID                              |
+| `order_id`        | String(36) FK | Referenz auf orders.id            |
+| `order_item_id`   | String(36) FK | Referenz auf order_items.id       |
+| `status`          | String(20)    | active / change_pending / cancelled |
+| `created_at`      | DateTime(tz)  | Erstellungszeitpunkt              |
+| `updated_at`      | DateTime(tz)  | Letzte Aenderung                  |
+
+### group_subscriptions
+
+| Spalte            | Typ           | Beschreibung                      |
+|-------------------|---------------|-----------------------------------|
+| `id`              | String(36) PK | UUID                              |
+| `subscription_id` | String(36) FK | Referenz auf subscriptions.id     |
+| `group_id`        | String(36) FK | Referenz auf order_item_groups.id |
+| `created_at`      | DateTime(tz)  | Erstellungszeitpunkt              |
+
+### order_item_groups
+
+| Spalte            | Typ           | Beschreibung                      |
+|-------------------|---------------|-----------------------------------|
+| `id`              | String(36) PK | UUID                              |
+| `order_id`        | String(36) FK | Referenz auf orders.id            |
+| `name`            | String(100)   | Gruppenname                       |
+| `quantity`        | Integer       | Anzahl Instanzen                  |
+| `created_at`      | DateTime(tz)  | Erstellungszeitpunkt              |
+| `updated_at`      | DateTime(tz)  | Letzte Aenderung                  |
+
+**Beziehung:** `order_item_groups.order_id → orders.id` (CASCADE DELETE)
+
 ---
 
 ## Beziehungen
@@ -225,6 +261,12 @@ order_items ──→ orders (FK: order_id, CASCADE)
     ↑
 dispatch_logs (order_item_id)
 credential_links (order_item_id)
+subscriptions (order_item_id)
+
+order_item_groups ──→ orders (FK: order_id, CASCADE)
+
+group_subscriptions ──→ subscriptions (FK: subscription_id)
+group_subscriptions ──→ order_item_groups (FK: group_id)
 
 approval_requests ──→ orders (FK: order_id)
 

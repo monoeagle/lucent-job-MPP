@@ -1,6 +1,6 @@
 # Services
 
-10 Backend-Services implementieren die gesamte Business-Logik. Jeder Service ist ein eigenstaendiges Modul unter `app/services/`.
+13 Backend-Services implementieren die gesamte Business-Logik. Jeder Service ist ein eigenstaendiges Modul unter `app/services/`.
 
 ---
 
@@ -18,6 +18,9 @@
 | NotificationService    | `services/notification_service.py` | Benachrichtigungserzeugung und -abfrage      |
 | CredentialService      | `services/credential_service.py`| Einmal-Links fuer Zugangsdaten                  |
 | TemplateValidator      | `services/template_validator.py`| Validierung neuer Templates bei Registrierung   |
+| DashboardService       | `services/dashboard_service.py` | Statistiken, Aggregation fuer Dashboard-Endpoint|
+| SearchService          | `services/search_service.py`    | Globale Suche ueber Orders, Templates, Ressourcen|
+| SubscriptionService    | `services/subscription_service.py`| Subscription-Lifecycle: Change, Cancel, Approval|
 
 ---
 
@@ -31,7 +34,7 @@
 
 **Auth-Modi:**
 
-- `stub`: 4 Dummy-Benutzer, kein Passwort noetig, JWT mit konfigurierbarer TTL
+- `stub`: 5 Dummy-Benutzer, kein Passwort noetig, JWT mit konfigurierbarer TTL
 - `ldap`: Nicht implementiert (Platzhalter fuer Produktion)
 
 **Sicherheitsregel:** Stub-Modus darf nicht in Produktion (`ENV=production`) aktiv sein.
@@ -171,3 +174,21 @@ Erzeugt Benachrichtigungen bei Status-Aenderungen (Order submitted, approved, re
 ## CredentialService
 
 Erzeugt Einmal-Links (One-Time-Token) fuer die sichere Zustellung von Zugangsdaten nach erfolgreicher Provisionierung. Token werden als SHA-256-Hash gespeichert und sind nach einmaligem Abruf oder Ablauf ungueltig.
+
+---
+
+## DashboardService
+
+Aggregiert Statistiken fuer das Dashboard: Bestellungen nach Status, Approval-Auslastung, Provisioning-Erfolgsraten. Liefert Daten fuer Recharts-Charts im Frontend.
+
+---
+
+## SearchService
+
+Globale Suche ueber Orders, Templates und Ressourcen. Unterstuetzt Volltextsuche mit Relevanz-Ranking und rollenbasierter Filterung.
+
+---
+
+## SubscriptionService
+
+Verwaltet den Lifecycle aktiver Subscriptions. Unterstuetzt Change-Requests (Parameter-Aenderung) und Cancel-Requests (Kuendigung), die jeweils den Approval-Workflow durchlaufen koennen.

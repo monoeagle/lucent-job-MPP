@@ -8,7 +8,7 @@ MPP verwendet in der Entwicklung drei Stub/Mock-Systeme als Ersatz fuer Produkti
 
 **Problem:** Kein Active Directory / LDAP in der Entwicklungsumgebung.
 
-**Loesung:** Konfigurierbarer Auth-Modus mit 4 vordefinierten Dummy-Benutzern.
+**Loesung:** Konfigurierbarer Auth-Modus mit 5 vordefinierten Dummy-Benutzern.
 
 ### Konfiguration
 
@@ -19,12 +19,13 @@ ENV=development       # Muss != production sein
 
 ### Benutzer
 
-| Benutzername     | Rollen              | E-Mail                |
-|------------------|---------------------|-----------------------|
-| test-requester   | requester           | requester@test.local  |
-| test-approver    | approver            | approver@test.local   |
-| test-admin       | admin               | admin@test.local      |
-| test-multi       | requester, approver | multi@test.local      |
+| Benutzername     | Rollen              | E-Mail                  |
+|------------------|---------------------|-------------------------|
+| test-requester   | requester           | requester@test.local    |
+| test-approver    | approver            | approver@test.local     |
+| test-admin       | admin               | admin@test.local        |
+| test-multi       | requester, approver | multi@test.local        |
+| test-superadmin  | superadmin          | superadmin@test.local   |
 
 ### Funktionsweise
 

@@ -26,12 +26,13 @@ Waehle den Benutzer **test-requester** aus der Liste. Im Stub-Modus ist kein Pas
 
 Verfuegbare Benutzer:
 
-| Benutzer         | Rolle(n)              |
-|------------------|-----------------------|
-| test-requester   | requester             |
-| test-approver    | approver              |
-| test-admin       | admin                 |
-| test-multi       | requester + approver  |
+| Benutzer         | Rolle(n)              | Passwort          |
+|------------------|-----------------------|-------------------|
+| test-requester   | requester             | (keins / beliebig)|
+| test-approver    | approver              | (keins / beliebig)|
+| test-admin       | admin                 | (keins / beliebig)|
+| test-multi       | requester + approver  | (keins / beliebig)|
+| test-superadmin  | superadmin            | (keins / beliebig)|
 
 ---
 
@@ -67,8 +68,34 @@ Klicke **Einreichen** — die Bestellung wechselt in den Status `submitted`. Je 
 
 ---
 
-## 5. Naechste Schritte
+## 5. Datenbank zuruecksetzen
+
+Falls die Datenbank in einen inkonsistenten Zustand geraet:
+
+```bash
+# Datenbank komplett neu aufsetzen
+alembic downgrade base
+alembic upgrade head
+python3 scripts/seed.py
+```
+
+---
+
+## 6. Screenshot-Tool
+
+Automatische Screenshots aller Seiten (rollenspezifisch) mit Playwright:
+
+```bash
+python3 scripts/screenshot.py
+```
+
+Screenshots werden im WebP-Format erzeugt und nach Benutzerrolle gruppiert.
+
+---
+
+## 7. Naechste Schritte
 
 - **Approval testen:** Als `test-approver` einloggen und offene Genehmigungen bearbeiten
 - **Admin-Dashboard:** Als `test-admin` einloggen fuer Statistiken und Audit-Log
-- **API erkunden:** [API-Referenz](../referenz/api-referenz.md) fuer alle 76 Endpoints
+- **Superadmin testen:** Als `test-superadmin` einloggen fuer DSGVO-Anonymisierung
+- **API erkunden:** [API-Referenz](../referenz/api-referenz.md) fuer alle 96 Endpoints

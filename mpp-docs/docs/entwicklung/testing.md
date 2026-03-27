@@ -1,6 +1,6 @@
 # Testing
 
-MPP wurde vollstaendig mit **Test-Driven Development (TDD)** entwickelt. 594 Backend-Tests + 47 Frontend-Tests = **641 Tests** insgesamt.
+MPP wurde vollstaendig mit **Test-Driven Development (TDD)** entwickelt. 756 Backend-Tests + 106 Frontend-Tests = **862 Tests** insgesamt.
 
 ---
 
@@ -8,11 +8,11 @@ MPP wurde vollstaendig mit **Test-Driven Development (TDD)** entwickelt. 594 Bac
 
 | Bereich      | Framework         | Anzahl | Verzeichnis          |
 |--------------|-------------------|--------|----------------------|
-| Backend Unit | pytest            | ~400   | `tests/unit/`        |
-| Backend Int. | pytest            | ~180   | `tests/integration/` |
-| Backend E2E  | pytest            | ~14    | `tests/e2e/`         |
-| Frontend     | vitest + RTL      | 47     | `frontend/tests/`    |
-| **Gesamt**   |                   | **641**|                      |
+| Backend Unit | pytest            | ~500   | `tests/unit/`        |
+| Backend Int. | pytest            | ~230   | `tests/integration/` |
+| Backend E2E  | pytest            | ~26    | `tests/e2e/`         |
+| Frontend     | vitest + RTL      | 106    | `frontend/tests/`    |
+| **Gesamt**   |                   | **862**|                      |
 
 ---
 
@@ -89,6 +89,10 @@ Testen einzelne Services und Repositories isoliert. Externe Abhaengigkeiten werd
 - `test_approval_service.py` — Regel-Evaluation, Approve/Reject
 - `test_context_service.py` — CMDB-Resolution, Tenant-Pruefung
 - `test_template_validator.py` — Template-Registrierungs-Validierung
+- `test_subscription_service.py` — Subscription-Lifecycle, Change, Cancel
+- `test_dashboard_service.py` — Dashboard-Statistiken und Aggregation
+- `test_search_service.py` — Globale Suche, Relevanz-Ranking
+- `test_dsgvo.py` — DSGVO-Anonymisierung, Datenschutz-Middleware
 
 ### Integration-Tests (`tests/integration/`)
 
@@ -107,6 +111,8 @@ Testen komplette Flows ueber die API-Schicht:
 - Kompletter Bestell-Flow (Create → Add Items → Validate → Submit → Provision)
 - Approval-Flow (Submit → Pending → Approve/Reject)
 - CMDB-Integration (Kontext-Aufloesung mit Verfuegbarkeitspruefung)
+- Subscription-Flow (Order → Done → Subscription → Change/Cancel)
+- Post-Submit-Flow (Genehmigung → Provisionierung → Credential-Link)
 
 ---
 

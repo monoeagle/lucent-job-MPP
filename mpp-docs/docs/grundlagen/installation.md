@@ -109,6 +109,41 @@ Das interaktive Menue bietet:
 
 ---
 
+## Docker / Offline-Installation
+
+MPP kann auch komplett Docker-basiert betrieben werden — ideal fuer Offline-Umgebungen oder schnelles Setup.
+
+### Voraussetzungen
+
+- Docker 24+
+- Docker Compose 2.x
+
+### Starten
+
+```bash
+docker compose up -d
+```
+
+Das startet Backend, Frontend, PostgreSQL und den GitLab-Mock in separaten Containern.
+
+### Bundle Builder (Offline)
+
+Fuer Air-Gapped-Umgebungen kann ein vollstaendiges Bundle erstellt werden:
+
+```bash
+bash scripts/bundle-builder.sh
+```
+
+Das erzeugt ein tar-Archiv mit allen Docker-Images, Konfigurationen und Seed-Daten. Das Bundle kann auf dem Zielsystem mit `docker compose load` importiert werden.
+
+### Dateien
+
+- `Dockerfile` — Multi-Stage-Build (Backend + Frontend)
+- `docker-compose.yml` — Orchestrierung aller Dienste
+- `scripts/bundle-builder.sh` — Offline-Bundle-Erstellung
+
+---
+
 ## Verifikation
 
 Nach dem Start:

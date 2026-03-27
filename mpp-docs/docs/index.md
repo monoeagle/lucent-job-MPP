@@ -7,13 +7,22 @@ Das **Marketplace Portal (MPP)** ist ein Self-Service-Portal fuer die automatisi
 ## Was kann MPP?
 
 - **Services bestellen** — VMs, Datenbanken, Container aus einem konfigurierbaren Servicekatalog
+- **Shop Wizard** — Wizard/Formular-Toggle mit T-Shirt-Sizes und wizard_config
 - **Order-Lifecycle** — Draft → Validated → Submitted → Provisioning → Done
+- **Order Groups + Quantity** — Gruppierte Items mit Mengenangabe und Per-Instance-Parametern
+- **Subscriptions** — Lifecycle-Management mit Change/Cancel und Approval-Integration
 - **Kontextabhaengig** — Standort, Mandant, Sicherheitsbereich beeinflussen Verfuegbarkeit und Parameter
+- **Dependency Matrix** — 15 Cross-Field-Abhaengigkeiten mit ~45.000 validen Kombinationen
 - **Approval-Workflow** — Automatische Genehmigungspflicht fuer kostenintensive Bestellungen
 - **Automatische Provisionierung** — GitLab-Pipeline-Integration mit OpenTofu
-- **Rollenbasiert** — Requester, Approver, Admin mit abgestuften Berechtigungen
+- **Rollenbasiert** — Requester, Approver, Admin, Superadmin mit abgestuften Berechtigungen
+- **Dashboard** — Statistiken, Suche und Recharts-Charts
+- **Notifications** — Read/Unread-Status, Event-Trigger, E-Mail-Stub
+- **DSGVO-Anonymisierung** — Middleware fuer datenschutzkonforme Anonymisierung (Admin-Toggle)
 - **Audit-Trail** — Vollstaendige Protokollierung aller Aktionen
 - **Einmal-Links** — Sichere Zustellung von Zugangsdaten nach Provisionierung
+- **Offline-Installer** — Docker-basierte Installation (Dockerfile, docker-compose, Bundle Builder)
+- **Screenshot-Tool** — Playwright-basiert, WebP-Format, rollenspezifisch
 
 ## Tech-Stack
 
@@ -32,15 +41,16 @@ Das **Marketplace Portal (MPP)** ist ein Self-Service-Portal fuer die automatisi
 
 | Metrik              | Wert  |
 |---------------------|-------|
-| Backend-Tests       | 594   |
-| Frontend-Tests      | 47    |
-| Tests gesamt        | 641   |
-| API-Endpoints       | 76    |
-| Datenbanktabellen   | 12    |
-| Alembic-Migrationen | 9     |
-| Frontend-Seiten     | 11    |
-| Backend-Services    | 10    |
-| Commits             | 77    |
+| Backend-Tests       | 756   |
+| Frontend-Tests      | 106   |
+| Tests gesamt        | 862   |
+| API-Endpoints       | 96    |
+| API-Module          | 17    |
+| Datenbanktabellen   | 15    |
+| Frontend-Seiten     | 17    |
+| Frontend-API-Module | 10    |
+| Frontend-Hook-Module| 7     |
+| Backend-Services    | 13    |
 
 ## Ansatz
 
