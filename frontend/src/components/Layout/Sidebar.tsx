@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '../../store/authStore'
 import { useUnreadCount } from '../../hooks/useNotifications'
+import { approvalsApi } from '../../api/approvals'
 
 const STORAGE_KEY = 'mpp-sidebar-collapsed'
 
@@ -69,10 +71,19 @@ function NavItemLink({ item, collapsed, badge }: { item: NavItem; collapsed: boo
 }
 
 export default function Sidebar() {
-  const { user, logout } = useAuthStore()
+  const { user, logout, token } = useAuthStore()
   const navigate = useNavigate()
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
+
+  const isApprover = user?.roles.includes('approver') || user?.roles.includes('admin')
+  const { data: approvalsData } = useQuery({
+    queryKey: ['pending-approvals-count'],
+    queryFn: () => approvalsApi.listPendingApprovals(token!),
+    enabled: !!token && !!isApprover,
+    refetchInterval: 60_000,
+  })
+  const pendingApprovals = approvalsData?.items?.length ?? 0
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem(STORAGE_KEY) === 'true'
   })
@@ -116,7 +127,11 @@ export default function Sidebar() {
             key={item.label}
             item={item}
             collapsed={collapsed}
-            badge={item.to === '/notifications' ? unreadCount : undefined}
+            badge={
+              item.to === '/notifications' ? unreadCount :
+              item.to === '/reviews' ? pendingApprovals :
+              undefined
+            }
           />
         ))}
 

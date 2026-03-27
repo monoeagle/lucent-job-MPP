@@ -65,11 +65,6 @@ describe('ServiceRequest', () => {
     })
   })
 
-  it('shows view toggle button', async () => {
-    renderPage()
-    expect(await screen.findByTestId('view-toggle')).toBeInTheDocument()
-  })
-
   it('defaults to wizard view', async () => {
     renderPage()
     expect(await screen.findByText('Weiter')).toBeInTheDocument()

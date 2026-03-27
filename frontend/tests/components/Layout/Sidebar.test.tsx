@@ -14,6 +14,12 @@ vi.mock('../../../src/api/notifications', () => ({
   },
 }))
 
+vi.mock('../../../src/api/approvals', () => ({
+  approvalsApi: {
+    listPendingApprovals: vi.fn().mockResolvedValue({ items: [], total: 0 }),
+  },
+}))
+
 function renderSidebar() {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(

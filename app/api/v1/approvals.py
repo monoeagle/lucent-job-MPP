@@ -173,7 +173,7 @@ def list_approvals():
         item["requester_id"] = order.requester_id
         results.append(item)
 
-    return jsonify(results), 200
+    return jsonify({"items": results, "total": len(results)}), 200
 
 
 @approvals_bp.route("/approvals/<approval_id>", methods=["GET"])
