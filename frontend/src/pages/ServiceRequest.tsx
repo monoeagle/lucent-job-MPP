@@ -75,12 +75,27 @@ export default function ServiceRequest() {
       }
 
       const { ordersApi } = await import('../api/orders')
-      await ordersApi.addItem(token, targetOrderId, {
+
+      // Auto-create group for quantity > 1
+      let groupId: string | undefined
+      if (quantity > 1) {
+        const groupResp = await ordersApi.createGroup(token, targetOrderId, {
+          name: `${template.display_name} (${quantity}x)`,
+        }) as unknown as { group: { id: string } }
+        groupId = groupResp?.group?.id
+      }
+
+      const itemResp = await ordersApi.addItem(token, targetOrderId, {
         template_slug: template.slug,
         template_version: template.version,
         parameters: values,
         quantity: quantity > 1 ? quantity : undefined,
-      })
+      }) as unknown as { item?: { id: string } }
+
+      // Assign to group if created
+      if (groupId && itemResp?.item?.id) {
+        await ordersApi.assignItemToGroup(token, targetOrderId, itemResp.item.id, groupId)
+      }
 
       navigate(`/orders/${targetOrderId}`)
     } finally {

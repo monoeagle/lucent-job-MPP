@@ -182,7 +182,10 @@ SHARED_PARAMS = [
         "key": "tshirt_size", "label": "T-Shirt Size", "type": "enum", "required": True,
         "tofu_variable_name": "tshirt_size", "display_order": 40, "group": "VM Sizing",
         "description": "Vorkonfigurierte Groesse — setzt CPU, RAM und OS-Disk automatisch",
+        "default_value": "custom",
         "constraints": {"options": [
+            {"value": "custom", "label": "Benutzerdefiniert", "enabled": True,
+             "metadata": {"allowed_system_types": ["db", "dc", "fp", "app", "web"]}},
             {"value": "xs", "label": "XS — 1 CPU, 2 GB RAM, 40 GB Disk", "enabled": True,
              "metadata": {"cpu_cores": 1, "ram_gb": 2, "os_disk_gb": 40,
                           "allowed_system_types": ["fp", "app", "web"]}},

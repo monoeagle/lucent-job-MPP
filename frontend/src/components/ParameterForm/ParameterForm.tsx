@@ -67,6 +67,22 @@ export default function ParameterForm({ parameters, values, onChange, errors, sh
         }
       }
     }
+
+    // Reverse: if a field is changed that was auto-filled by an enum,
+    // reset that enum to "custom" (if it has a custom option)
+    if (param.type !== 'enum') {
+      for (const p of parameters) {
+        if (p.type === 'enum' && p.affects_options_of.includes(param.key)) {
+          const currentEnumVal = values[p.key]
+          if (currentEnumVal && currentEnumVal !== 'custom') {
+            const hasCustom = p.constraints.options?.some(o => o.value === 'custom')
+            if (hasCustom) {
+              onChange(p.key, 'custom')
+            }
+          }
+        }
+      }
+    }
   }
 
   function filterOptions(p: ParameterDefinition) {
