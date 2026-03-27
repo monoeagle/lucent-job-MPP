@@ -6,6 +6,10 @@ export const approvalsApi = {
     return (await apiClient.get('/api/v1/approvals?status=pending', token)) as ApprovalListResponse
   },
 
+  async listAllApprovals(token: string): Promise<ApprovalListResponse> {
+    return (await apiClient.get('/api/v1/approvals', token)) as ApprovalListResponse
+  },
+
   async getApproval(token: string, approvalId: string): Promise<ApprovalRequest> {
     return (await apiClient.get(`/api/v1/approvals/${approvalId}`, token)) as ApprovalRequest
   },
