@@ -231,6 +231,8 @@ def add_item(order_id):
             template_slug=data.get("template_slug", ""),
             template_version=data.get("template_version", ""),
             parameters=data.get("parameters", {}),
+            quantity=data.get("quantity", 1),
+            instance_parameters=data.get("instance_parameters"),
         )
     except ValueError as e:
         msg = str(e)
@@ -485,9 +487,26 @@ def export_order_tofu(order_id):
     if order.status in _READONLY_STATUSES:
         readonly_notice = f"Order is {order.status}. Export is read-only."
 
+    # Build lookup for order_item_id and position by slug+version
+    item_lookup = {}
+    for item in order.items:
+        key = (item.template_slug, item.template_version)
+        if key not in item_lookup:
+            item_lookup[key] = item
+
     items = []
-    for item, export_data in zip(order.items, result["items"]):
-        items.append(_build_export_item(item, export_data))
+    for export_data in result["items"]:
+        key = (export_data["template_slug"], export_data["template_version"])
+        source_item = item_lookup.get(key)
+        items.append({
+            "order_item_id": source_item.id if source_item else None,
+            "template_slug": export_data["template_slug"],
+            "template_version": export_data["template_version"],
+            "position": source_item.position if source_item else None,
+            "module_source": export_data["module_source"],
+            "variables": export_data["variables"],
+            "error": export_data.get("error"),
+        })
 
     return jsonify({
         "order_id": order.id,
