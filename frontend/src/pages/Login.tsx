@@ -35,7 +35,10 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-sm p-8 bg-white rounded-lg shadow">
-        <h1 className="text-2xl font-bold text-center mb-6">Marketplace Portal</h1>
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold">Marketplace Portal</h1>
+          <p className="text-xs text-gray-400 mt-1">v1.0.0</p>
+        </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
