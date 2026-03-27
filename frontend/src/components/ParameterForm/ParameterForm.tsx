@@ -10,6 +10,7 @@ interface Props {
   values: Record<string, unknown>
   onChange: (key: string, value: unknown) => void
   errors?: Record<string, string[]>
+  showGroupHeaders?: boolean
 }
 
 function isVisible(param: ParameterDefinition, values: Record<string, unknown>): boolean {
@@ -27,7 +28,7 @@ function isVisible(param: ParameterDefinition, values: Record<string, unknown>):
   })
 }
 
-export default function ParameterForm({ parameters, values, onChange, errors }: Props) {
+export default function ParameterForm({ parameters, values, onChange, errors, showGroupHeaders = true }: Props) {
   const visible = parameters.filter(p => isVisible(p, values))
   const grouped = visible.reduce<Record<string, ParameterDefinition[]>>((acc, p) => {
     const g = p.group || 'Allgemein'
@@ -69,7 +70,9 @@ export default function ParameterForm({ parameters, values, onChange, errors }: 
     <div>
       {Object.entries(grouped).map(([group, params]) => (
         <div key={group} className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 border-b pb-1">{group}</h4>
+          {showGroupHeaders && (
+            <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3 border-b pb-1">{group}</h4>
+          )}
           {params.sort((a, b) => a.display_order - b.display_order).map(renderField)}
         </div>
       ))}
