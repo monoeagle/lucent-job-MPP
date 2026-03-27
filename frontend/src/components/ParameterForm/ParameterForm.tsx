@@ -13,7 +13,7 @@ interface Props {
   showGroupHeaders?: boolean
 }
 
-function isVisible(param: ParameterDefinition, values: Record<string, unknown>): boolean {
+export function isVisible(param: ParameterDefinition, values: Record<string, unknown>): boolean {
   const visRules = param.depends_on.filter(r => r.effect === 'visible')
   if (visRules.length === 0) return true
   return visRules.every(r => {
@@ -26,6 +26,22 @@ function isVisible(param: ParameterDefinition, values: Record<string, unknown>):
       default: return true
     }
   })
+}
+
+export function isFormComplete(parameters: ParameterDefinition[], values: Record<string, unknown>): boolean {
+  for (const param of parameters) {
+    if (!isVisible(param, values)) continue
+    if (!param.required) continue
+
+    const val = values[param.key]
+    if (val === undefined || val === null || val === '') return false
+
+    if (param.type === 'string' && typeof val === 'string') {
+      if (!val.trim()) return false
+      if (param.constraints.pattern && !new RegExp(param.constraints.pattern).test(val)) return false
+    }
+  }
+  return true
 }
 
 export default function ParameterForm({ parameters, values, onChange, errors, showGroupHeaders = true }: Props) {

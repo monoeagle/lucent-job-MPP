@@ -3,7 +3,7 @@ import type { ServiceTemplateDetail, ParameterDefinition } from '../../types/cat
 import type { OrderContext } from '../../types/context'
 import StepIndicator, { type StepDef } from './StepIndicator'
 import ContextSelector from './ContextSelector'
-import ParameterForm from '../ParameterForm/ParameterForm'
+import ParameterForm, { isFormComplete } from '../ParameterForm/ParameterForm'
 import RequestSummary from './RequestSummary'
 
 interface WizardStep extends StepDef {
@@ -129,8 +129,10 @@ export default function WizardView({
             Weiter
           </button>
         ) : (
-          <button onClick={onSubmit} disabled={isSubmitting}
-            className="px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50">
+          <button onClick={onSubmit}
+            disabled={isSubmitting || !context || !isFormComplete(template.parameters, values)}
+            className="px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50"
+            title={!context ? 'Kontext muss ausgefuellt sein' : !isFormComplete(template.parameters, values) ? 'Alle Pflichtfelder muessen ausgefuellt sein' : ''}>
             {isSubmitting ? 'Wird erstellt...' : 'Zur Bestellung hinzufügen'}
           </button>
         )}

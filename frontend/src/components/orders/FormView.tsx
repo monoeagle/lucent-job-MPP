@@ -1,7 +1,7 @@
 import type { ServiceTemplateDetail, ParameterDefinition } from '../../types/catalog'
 import type { OrderContext } from '../../types/context'
 import ContextSelector from './ContextSelector'
-import ParameterForm from '../ParameterForm/ParameterForm'
+import ParameterForm, { isFormComplete } from '../ParameterForm/ParameterForm'
 import RequestSummary from './RequestSummary'
 
 interface Props {
@@ -82,8 +82,10 @@ export default function FormView({
           quantity={quantity}
           onQuantityChange={onQuantityChange}
         />
-        <button onClick={onSubmit} disabled={isSubmitting}
-          className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50">
+        <button onClick={onSubmit}
+          disabled={isSubmitting || !context || !isFormComplete(template.parameters, values)}
+          className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50"
+          title={!context ? 'Kontext muss ausgefuellt sein' : !isFormComplete(template.parameters, values) ? 'Alle Pflichtfelder muessen ausgefuellt sein' : ''}>
           {isSubmitting ? 'Wird erstellt...' : 'Zur Bestellung hinzufügen'}
         </button>
       </div>
