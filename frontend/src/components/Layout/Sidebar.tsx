@@ -98,7 +98,7 @@ export default function Sidebar() {
   return (
     <aside
       data-testid="sidebar"
-      className={`${collapsed ? 'w-16' : 'w-60'} bg-gray-900 text-white min-h-screen flex flex-col transition-all duration-200`}
+      className={`${collapsed ? 'w-16' : 'w-60'} bg-gray-900 text-white h-screen flex flex-col transition-all duration-200 shrink-0 overflow-y-auto`}
     >
       <div className="flex items-center justify-between p-4">
         {!collapsed && <span className="text-lg font-bold">MPP</span>}
