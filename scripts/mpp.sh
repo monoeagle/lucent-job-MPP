@@ -519,6 +519,7 @@ while true; do
     echo -e "${CYAN}Tools:${NC}"
     echo "  [8] Logs anzeigen"
     echo "  [9] Tests ausführen"
+    echo "  [s] Screenshots erstellen (WebP)"
     echo -e "  [r] ${RED}DB Reset + Neu-Seed${NC}"
     echo ""
     echo -e "${CYAN}Demo-Zugaenge:${NC}"
@@ -543,6 +544,7 @@ while true; do
         7) stop_docs ;;
         8) show_logs ;;
         9) run_tests ;;
+        s|S) echo -e "${CYAN}Screenshots erstellen...${NC}"; bash "$PROJECT_DIR/scripts/run_screenshots.sh"; wait_for_enter ;;
         r|R) reset_database ;;
         q|Q) echo -e "${YELLOW}Bye!${NC}"; exit 0 ;;
         *) echo -e "${RED}Ungültige Eingabe.${NC}"; sleep 1 ;;
