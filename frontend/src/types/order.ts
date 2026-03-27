@@ -17,6 +17,18 @@ export interface OrderItem {
   validation_errors: ValidationViolation[]
   created_at: string
   updated_at: string
+  group_id: string | null
+  quantity: number
+  instance_parameters: Record<string, unknown>[]
+}
+
+export interface OrderItemGroup {
+  id: string
+  order_id: string
+  name: string
+  description: string | null
+  position: number
+  items: OrderItem[]
 }
 
 export interface Order {
@@ -32,6 +44,8 @@ export interface Order {
   submitted_at: string | null
   created_at: string
   updated_at: string
+  groups: OrderItemGroup[]
+  ungrouped_items: OrderItem[]
 }
 
 export interface OrderListItem {

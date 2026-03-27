@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ordersApi, type CreateOrderBody, type AddItemBody } from '../api/orders'
+import { ordersApi, type CreateOrderBody, type AddItemBody, type CreateGroupBody } from '../api/orders'
 import { useAuthStore } from '../store/authStore'
 
 export function useOrders(params?: { status?: string; limit?: number; offset?: number }) {
@@ -90,5 +90,23 @@ export function useOrderExport(orderId: string | null) {
     queryKey: ['order-export', orderId],
     queryFn: () => ordersApi.getExport(token!, orderId!),
     enabled: !!token && !!orderId,
+  })
+}
+
+export function useCreateGroup(orderId: string) {
+  const token = useAuthStore((s) => s.token)
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (body: CreateGroupBody) => ordersApi.createGroup(token!, orderId, body),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['order', orderId] }),
+  })
+}
+
+export function useDeleteGroup(orderId: string) {
+  const token = useAuthStore((s) => s.token)
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (groupId: string) => ordersApi.deleteGroup(token!, orderId, groupId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['order', orderId] }),
   })
 }
