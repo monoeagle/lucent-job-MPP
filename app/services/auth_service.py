@@ -29,6 +29,12 @@ STUB_USERS = [
         email="multi@test.local",
         roles=[Role.REQUESTER, Role.APPROVER, Role.ADMIN],
     ),
+    User(
+        username="test-superadmin",
+        display_name="Test Super Admin",
+        email="superadmin@test.local",
+        roles=[Role.SUPERADMIN],
+    ),
 ]
 
 _STUB_USER_MAP = {u.username: u for u in STUB_USERS}

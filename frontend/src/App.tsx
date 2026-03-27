@@ -65,7 +65,7 @@ function AppRoutes() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute requiredRoles={['admin']}>
+            <ProtectedRoute requiredRoles={['admin', 'superadmin']}>
               <AdminDashboard />
             </ProtectedRoute>
           }
@@ -73,7 +73,7 @@ function AppRoutes() {
         <Route
           path="/admin/rules"
           element={
-            <ProtectedRoute requiredRoles={['admin']}>
+            <ProtectedRoute requiredRoles={['superadmin']}>
               <Rules />
             </ProtectedRoute>
           }
@@ -81,7 +81,7 @@ function AppRoutes() {
         <Route
           path="/admin/audit-log"
           element={
-            <ProtectedRoute requiredRoles={['admin']}>
+            <ProtectedRoute requiredRoles={['superadmin']}>
               <AuditLog />
             </ProtectedRoute>
           }

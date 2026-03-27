@@ -48,7 +48,7 @@ def _serialize_entry(entry) -> dict:
 
 
 @bp.route("/admin/audit-log", methods=["GET"])
-@role_required("admin")
+@role_required("superadmin")
 def list_audit_log():
     filters = _parse_filters()
     limit = cap_limit(request.args.get("limit", 50, type=int))
@@ -148,14 +148,14 @@ def admin_dashboard():
 
 
 @bp.route("/admin/dsgvo", methods=["GET"])
-@role_required("admin")
+@role_required("superadmin")
 def get_dsgvo_status():
     enabled = current_app.config.get("DSGVO_ANONYMIZE", False)
     return jsonify({"dsgvo_anonymize": enabled}), 200
 
 
 @bp.route("/admin/dsgvo", methods=["PUT"])
-@role_required("admin")
+@role_required("superadmin")
 def set_dsgvo_status():
     data = request.get_json() or {}
     enabled = data.get("dsgvo_anonymize", False)

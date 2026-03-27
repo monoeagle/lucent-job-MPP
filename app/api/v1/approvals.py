@@ -65,7 +65,7 @@ def _serialize_request(req):
 
 
 @admin_bp.route("/admin/approval-rules", methods=["POST"])
-@role_required("admin")
+@role_required("superadmin")
 def create_rule():
     data = request.get_json() or {}
     repo = _get_approval_repo()
@@ -80,7 +80,7 @@ def create_rule():
 
 
 @admin_bp.route("/admin/approval-rules", methods=["GET"])
-@role_required("admin")
+@role_required("superadmin")
 def list_rules():
     repo = _get_approval_repo()
     rules = repo.list_rules()
@@ -88,7 +88,7 @@ def list_rules():
 
 
 @admin_bp.route("/admin/approval-rules/<rule_id>", methods=["PATCH"])
-@role_required("admin")
+@role_required("superadmin")
 def update_rule(rule_id):
     repo = _get_approval_repo()
     rule = repo.get_rule(rule_id)
@@ -106,7 +106,7 @@ def update_rule(rule_id):
 
 
 @admin_bp.route("/admin/approval-rules/<rule_id>", methods=["DELETE"])
-@role_required("admin")
+@role_required("superadmin")
 def delete_rule(rule_id):
     repo = _get_approval_repo()
     try:
@@ -120,7 +120,7 @@ def delete_rule(rule_id):
 
 
 @admin_bp.route("/admin/approval-settings", methods=["GET"])
-@role_required("admin")
+@role_required("superadmin")
 def get_settings():
     return jsonify({
         "default_deadline_hours": current_app.config.get("APPROVAL_DEFAULT_DEADLINE_HOURS", 48),
@@ -129,7 +129,7 @@ def get_settings():
 
 
 @admin_bp.route("/admin/approval-settings", methods=["PUT"])
-@role_required("admin")
+@role_required("superadmin")
 def update_settings():
     data = request.get_json() or {}
     if "default_deadline_hours" in data:

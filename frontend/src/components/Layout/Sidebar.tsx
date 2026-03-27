@@ -24,9 +24,9 @@ const mainItems: NavItem[] = [
 ]
 
 const adminItems: NavItem[] = [
-  { to: '/admin', label: 'Admin Dashboard', icon: '⚙', roles: ['admin'] },
-  { to: '/admin/rules', label: 'Rules', icon: '📏', roles: ['admin'] },
-  { to: '/admin/audit-log', label: 'Audit Log', icon: '📜', roles: ['admin'] },
+  { to: '/admin', label: 'Admin Dashboard', icon: '⚙', roles: ['admin', 'superadmin'] },
+  { to: '/admin/rules', label: 'Rules', icon: '📏', roles: ['superadmin'] },
+  { to: '/admin/audit-log', label: 'Audit Log', icon: '📜', roles: ['superadmin'] },
 ]
 
 function NavItemLink({ item, collapsed, badge }: { item: NavItem; collapsed: boolean; badge?: number }) {

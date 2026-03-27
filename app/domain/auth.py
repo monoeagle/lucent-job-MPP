@@ -5,6 +5,7 @@ class Role:
     REQUESTER = "requester"
     APPROVER = "approver"
     ADMIN = "admin"
+    SUPERADMIN = "superadmin"
 
 
 @dataclass(frozen=True)
@@ -19,7 +20,11 @@ class User:
 
     @property
     def is_admin(self) -> bool:
-        return self.has_role(Role.ADMIN)
+        return self.has_role(Role.ADMIN) or self.has_role(Role.SUPERADMIN)
+
+    @property
+    def is_superadmin(self) -> bool:
+        return self.has_role(Role.SUPERADMIN)
 
     def to_jwt_claims(self) -> dict:
         return {
