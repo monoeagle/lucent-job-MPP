@@ -56,42 +56,73 @@ export default function FormView({
 
   const hasWizardConfig = !!(template.metadata?.wizard_config as { steps?: unknown[] } | undefined)?.steps
 
+  const isValid = isFormComplete(template.parameters, values) && (hasWizardConfig || !!context)
+
   return (
-    <div className="space-y-8">
-      {!hasWizardConfig && (
-        <div>
-          <h3 className="text-lg font-semibold mb-4 border-b pb-2">Kontext</h3>
-          <ContextSelector value={context} onChange={onContextChange} />
-        </div>
-      )}
+    <div className="flex gap-8">
+      {/* Left: Form fields */}
+      <div className="flex-1 min-w-0 space-y-8">
+        {!hasWizardConfig && (
+          <div>
+            <h3 className="text-lg font-semibold mb-4 border-b pb-2">Kontext</h3>
+            <ContextSelector value={context} onChange={onContextChange} />
+          </div>
+        )}
 
-      {sections.map((section) => (
-        <div key={section.label}>
-          <h3 className="text-lg font-semibold mb-4 border-b pb-2">{section.label}</h3>
-          <ParameterForm
-            parameters={section.params}
-            values={values}
-            onChange={onValuesChange}
-            showGroupHeaders={false}
-          />
-        </div>
-      ))}
+        {sections.map((section) => (
+          <div key={section.label}>
+            <h3 className="text-lg font-semibold mb-4 border-b pb-2">{section.label}</h3>
+            <ParameterForm
+              parameters={section.params}
+              values={values}
+              onChange={onValuesChange}
+              showGroupHeaders={false}
+            />
+          </div>
+        ))}
+      </div>
 
-      <div>
-        <h3 className="text-lg font-semibold mb-4 border-b pb-2">Zusammenfassung</h3>
-        <RequestSummary
-          template={template}
-          parameters={values}
-          parameterDefs={template.parameters}
-          quantity={quantity}
-          onQuantityChange={onQuantityChange}
-        />
-        <button onClick={onSubmit}
-          disabled={isSubmitting || (!context && !hasWizardConfig) || !isFormComplete(template.parameters, values)}
-          className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50"
-          title={!context ? 'Kontext muss ausgefuellt sein' : !isFormComplete(template.parameters, values) ? 'Alle Pflichtfelder muessen ausgefuellt sein' : ''}>
-          {isSubmitting ? 'Wird erstellt...' : 'Zur Bestellung hinzufügen'}
-        </button>
+      {/* Right: Summary (sticky) */}
+      <div className="w-80 shrink-0 hidden lg:block">
+        <div className="sticky top-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <h3 className="text-lg font-semibold mb-4">Zusammenfassung</h3>
+            <RequestSummary
+              template={template}
+              parameters={values}
+              parameterDefs={template.parameters}
+              quantity={quantity}
+              onQuantityChange={onQuantityChange}
+            />
+            <button onClick={onSubmit}
+              disabled={isSubmitting || !isValid}
+              className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50"
+              title={!isValid ? 'Alle Pflichtfelder muessen ausgefuellt sein' : ''}>
+              {isSubmitting ? 'Wird erstellt...' : 'Zur Bestellung hinzufuegen'}
+            </button>
+            {!isValid && (
+              <p className="text-xs text-red-500 mt-2 text-center">
+                Pflichtfelder noch nicht vollstaendig
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: Summary below form (visible on small screens) */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-40">
+        <div className="flex items-center justify-between gap-4">
+          <div className="text-sm text-gray-600">
+            {template.estimated_cost_eur_per_month && (
+              <span className="font-semibold">{template.estimated_cost_eur_per_month * quantity} EUR/Monat</span>
+            )}
+          </div>
+          <button onClick={onSubmit}
+            disabled={isSubmitting || !isValid}
+            className="px-6 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50">
+            {isSubmitting ? 'Wird erstellt...' : 'Bestellen'}
+          </button>
+        </div>
       </div>
     </div>
   )
