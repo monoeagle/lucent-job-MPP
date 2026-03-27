@@ -54,12 +54,16 @@ export default function FormView({
 }: Props) {
   const sections = getSectionOrder(template)
 
+  const hasWizardConfig = !!(template.metadata?.wizard_config as { steps?: unknown[] } | undefined)?.steps
+
   return (
     <div className="space-y-8">
-      <div>
-        <h3 className="text-lg font-semibold mb-4 border-b pb-2">Kontext</h3>
-        <ContextSelector value={context} onChange={onContextChange} />
-      </div>
+      {!hasWizardConfig && (
+        <div>
+          <h3 className="text-lg font-semibold mb-4 border-b pb-2">Kontext</h3>
+          <ContextSelector value={context} onChange={onContextChange} />
+        </div>
+      )}
 
       {sections.map((section) => (
         <div key={section.label}>
@@ -83,7 +87,7 @@ export default function FormView({
           onQuantityChange={onQuantityChange}
         />
         <button onClick={onSubmit}
-          disabled={isSubmitting || !context || !isFormComplete(template.parameters, values)}
+          disabled={isSubmitting || (!context && !hasWizardConfig) || !isFormComplete(template.parameters, values)}
           className="mt-4 w-full px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50"
           title={!context ? 'Kontext muss ausgefuellt sein' : !isFormComplete(template.parameters, values) ? 'Alle Pflichtfelder muessen ausgefuellt sein' : ''}>
           {isSubmitting ? 'Wird erstellt...' : 'Zur Bestellung hinzufügen'}

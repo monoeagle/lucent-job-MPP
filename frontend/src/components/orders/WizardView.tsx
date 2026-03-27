@@ -24,12 +24,15 @@ interface Props {
 }
 
 function buildSteps(template: ServiceTemplateDetail): WizardStep[] {
-  const steps: WizardStep[] = [
-    { key: 'context', label: 'Kontext', type: 'context' },
-  ]
+  const steps: WizardStep[] = []
 
   const wizardConfig = template.metadata?.wizard_config as
     { steps?: Array<{ group: string; label: string }> } | undefined
+
+  // Only add Context step if no wizard_config (template controls the full flow)
+  if (!wizardConfig?.steps) {
+    steps.push({ key: 'context', label: 'Kontext', type: 'context' })
+  }
 
   if (wizardConfig?.steps) {
     for (const stepDef of wizardConfig.steps) {
@@ -72,6 +75,7 @@ export default function WizardView({
   const [currentStep, setCurrentStep] = useState(0)
   const steps = buildSteps(template)
   const step = steps[currentStep]
+  const hasWizardConfig = !!(template.metadata?.wizard_config as { steps?: unknown[] } | undefined)?.steps
 
   const canNext = currentStep < steps.length - 1
   const canBack = currentStep > 0
@@ -130,7 +134,7 @@ export default function WizardView({
           </button>
         ) : (
           <button onClick={onSubmit}
-            disabled={isSubmitting || !context || !isFormComplete(template.parameters, values)}
+            disabled={isSubmitting || (!context && !hasWizardConfig) || !isFormComplete(template.parameters, values)}
             className="px-4 py-2 bg-green-600 text-white rounded-md text-sm hover:bg-green-700 disabled:opacity-50"
             title={!context ? 'Kontext muss ausgefuellt sein' : !isFormComplete(template.parameters, values) ? 'Alle Pflichtfelder muessen ausgefuellt sein' : ''}>
             {isSubmitting ? 'Wird erstellt...' : 'Zur Bestellung hinzufügen'}
