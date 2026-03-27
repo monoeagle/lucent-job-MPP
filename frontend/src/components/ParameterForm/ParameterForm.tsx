@@ -53,10 +53,48 @@ export default function ParameterForm({ parameters, values, onChange, errors, sh
     return acc
   }, {})
 
+  function handleChange(param: ParameterDefinition, val: unknown) {
+    onChange(param.key, val)
+
+    // Auto-fill: if enum option has metadata, set affected fields
+    if (param.type === 'enum' && param.affects_options_of.length > 0 && typeof val === 'string') {
+      const option = param.constraints.options?.find(o => o.value === val)
+      if (option?.metadata) {
+        for (const [metaKey, metaVal] of Object.entries(option.metadata)) {
+          if (param.affects_options_of.includes(metaKey)) {
+            onChange(metaKey, metaVal)
+          }
+        }
+      }
+    }
+  }
+
+  function filterOptions(p: ParameterDefinition) {
+    if (p.type !== 'enum' || !p.constraints.options) return p.constraints.options ?? []
+    return p.constraints.options.filter(opt => {
+      if (!opt.enabled) return false
+      if (!opt.metadata) return true
+      // Filter by metadata matching current values
+      // e.g. metadata.security_areas=["sec1","sec2"] checks if values.security_area is in the list
+      // e.g. metadata.allowed_system_types=["dc"] checks if values.system_type is in the list
+      for (const [metaKey, metaVal] of Object.entries(opt.metadata)) {
+        if (Array.isArray(metaVal)) {
+          // Find which parameter this metadata refers to (by naming convention)
+          // metadata key like "security_areas" → parameter key "security_area"
+          // metadata key like "allowed_system_types" → parameter key "system_type"
+          const paramKey = metaKey.replace(/s$/, '').replace('allowed_', '')
+          const currentVal = values[paramKey]
+          if (currentVal && !metaVal.includes(currentVal)) return false
+        }
+      }
+      return true
+    })
+  }
+
   function renderField(p: ParameterDefinition) {
     const fieldErrors = errors?.[p.key]
     const v = values[p.key]
-    const change = (val: unknown) => onChange(p.key, val)
+    const change = (val: unknown) => handleChange(p, val)
 
     const fieldId = `param-${p.key}`
     switch (p.type) {
@@ -66,7 +104,7 @@ export default function ParameterForm({ parameters, values, onChange, errors, sh
           required={p.required} description={p.description} errors={fieldErrors} />
       case 'enum':
         return <EnumField key={p.key} id={fieldId} label={p.label} value={v as string | undefined}
-          onChange={change as (v: string) => void} options={p.constraints.options ?? []}
+          onChange={change as (v: string) => void} options={filterOptions(p)}
           required={p.required} description={p.description} errors={fieldErrors} />
       case 'boolean':
         return <BooleanField key={p.key} id={fieldId} label={p.label} value={v as boolean | undefined}

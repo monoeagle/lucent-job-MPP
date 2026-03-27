@@ -115,7 +115,7 @@ WINDOWS_VM = {
                 {"value": "windows", "label": "Windows VM", "enabled": True},
                 {"value": "linux", "label": "Linux VM", "enabled": True},
             ]},
-            "depends_on": [], "affects_options_of": ["os_template"],
+            "depends_on": [], "affects_options_of": ["os_template", "os_template_linux"],
         },
         # ── Netzwerk (Hostnamen- und Netzwerkkonfiguration) ─────
         {
@@ -185,10 +185,14 @@ WINDOWS_VM = {
         {
             "key": "ad_tier", "label": "Sicherheitsklasse (AD Tier)", "type": "enum", "required": True,
             "tofu_variable_name": "ad_tier", "display_order": 17, "group": "Netzwerk",
+            "description": "Tier 0 nur fuer Domain Controller, Tier 2 nur fuer Webserver",
             "constraints": {"options": [
-                {"value": "tier0", "label": "Tier 0 — Domain Controllers", "enabled": True},
-                {"value": "tier1", "label": "Tier 1 — Server", "enabled": True},
-                {"value": "tier2", "label": "Tier 2 — Workstations", "enabled": True},
+                {"value": "tier0", "label": "Tier 0 — Domain Controllers", "enabled": True,
+                 "metadata": {"allowed_system_types": ["dc"]}},
+                {"value": "tier1", "label": "Tier 1 — Server", "enabled": True,
+                 "metadata": {"allowed_system_types": ["db", "dc", "fp", "app", "web"]}},
+                {"value": "tier2", "label": "Tier 2 — Workstations/Web", "enabled": True,
+                 "metadata": {"allowed_system_types": ["web", "app"]}},
             ]},
             "depends_on": [], "affects_options_of": [],
         },
@@ -205,10 +209,18 @@ WINDOWS_VM = {
         {
             "key": "network_vlan", "label": "Netzwerk (VLAN)", "type": "enum", "required": True,
             "tofu_variable_name": "network_vlan", "display_order": 19, "group": "Netzwerk",
+            "description": "Verfuegbare VLANs haengen vom Sicherheitsbereich ab",
             "constraints": {"options": [
-                {"value": "vlan100", "label": "VLAN 100 — Produktion", "enabled": True},
-                {"value": "vlan200", "label": "VLAN 200 — Entwicklung", "enabled": True},
-                {"value": "vlan300", "label": "VLAN 300 — Management", "enabled": True},
+                {"value": "vlan100", "label": "VLAN 100 — Produktion (Sec1)", "enabled": True,
+                 "metadata": {"security_areas": ["sec1"]}},
+                {"value": "vlan110", "label": "VLAN 110 — Produktion (Sec2)", "enabled": True,
+                 "metadata": {"security_areas": ["sec2"]}},
+                {"value": "vlan200", "label": "VLAN 200 — Entwicklung (Sec1/Sec2)", "enabled": True,
+                 "metadata": {"security_areas": ["sec1", "sec2"]}},
+                {"value": "vlan300", "label": "VLAN 300 — Management (Sec3)", "enabled": True,
+                 "metadata": {"security_areas": ["sec3"]}},
+                {"value": "vlan400", "label": "VLAN 400 — DMZ (alle)", "enabled": True,
+                 "metadata": {"security_areas": ["sec1", "sec2", "sec3"]}},
             ]},
             "depends_on": [], "affects_options_of": [],
         },
@@ -227,9 +239,12 @@ WINDOWS_VM = {
         {
             "key": "vmware_cluster", "label": "Zuordnung im VMware Cluster", "type": "enum", "required": True,
             "tofu_variable_name": "vmware_cluster", "display_order": 21, "group": "Platzierung",
+            "description": "Dual Site nur fuer SecBereich1 und SecBereich2 verfuegbar",
             "constraints": {"options": [
-                {"value": "single-site", "label": "Single Site Cluster", "enabled": True},
-                {"value": "dual-site", "label": "Dual Site Cluster", "enabled": True},
+                {"value": "single-site", "label": "Single Site Cluster", "enabled": True,
+                 "metadata": {"security_areas": ["sec1", "sec2", "sec3"]}},
+                {"value": "dual-site", "label": "Dual Site Cluster", "enabled": True,
+                 "metadata": {"security_areas": ["sec1", "sec2"]}},
             ]},
             "depends_on": [], "affects_options_of": [],
         },
@@ -244,6 +259,20 @@ WINDOWS_VM = {
             ]},
             "depends_on": [
                 {"parameter_key": "vm_type", "operator": "eq", "value": "windows", "effect": "visible"},
+            ],
+            "affects_options_of": [],
+        },
+        {
+            "key": "os_template_linux", "label": "Template", "type": "enum", "required": True,
+            "tofu_variable_name": "os_template_linux", "display_order": 31, "group": "Betriebssystem",
+            "constraints": {"options": [
+                {"value": "ubuntu2204", "label": "Ubuntu 22.04 LTS", "enabled": True},
+                {"value": "ubuntu2404", "label": "Ubuntu 24.04 LTS", "enabled": True},
+                {"value": "rhel9", "label": "RHEL 9", "enabled": True},
+                {"value": "alma10", "label": "AlmaLinux 10", "enabled": True},
+            ]},
+            "depends_on": [
+                {"parameter_key": "vm_type", "operator": "eq", "value": "linux", "effect": "visible"},
             ],
             "affects_options_of": [],
         },
