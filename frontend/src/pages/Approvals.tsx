@@ -263,27 +263,69 @@ export default function Approvals() {
 
                 {/* Expandable detail section */}
                 {isExpanded && (
-                  <div className="border-t border-gray-100 px-4 py-3 bg-gray-50 text-sm space-y-2">
-                    <div className="grid grid-cols-2 gap-2 text-gray-600">
-                      <span className="font-medium">Bestell-ID:</span>
-                      <span>{approval.order_id}</span>
+                  <div className="border-t border-gray-100 px-4 py-3 bg-gray-50 text-sm space-y-4">
+                    {/* Bestellinfos */}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-gray-600">
+                      <span className="font-medium">Bestellnummer:</span>
+                      <span>{approval.order_number ?? approval.order_id}</span>
+                      <span className="font-medium">Bestellt von:</span>
+                      <span className="font-semibold">{approval.requester_id ?? '—'}</span>
                       <span className="font-medium">Angefragt am:</span>
                       <span>{new Date(approval.requested_at).toLocaleDateString('de-DE')}</span>
                       <span className="font-medium">Frist:</span>
                       <span className={deadlineColor}>{deadlineText}</span>
+                      {approval.business_reason && (
+                        <>
+                          <span className="font-medium">Geschaeftsgrund:</span>
+                          <span>{approval.business_reason}</span>
+                        </>
+                      )}
+                      {approval.decided_by && (
+                        <>
+                          <span className="font-medium">Entschieden von:</span>
+                          <span className="font-semibold">{approval.decided_by}</span>
+                        </>
+                      )}
+                      {approval.decided_at && (
+                        <>
+                          <span className="font-medium">Entschieden am:</span>
+                          <span>{new Date(approval.decided_at).toLocaleDateString('de-DE')}</span>
+                        </>
+                      )}
                       {approval.decision_reason && (
                         <>
                           <span className="font-medium">Entscheidungsgrund:</span>
                           <span>{approval.decision_reason}</span>
                         </>
                       )}
-                      {approval.decided_by && (
-                        <>
-                          <span className="font-medium">Entschieden von:</span>
-                          <span>{approval.decided_by}</span>
-                        </>
-                      )}
                     </div>
+
+                    {/* Bestellpositionen */}
+                    {approval.order_items && approval.order_items.length > 0 && (
+                      <div>
+                        <h4 className="font-medium text-gray-700 mb-2">Bestellpositionen</h4>
+                        <div className="space-y-2">
+                          {approval.order_items.map((oi, idx) => (
+                            <div key={idx} className="bg-white border border-gray-200 rounded p-3">
+                              <div className="flex items-center justify-between mb-1">
+                                <span className="font-medium">{oi.display_name}</span>
+                                <div className="flex gap-2 text-xs text-gray-400">
+                                  <span>{oi.template_slug} v{oi.template_version}</span>
+                                  {oi.quantity > 1 && (
+                                    <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">x{oi.quantity}</span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-3 gap-1 text-xs text-gray-500">
+                                {Object.entries(oi.parameters).slice(0, 12).map(([k, v]) => (
+                                  <span key={k}>{k}: <span className="text-gray-700">{String(v)}</span></span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
 
                     {isPending && (
                       <div className="flex gap-2 pt-2">

@@ -55,6 +55,7 @@ export default function OrderList() {
             <tr className="border-b border-gray-200 text-left text-gray-500">
               <th className="py-2 font-medium">Nummer</th>
               <th className="py-2 font-medium">Titel</th>
+              <th className="py-2 font-medium">Besteller</th>
               <th className="py-2 font-medium">Status</th>
               <th className="py-2 font-medium">Positionen</th>
               <th className="py-2 font-medium">Erstellt</th>
@@ -69,6 +70,7 @@ export default function OrderList() {
                   </Link>
                 </td>
                 <td className="py-3">{o.title}</td>
+                <td className="py-3 text-gray-500 text-xs">{(o as unknown as { requester_id?: string }).requester_id ?? '—'}</td>
                 <td className="py-3"><StatusBadge status={o.status} /></td>
                 <td className="py-3">{o.item_count}</td>
                 <td className="py-3 text-gray-400">{new Date(o.created_at).toLocaleDateString('de-DE')}</td>

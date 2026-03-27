@@ -171,6 +171,19 @@ def list_approvals():
 
         item = _serialize_request(req)
         item["requester_id"] = order.requester_id
+        item["order_title"] = order.title
+        item["order_number"] = order.order_number
+        item["business_reason"] = order.business_reason
+        item["order_items"] = [
+            {
+                "display_name": oi.display_name,
+                "template_slug": oi.template_slug,
+                "template_version": oi.template_version,
+                "parameters": oi.parameters,
+                "quantity": getattr(oi, "quantity", 1),
+            }
+            for oi in order.items
+        ]
         results.append(item)
 
     return jsonify({"items": results, "total": len(results)}), 200
