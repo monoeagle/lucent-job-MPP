@@ -42,7 +42,6 @@ export default function AdminDashboard() {
           const cfg = STATUS_LABELS[status] ?? { label: status, color: 'text-blue-600' }
           return <StatCard key={status} label={cfg.label} value={count as number} color={cfg.color} />
         })}
-        <StatCard label="Genehm. offen" value={data.pending_approvals} color="text-yellow-600" />
         <StatCard label="Aktive Ressourcen" value={data.active_resources} color="text-green-600" />
       </div>
 

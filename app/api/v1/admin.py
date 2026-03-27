@@ -202,6 +202,38 @@ def get_system_config():
     }), 200
 
 
+@bp.route("/admin/config", methods=["PUT"])
+@role_required("admin", "superadmin")
+def update_system_config():
+    data = request.get_json() or {}
+    cfg = current_app.config
+    updated = []
+
+    if "dsgvo_anonymize" in data:
+        cfg["DSGVO_ANONYMIZE"] = bool(data["dsgvo_anonymize"])
+        updated.append("dsgvo_anonymize")
+
+    if "approval_default_deadline_hours" in data:
+        val = int(data["approval_default_deadline_hours"])
+        if 1 <= val <= 720:
+            cfg["APPROVAL_DEFAULT_DEADLINE_HOURS"] = val
+            updated.append("approval_default_deadline_hours")
+
+    if "approval_allow_self_approval" in data:
+        cfg["APPROVAL_ALLOW_SELF_APPROVAL"] = bool(data["approval_allow_self_approval"])
+        updated.append("approval_allow_self_approval")
+
+    if "gitlab_url" in data:
+        cfg["GITLAB_URL"] = str(data["gitlab_url"])
+        updated.append("gitlab_url")
+
+    if "gitlab_project_id" in data:
+        cfg["GITLAB_PROJECT_ID"] = str(data["gitlab_project_id"])
+        updated.append("gitlab_project_id")
+
+    return jsonify({"updated": updated, "message": f"{len(updated)} Einstellung(en) aktualisiert."}), 200
+
+
 @bp.route("/admin/dsgvo", methods=["GET"])
 @role_required("superadmin")
 def get_dsgvo_status():

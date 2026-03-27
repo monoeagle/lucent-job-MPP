@@ -60,10 +60,9 @@ describe('Admin Dashboard', () => {
     expect(screen.getByText(/CMDB/)).toBeInTheDocument()
   })
 
-  it('shows pending approvals and active resources', async () => {
+  it('shows active resources card', async () => {
     renderAdminDashboard()
     await waitFor(() => {
-      expect(screen.getByText('Genehm. offen')).toBeInTheDocument()
       expect(screen.getByText('Aktive Ressourcen')).toBeInTheDocument()
       expect(screen.getByText('7')).toBeInTheDocument()
     })
