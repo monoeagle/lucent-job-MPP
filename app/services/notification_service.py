@@ -8,8 +8,48 @@ from app.data.db.models.notification import NotificationModel
 
 
 class NotificationService:
-    def __init__(self, session: Session):
+    EVENT_TEMPLATES = {
+        "order_submitted": {
+            "subject": "Bestellung {order_number} eingereicht",
+            "body": "Ihre Bestellung '{title}' ({order_number}) wurde erfolgreich eingereicht.",
+        },
+        "order_approved": {
+            "subject": "Bestellung {order_number} genehmigt",
+            "body": "Ihre Bestellung '{title}' ({order_number}) wurde genehmigt.",
+        },
+        "order_rejected": {
+            "subject": "Bestellung {order_number} abgelehnt",
+            "body": "Ihre Bestellung '{title}' ({order_number}) wurde abgelehnt. Grund: {reason}",
+        },
+        "order_provisioned": {
+            "subject": "Bestellung {order_number} bereitgestellt",
+            "body": "Ihre Bestellung '{title}' ({order_number}) wurde erfolgreich bereitgestellt.",
+        },
+        "order_failed": {
+            "subject": "Bestellung {order_number} fehlgeschlagen",
+            "body": "Bei der Bereitstellung von '{title}' ({order_number}) ist ein Fehler aufgetreten.",
+        },
+        "approval_requested": {
+            "subject": "Genehmigung erforderlich: {order_number}",
+            "body": "Bestellung {order_number} von {requester} erfordert Ihre Genehmigung.",
+        },
+        "approval_decided": {
+            "subject": "Genehmigung entschieden: {order_number}",
+            "body": "Die Genehmigung fuer Bestellung {order_number} wurde entschieden.",
+        },
+        "template_deprecated": {
+            "subject": "Service-Template veraltet: {template_name}",
+            "body": "Das Template '{template_name}' wurde als veraltet markiert.",
+        },
+        "system_maintenance": {
+            "subject": "Wartungshinweis: {title}",
+            "body": "{message}",
+        },
+    }
+
+    def __init__(self, session: Session, email_sender=None):
         self.session = session
+        self.email_sender = email_sender
 
     def send(self, event_type: str, recipient_email: str,
              recipient_id: str | None, subject: str, body: str) -> NotificationModel:
@@ -78,3 +118,22 @@ class NotificationService:
             )
             .count()
         )
+
+    def create_event_notification(self, event_type: str, recipient_id: str,
+                                   recipient_email: str, context: dict) -> NotificationModel:
+        defaults = {"reason": "", "message": "", "title": "", "template_name": "",
+                     "order_number": "", "requester": ""}
+        ctx = {**defaults, **context}
+        tmpl = self.EVENT_TEMPLATES.get(event_type, {
+            "subject": event_type,
+            "body": str(context),
+        })
+        subject = tmpl["subject"].format_map(ctx)
+        body = tmpl["body"].format_map(ctx)
+
+        notification = self.send(event_type, recipient_email, recipient_id, subject, body)
+
+        if self.email_sender:
+            self.email_sender.send(recipient_email, subject, body)
+
+        return notification
