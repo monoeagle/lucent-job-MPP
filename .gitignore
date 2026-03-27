@@ -5,3 +5,4 @@ frontend/dist/
 frontend/tsconfig.tsbuildinfo
 *.pyc
 .pytest_cache/
+logs/
