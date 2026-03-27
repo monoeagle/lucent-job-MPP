@@ -406,6 +406,16 @@ def submit_order(order_id):
     except Exception:
         pass  # Notification failure should not block submit
 
+    # Create subscriptions
+    from app.data.repositories.subscription_repository import SubscriptionRepository
+    from app.services.subscription_service import SubscriptionService
+    try:
+        sub_repo = SubscriptionRepository(g.db_session)
+        sub_service = SubscriptionService(sub_repo)
+        sub_service.create_from_order(submitted, template_costs={})
+    except Exception:
+        pass  # Subscription creation failure should not block submit
+
     return jsonify({
         "order_id": submitted.id,
         "order_number": submitted.order_number,
