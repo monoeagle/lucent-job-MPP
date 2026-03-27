@@ -18,4 +18,5 @@ class NotificationModel(Base):
     created_at = Column(DateTime(timezone=True),
                         default=lambda: datetime.now(timezone.utc))
     sent_at = Column(DateTime(timezone=True), nullable=True)
+    read_at = Column(DateTime(timezone=True), nullable=True)
     error_message = Column(Text, nullable=True)
