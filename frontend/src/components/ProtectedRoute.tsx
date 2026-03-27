@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children, requiredRoles }: Props) {
   if (requiredRoles && user) {
     const hasRequiredRole = requiredRoles.some((role) => user.roles.includes(role))
     if (!hasRequiredRole) {
-      return <Navigate to="/orders" replace />
+      return <Navigate to="/dashboard" replace />
     }
   }
 

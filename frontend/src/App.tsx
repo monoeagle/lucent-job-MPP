@@ -5,6 +5,7 @@ import { useAuthStore } from './store/authStore'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './components/Layout/AppLayout'
 import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
 import Catalog from './pages/Catalog'
 import OrderList from './pages/OrderList'
 import OrderNew from './pages/OrderNew'
@@ -12,6 +13,7 @@ import OrderDetail from './pages/OrderDetail'
 import OrderExport from './pages/OrderExport'
 import Approvals from './pages/Approvals'
 import Resources from './pages/Resources'
+import Notifications from './pages/Notifications'
 import AdminDashboard from './pages/admin/Dashboard'
 import Rules from './pages/admin/Rules'
 import AuditLog from './pages/admin/AuditLog'
@@ -39,21 +41,26 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/orders" replace />} />
-        <Route path="/catalog" element={<Catalog />} />
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/shop" element={<Catalog />} />
+        <Route path="/catalog" element={<Navigate to="/shop" replace />} />
         <Route path="/orders" element={<OrderList />} />
         <Route path="/orders/new" element={<OrderNew />} />
         <Route path="/orders/:orderId" element={<OrderDetail />} />
         <Route path="/orders/:orderId/export" element={<OrderExport />} />
-        <Route path="/resources" element={<Resources />} />
+        <Route path="/my-services" element={<Resources />} />
+        <Route path="/resources" element={<Navigate to="/my-services" replace />} />
+        <Route path="/notifications" element={<Notifications />} />
         <Route
-          path="/approvals"
+          path="/reviews"
           element={
             <ProtectedRoute requiredRoles={['approver', 'admin']}>
               <Approvals />
             </ProtectedRoute>
           }
         />
+        <Route path="/approvals" element={<Navigate to="/reviews" replace />} />
         <Route
           path="/admin"
           element={
@@ -79,7 +86,7 @@ function AppRoutes() {
           }
         />
       </Route>
-      <Route path="*" element={<Navigate to="/orders" replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   )
 }

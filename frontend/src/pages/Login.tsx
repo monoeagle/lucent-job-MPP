@@ -23,7 +23,7 @@ export default function Login() {
         password,
       })) as LoginResponse
       setAuth(data.token, data.user)
-      navigate('/orders')
+      navigate('/dashboard')
     } catch (err) {
       const apiErr = err as ApiError
       setError(apiErr.message || 'Login fehlgeschlagen')
