@@ -5,7 +5,6 @@ import { useAuthStore } from './store/authStore'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './components/Layout/AppLayout'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
 import Catalog from './pages/Catalog'
 import OrderList from './pages/OrderList'
 import OrderNew from './pages/OrderNew'
@@ -13,6 +12,9 @@ import OrderDetail from './pages/OrderDetail'
 import OrderExport from './pages/OrderExport'
 import Approvals from './pages/Approvals'
 import Resources from './pages/Resources'
+import AdminDashboard from './pages/admin/Dashboard'
+import Rules from './pages/admin/Rules'
+import AuditLog from './pages/admin/AuditLog'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,7 +54,30 @@ function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route path="/admin/*" element={<Dashboard />} />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute requiredRoles={['admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/rules"
+          element={
+            <ProtectedRoute requiredRoles={['admin']}>
+              <Rules />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/audit-log"
+          element={
+            <ProtectedRoute requiredRoles={['admin']}>
+              <AuditLog />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       <Route path="*" element={<Navigate to="/orders" replace />} />
     </Routes>
