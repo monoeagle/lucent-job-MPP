@@ -6,3 +6,4 @@ from app.data.db.models.context_rule import (
     UserTenantAssignmentModel,
 )
 from app.data.db.models.dispatch_log import DispatchLogModel
+from app.data.db.models.approval import ApprovalRuleModel, ApprovalRequestModel
