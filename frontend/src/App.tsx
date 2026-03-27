@@ -11,6 +11,8 @@ import OrderList from './pages/OrderList'
 import OrderNew from './pages/OrderNew'
 import OrderDetail from './pages/OrderDetail'
 import OrderExport from './pages/OrderExport'
+import Approvals from './pages/Approvals'
+import Resources from './pages/Resources'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,8 +43,15 @@ function AppRoutes() {
         <Route path="/orders/new" element={<OrderNew />} />
         <Route path="/orders/:orderId" element={<OrderDetail />} />
         <Route path="/orders/:orderId/export" element={<OrderExport />} />
-        <Route path="/resources" element={<Dashboard />} />
-        <Route path="/approvals" element={<Dashboard />} />
+        <Route path="/resources" element={<Resources />} />
+        <Route
+          path="/approvals"
+          element={
+            <ProtectedRoute requiredRoles={['approver', 'admin']}>
+              <Approvals />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/admin/*" element={<Dashboard />} />
       </Route>
       <Route path="*" element={<Navigate to="/orders" replace />} />
