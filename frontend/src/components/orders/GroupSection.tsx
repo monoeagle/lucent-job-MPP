@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { OrderItemGroup } from '../../types/order'
+import type { OrderItem, OrderItemGroup } from '../../types/order'
 import OrderItemCard from './OrderItemCard'
 
 interface Props {
@@ -7,9 +7,10 @@ interface Props {
   isDraft: boolean
   onDeleteGroup?: () => void
   onRemoveItem?: (itemId: string) => void
+  onCopyItem?: (item: OrderItem) => void
 }
 
-export default function GroupSection({ group, isDraft, onDeleteGroup, onRemoveItem }: Props) {
+export default function GroupSection({ group, isDraft, onDeleteGroup, onRemoveItem, onCopyItem }: Props) {
   const [collapsed, setCollapsed] = useState(false)
 
   return (
@@ -48,6 +49,7 @@ export default function GroupSection({ group, isDraft, onDeleteGroup, onRemoveIt
                 item={item}
                 readonly={!isDraft}
                 onRemove={isDraft && onRemoveItem ? () => onRemoveItem(item.id) : undefined}
+                onCopy={onCopyItem ? () => onCopyItem(item) : undefined}
               />
             ))
           )}

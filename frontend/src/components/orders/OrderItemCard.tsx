@@ -6,10 +6,11 @@ interface Props {
   item: OrderItem
   onEdit?: () => void
   onRemove?: () => void
+  onCopy?: () => void
   readonly?: boolean
 }
 
-export default function OrderItemCard({ item, onEdit, onRemove, readonly }: Props) {
+export default function OrderItemCard({ item, onEdit, onRemove, onCopy, readonly }: Props) {
   const paramSummary = Object.entries(item.parameters)
     .slice(0, 4)
     .map(([k, v]) => `${k}: ${String(v)}`)
@@ -30,6 +31,11 @@ export default function OrderItemCard({ item, onEdit, onRemove, readonly }: Prop
         </div>
         {!readonly && (
           <div className="flex gap-2">
+            {onCopy && (
+              <button onClick={onCopy} className="text-xs text-blue-600 hover:text-blue-800">
+                Ähnlichen hinzufügen
+              </button>
+            )}
             {onEdit && (
               <button onClick={onEdit} className="text-xs text-blue-600 hover:text-blue-800">
                 Bearbeiten

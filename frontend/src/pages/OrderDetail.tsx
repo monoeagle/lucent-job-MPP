@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import type { OrderItem } from '../types/order'
 import { useOrder, useAddItem, useRemoveItem, useValidateOrder, useSubmitOrder, useDeleteOrder, useCreateGroup, useDeleteGroup } from '../hooks/useOrders'
 import { useOrderStatus } from '../hooks/useOrderStatus'
 import { useTemplates, useTemplate } from '../hooks/useCatalog'
@@ -71,6 +72,10 @@ export default function OrderDetail() {
     )
   }
 
+  const handleCopyItem = (item: OrderItem) => {
+    navigate(`/shop/${item.template_slug}/request?orderId=${orderId}`)
+  }
+
   const handleDelete = () => {
     if (!orderId) return
     deleteOrder.mutate(orderId, { onSuccess: () => navigate('/orders') })
@@ -135,6 +140,7 @@ export default function OrderDetail() {
                   isDraft={isDraft}
                   onDeleteGroup={() => deleteGroup.mutate(group.id)}
                   onRemoveItem={(itemId) => removeItem.mutate(itemId)}
+                  onCopyItem={(item) => handleCopyItem(item)}
                 />
               ))}
           </div>
@@ -156,6 +162,7 @@ export default function OrderDetail() {
                   item={item}
                   readonly={!isDraft}
                   onRemove={isDraft ? () => removeItem.mutate(item.id) : undefined}
+                  onCopy={isDraft ? () => handleCopyItem(item) : undefined}
                 />
               ))}
           </div>
