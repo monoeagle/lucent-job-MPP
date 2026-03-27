@@ -1,14 +1,27 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import Sidebar from '../../../src/components/Layout/Sidebar'
 import { useAuthStore } from '../../../src/store/authStore'
 
+vi.mock('../../../src/api/notifications', () => ({
+  notificationsApi: {
+    unreadCount: vi.fn().mockResolvedValue({ count: 0 }),
+    list: vi.fn().mockResolvedValue({ items: [], total: 0 }),
+    markRead: vi.fn().mockResolvedValue({}),
+    markAllRead: vi.fn().mockResolvedValue({ marked_count: 0 }),
+  },
+}))
+
 function renderSidebar() {
+  const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
-    <MemoryRouter>
-      <Sidebar />
-    </MemoryRouter>
+    <QueryClientProvider client={qc}>
+      <MemoryRouter>
+        <Sidebar />
+      </MemoryRouter>
+    </QueryClientProvider>
   )
 }
 

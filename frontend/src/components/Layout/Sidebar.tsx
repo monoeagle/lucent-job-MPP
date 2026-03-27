@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
+import { useUnreadCount } from '../../hooks/useNotifications'
 
 const STORAGE_KEY = 'mpp-sidebar-collapsed'
 
@@ -27,7 +28,7 @@ const adminItems: NavItem[] = [
   { to: '/admin/audit-log', label: 'Audit Log', icon: '📜', roles: ['admin'] },
 ]
 
-function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
+function NavItemLink({ item, collapsed, badge }: { item: NavItem; collapsed: boolean; badge?: number }) {
   if (item.disabled) {
     return (
       <div
@@ -45,15 +46,25 @@ function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
       to={item.to}
       title={collapsed ? item.label : undefined}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-3 py-2 rounded-md text-sm ${
+        `relative flex items-center gap-3 px-3 py-2 rounded-md text-sm ${
           isActive
             ? 'bg-gray-700 text-white'
             : 'text-gray-300 hover:bg-gray-800 hover:text-white'
         }`
       }
     >
-      <span className="text-base w-5 text-center">{item.icon}</span>
+      <span className="relative text-base w-5 text-center">
+        {item.icon}
+        {badge !== undefined && badge > 0 && collapsed && (
+          <span className="absolute -top-1 -right-1 bg-red-500 rounded-full w-2 h-2" />
+        )}
+      </span>
       {!collapsed && <span>{item.label}</span>}
+      {badge !== undefined && badge > 0 && !collapsed && (
+        <span className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
     </NavLink>
   )
 }
@@ -61,6 +72,8 @@ function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean })
 export default function Sidebar() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
+  const { data: unreadData } = useUnreadCount()
+  const unreadCount = unreadData?.count ?? 0
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem(STORAGE_KEY) === 'true'
   })
@@ -100,7 +113,12 @@ export default function Sidebar() {
 
       <nav className="flex-1 px-2 space-y-1">
         {visibleMain.map((item) => (
-          <NavItemLink key={item.label} item={item} collapsed={collapsed} />
+          <NavItemLink
+            key={item.label}
+            item={item}
+            collapsed={collapsed}
+            badge={item.to === '/notifications' ? unreadCount : undefined}
+          />
         ))}
 
         {visibleAdmin.length > 0 && (
