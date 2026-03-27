@@ -65,11 +65,6 @@ describe('ServiceRequest', () => {
     })
   })
 
-  it('renders template name', async () => {
-    renderPage()
-    expect(await screen.findByText('Linux VM bestellen')).toBeInTheDocument()
-  })
-
   it('shows view toggle button', async () => {
     renderPage()
     expect(await screen.findByTestId('view-toggle')).toBeInTheDocument()

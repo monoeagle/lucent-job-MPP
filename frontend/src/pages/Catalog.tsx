@@ -16,13 +16,6 @@ export default function Catalog() {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Service Catalog</h1>
-        {templates && (
-          <span className="text-sm text-gray-500">{templates.total} Services</span>
-        )}
-      </div>
-
       <FilterBar
         categories={categories?.categories ?? []}
         onFilterChange={(f) => setFilters({ ...filters, ...f })}

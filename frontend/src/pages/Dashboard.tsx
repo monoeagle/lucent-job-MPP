@@ -1,7 +1,6 @@
 import { useAuthStore } from '../store/authStore'
 import { useStats } from '../hooks/useDashboard'
 import StatCard from '../components/dashboard/StatCard'
-import GlobalSearch from '../components/dashboard/GlobalSearch'
 import RecentOrders from '../components/dashboard/RecentOrders'
 import OrderStatusChart from '../components/dashboard/OrderStatusChart'
 import OrderTimelineChart from '../components/dashboard/OrderTimelineChart'
@@ -17,11 +16,6 @@ export default function Dashboard() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <GlobalSearch />
-      </div>
-
       {isLoading ? (
         <p className="text-gray-500">Lade Dashboard...</p>
       ) : stats ? (

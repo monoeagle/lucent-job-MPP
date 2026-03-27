@@ -72,13 +72,6 @@ describe('Catalog page', () => {
     })
   })
 
-  it('shows template count', async () => {
-    renderCatalog()
-    await waitFor(() => {
-      expect(screen.getByText(/2 Services/i)).toBeInTheDocument()
-    })
-  })
-
   it('opens detail drawer on card click', async () => {
     renderCatalog()
     await waitFor(() => screen.getByText('Linux VM'))

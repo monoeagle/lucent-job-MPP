@@ -101,8 +101,7 @@ export default function ServiceRequest() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{template.display_name} bestellen</h1>
+      <div className="flex justify-end mb-6">
         <button
           data-testid="view-toggle"
           onClick={toggleView}

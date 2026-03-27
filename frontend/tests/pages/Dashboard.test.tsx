@@ -58,20 +58,10 @@ describe('Dashboard', () => {
     })
   })
 
-  it('renders dashboard title', async () => {
-    renderDashboard()
-    expect(await screen.findByText('Dashboard')).toBeInTheDocument()
-  })
-
   it('renders stat cards', async () => {
     renderDashboard()
     expect(await screen.findByText('Offene Orders')).toBeInTheDocument()
     expect(await screen.findByText('Templates')).toBeInTheDocument()
-  })
-
-  it('renders search field', async () => {
-    renderDashboard()
-    expect(await screen.findByTestId('global-search')).toBeInTheDocument()
   })
 
   it('renders recent orders', async () => {

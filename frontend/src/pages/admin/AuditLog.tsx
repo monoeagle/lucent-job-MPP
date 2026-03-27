@@ -38,8 +38,7 @@ export default function AuditLog() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Audit Log</h1>
+      <div className="flex justify-end mb-6">
         <button
           onClick={handleExport}
           className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700"

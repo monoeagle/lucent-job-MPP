@@ -50,8 +50,7 @@ export default function Notifications() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">Benachrichtigungen</h1>
+      <div className="mb-4">
         <button onClick={() => markAllRead.mutate()}
           disabled={markAllRead.isPending}
           className="text-sm text-blue-600 hover:text-blue-800 disabled:opacity-50">

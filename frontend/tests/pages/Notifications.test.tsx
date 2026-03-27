@@ -51,11 +51,6 @@ describe('Notifications', () => {
     })
   })
 
-  it('renders notifications heading', async () => {
-    renderPage()
-    expect(await screen.findByText('Benachrichtigungen')).toBeInTheDocument()
-  })
-
   it('renders notification subjects', async () => {
     renderPage()
     expect(await screen.findByText('Bestellung ORD-1 eingereicht')).toBeInTheDocument()
