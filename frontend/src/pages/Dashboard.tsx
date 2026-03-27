@@ -33,7 +33,7 @@ export default function Dashboard() {
 
           {/* Quick-Access Kacheln: Notifications + Review Requests */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <Link to="/workspace?tab=notifications"
+            <Link to="/notifications"
               className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-blue-300 transition-all">
               <div className="flex items-center justify-between">
                 <div>
@@ -51,7 +51,7 @@ export default function Dashboard() {
             </Link>
 
             {isApprover && (
-              <Link to="/workspace?tab=reviews"
+              <Link to="/reviews"
                 className="block bg-white border border-gray-200 rounded-lg p-5 hover:shadow-md hover:border-yellow-300 transition-all">
                 <div className="flex items-center justify-between">
                   <div>
