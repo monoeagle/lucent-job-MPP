@@ -60,7 +60,7 @@ export default function ServiceRequest() {
       if (!targetOrderId) {
         const order = await createOrder.mutateAsync({
           title: `${template.display_name} Bestellung`,
-          context,
+          context: context as unknown as Record<string, string>,
         })
         targetOrderId = order.id
       }
