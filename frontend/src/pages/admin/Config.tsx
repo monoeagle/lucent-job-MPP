@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../store/authStore'
 import { apiClient } from '../../api/client'
@@ -11,6 +11,14 @@ interface SystemConfig {
   email: { status: string; description: string }
   dsgvo: { anonymize: boolean }
   approvals: { default_deadline_hours: number; allow_self_approval: boolean }
+}
+
+interface FormState {
+  gitlab_url: string
+  gitlab_project_id: string
+  dsgvo_anonymize: boolean
+  approval_default_deadline_hours: number
+  approval_allow_self_approval: boolean
 }
 
 function StatusDot({ status }: { status: string }) {
@@ -39,7 +47,7 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 export default function Config() {
   const token = useAuthStore((s) => s.token)
   const queryClient = useQueryClient()
-  const [feedback, setFeedback] = useState<string | null>(null)
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-config'],
@@ -47,18 +55,43 @@ export default function Config() {
     enabled: !!token,
   })
 
+  const [form, setForm] = useState<FormState>({
+    gitlab_url: '',
+    gitlab_project_id: '',
+    dsgvo_anonymize: false,
+    approval_default_deadline_hours: 48,
+    approval_allow_self_approval: false,
+  })
+
+  // Sync form state when data loads
+  useEffect(() => {
+    if (data) {
+      setForm({
+        gitlab_url: data.gitlab.url === '(nicht konfiguriert)' ? '' : data.gitlab.url,
+        gitlab_project_id: data.gitlab.project_id,
+        dsgvo_anonymize: data.dsgvo.anonymize,
+        approval_default_deadline_hours: data.approvals.default_deadline_hours,
+        approval_allow_self_approval: data.approvals.allow_self_approval,
+      })
+    }
+  }, [data])
+
   const saveMutation = useMutation({
     mutationFn: (body: Record<string, unknown>) =>
       apiClient.put('/api/v1/admin/config', body, token!) as Promise<{ updated: string[]; message: string }>,
     onSuccess: (resp) => {
       queryClient.invalidateQueries({ queryKey: ['admin-config'] })
-      setFeedback(resp.message)
+      setFeedback({ type: 'success', message: resp.message })
+      setTimeout(() => setFeedback(null), 3000)
+    },
+    onError: () => {
+      setFeedback({ type: 'error', message: 'Speichern fehlgeschlagen.' })
       setTimeout(() => setFeedback(null), 3000)
     },
   })
 
-  const save = (key: string, value: unknown) => {
-    saveMutation.mutate({ [key]: value })
+  const handleSave = () => {
+    saveMutation.mutate(form)
   }
 
   if (isLoading) return <p className="text-sm text-gray-500">Laden...</p>
@@ -66,11 +99,24 @@ export default function Config() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Konfiguration</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Konfiguration</h1>
+        <button
+          onClick={handleSave}
+          disabled={saveMutation.isPending}
+          className="px-5 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+        >
+          {saveMutation.isPending ? 'Speichert...' : 'Speichern'}
+        </button>
+      </div>
 
       {feedback && (
-        <div className="mb-4 p-3 bg-green-50 text-green-700 border border-green-200 rounded-md text-sm">
-          {feedback}
+        <div className={`mb-4 p-3 rounded-md text-sm border ${
+          feedback.type === 'success'
+            ? 'bg-green-50 text-green-700 border-green-200'
+            : 'bg-red-50 text-red-700 border-red-200'
+        }`}>
+          {feedback.message}
         </div>
       )}
 
@@ -104,8 +150,8 @@ export default function Config() {
             <label className="block text-gray-500 mb-1">URL</label>
             <input
               type="text"
-              defaultValue={data.gitlab.url === '(nicht konfiguriert)' ? '' : data.gitlab.url}
-              onBlur={(e) => save('gitlab_url', e.target.value)}
+              value={form.gitlab_url}
+              onChange={(e) => setForm((f) => ({ ...f, gitlab_url: e.target.value }))}
               placeholder="https://gitlab.example.com"
               className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"
             />
@@ -114,8 +160,8 @@ export default function Config() {
             <label className="block text-gray-500 mb-1">Projekt-ID</label>
             <input
               type="text"
-              defaultValue={data.gitlab.project_id}
-              onBlur={(e) => save('gitlab_project_id', e.target.value)}
+              value={form.gitlab_project_id}
+              onChange={(e) => setForm((f) => ({ ...f, gitlab_project_id: e.target.value }))}
               className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"
             />
           </div>
@@ -129,18 +175,18 @@ export default function Config() {
 
         {/* Editable: DSGVO */}
         <Section title="DSGVO">
-          <div className="flex items-center justify-between">
+          <label className="flex items-center justify-between cursor-pointer">
             <span className="text-gray-500">Anonymisierung</span>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={data.dsgvo.anonymize}
-                onChange={(e) => save('dsgvo_anonymize', e.target.checked)}
+                checked={form.dsgvo_anonymize}
+                onChange={(e) => setForm((f) => ({ ...f, dsgvo_anonymize: e.target.checked }))}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm">{data.dsgvo.anonymize ? 'Aktiviert' : 'Deaktiviert'}</span>
-            </label>
-          </div>
+              <span>{form.dsgvo_anonymize ? 'Aktiviert' : 'Deaktiviert'}</span>
+            </div>
+          </label>
         </Section>
 
         {/* Editable: Approvals */}
@@ -151,23 +197,23 @@ export default function Config() {
               type="number"
               min={1}
               max={720}
-              defaultValue={data.approvals.default_deadline_hours}
-              onBlur={(e) => save('approval_default_deadline_hours', Number(e.target.value))}
+              value={form.approval_default_deadline_hours}
+              onChange={(e) => setForm((f) => ({ ...f, approval_default_deadline_hours: Number(e.target.value) }))}
               className="w-full px-3 py-1.5 border border-gray-300 rounded text-sm"
             />
           </div>
-          <div className="flex items-center justify-between">
+          <label className="flex items-center justify-between cursor-pointer">
             <span className="text-gray-500">Selbst-Genehmigung</span>
-            <label className="flex items-center gap-2 cursor-pointer">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={data.approvals.allow_self_approval}
-                onChange={(e) => save('approval_allow_self_approval', e.target.checked)}
+                checked={form.approval_allow_self_approval}
+                onChange={(e) => setForm((f) => ({ ...f, approval_allow_self_approval: e.target.checked }))}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm">{data.approvals.allow_self_approval ? 'Erlaubt' : 'Nicht erlaubt'}</span>
-            </label>
-          </div>
+              <span>{form.approval_allow_self_approval ? 'Erlaubt' : 'Nicht erlaubt'}</span>
+            </div>
+          </label>
         </Section>
       </div>
     </div>
