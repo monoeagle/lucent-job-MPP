@@ -713,6 +713,7 @@ def seed():
     restrictions = [
         {
             "name": "Tier 0 nur fuer Domain Controller",
+            "template_slug": None,
             "parameter_key": "ad_tier",
             "restriction_type": "value_lock",
             "conditions": {"when": {"system_type": {"neq": "dc"}}},
@@ -721,6 +722,7 @@ def seed():
         },
         {
             "name": "Dual-Site nur SecBereich1/2",
+            "template_slug": None,
             "parameter_key": "vmware_cluster",
             "restriction_type": "value_lock",
             "conditions": {"when": {"security_area": {"in": ["sec3"]}}},
@@ -738,6 +740,7 @@ def seed():
         },
         {
             "name": "Max 16 CPU fuer Nicht-DB-Server",
+            "template_slug": None,
             "parameter_key": "cpu_cores",
             "restriction_type": "range_limit",
             "conditions": {"when": {"system_type": {"neq": "db"}}},
