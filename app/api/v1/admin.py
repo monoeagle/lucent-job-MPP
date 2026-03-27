@@ -81,7 +81,7 @@ def admin_dashboard():
 
     # Order counts by status
     all_statuses = ["draft", "validated", "submitted", "pending_approval",
-                    "provisioning", "done", "failed"]
+                    "approved", "provisioning", "done", "cancelled", "rejected", "failed"]
     rows = (
         session.query(OrderModel.status, func.count(OrderModel.id))
         .group_by(OrderModel.status)

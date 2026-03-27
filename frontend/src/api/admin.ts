@@ -4,7 +4,7 @@ export interface DashboardData {
   order_counts: Record<string, number>
   pending_approvals: number
   active_resources: number
-  system_health: { status: string; uptime: string; version: string }
+  system_health: { status?: string; uptime?: string; version?: string; database?: string; cmdb?: string }
   recent_orders: Array<{
     id: string
     order_number: string

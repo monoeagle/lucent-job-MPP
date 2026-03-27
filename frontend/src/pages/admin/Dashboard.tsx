@@ -7,6 +7,19 @@ import OrderStatusChart from '../../components/dashboard/OrderStatusChart'
 import OrderTimelineChart from '../../components/dashboard/OrderTimelineChart'
 import StatCard from '../../components/dashboard/StatCard'
 
+const STATUS_LABELS: Record<string, { label: string; color: string }> = {
+  draft:            { label: 'Entwurf',           color: 'text-gray-500' },
+  validated:        { label: 'Validiert',          color: 'text-blue-500' },
+  submitted:        { label: 'Eingereicht',        color: 'text-blue-600' },
+  pending_approval: { label: 'Genehmigung offen',  color: 'text-yellow-600' },
+  approved:         { label: 'Genehmigt',          color: 'text-green-500' },
+  provisioning:     { label: 'Bereitstellung',     color: 'text-purple-600' },
+  done:             { label: 'Aktiv',              color: 'text-green-600' },
+  cancelled:        { label: 'Storniert',          color: 'text-gray-400' },
+  rejected:         { label: 'Abgelehnt',          color: 'text-red-500' },
+  failed:           { label: 'Fehlgeschlagen',     color: 'text-red-600' },
+}
+
 export default function AdminDashboard() {
   const token = useAuthStore((s) => s.token)
 
@@ -23,11 +36,16 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      {/* Stat Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {Object.entries(data.order_counts).map(([status, count]) => (
-          <StatCard key={status} label={status} value={count as number} />
-        ))}
+      {/* Stat Cards — alle Bestell-Status */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+        {Object.entries(data.order_counts).map(([status, count]) => {
+          const cfg = STATUS_LABELS[status] ?? { label: status, color: 'text-blue-600' }
+          return <StatCard key={status} label={cfg.label} value={count as number} color={cfg.color} />
+        })}
+      </div>
+
+      {/* Zusaetzliche Kennzahlen */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard label="Ausstehende Genehmigungen" value={data.pending_approvals} color="text-yellow-600" />
         <StatCard label="Aktive Ressourcen" value={data.active_resources} color="text-green-600" />
       </div>
@@ -44,11 +62,21 @@ export default function AdminDashboard() {
       <div className="mb-6">
         <h2 className="text-lg font-semibold mb-3">Systemstatus</h2>
         <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-2">
-          <p className="text-sm">
-            Status: <StatusBadge status={data.system_health.status} />
-          </p>
-          <p className="text-sm text-gray-600">Uptime: {data.system_health.uptime}</p>
-          <p className="text-sm text-gray-600">Version: {data.system_health.version}</p>
+          {data.system_health.database && (
+            <p className="text-sm text-gray-600">Datenbank: <span className="font-medium">{data.system_health.database}</span></p>
+          )}
+          {data.system_health.cmdb && (
+            <p className="text-sm text-gray-600">CMDB: <span className="font-medium">{data.system_health.cmdb}</span></p>
+          )}
+          {data.system_health.status && (
+            <p className="text-sm">Status: <StatusBadge status={data.system_health.status} /></p>
+          )}
+          {data.system_health.uptime && (
+            <p className="text-sm text-gray-600">Uptime: {data.system_health.uptime}</p>
+          )}
+          {data.system_health.version && (
+            <p className="text-sm text-gray-600">Version: {data.system_health.version}</p>
+          )}
         </div>
       </div>
 
@@ -69,8 +97,8 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {data.recent_orders.map((order: { id: string; order_number: string; title: string; status: string; created_at: string; requester_id?: string }) => (
-                <tr key={order.id}>
+              {data.recent_orders.map((order: { order_id?: string; id?: string; order_number: string; title: string; status: string; created_at: string; requester_id?: string }) => (
+                <tr key={order.order_id ?? order.id}>
                   <td className="px-4 py-3 text-sm">{order.order_number}</td>
                   <td className="px-4 py-3 text-sm">{order.title}</td>
                   <td className="px-4 py-3 text-sm text-gray-500">{order.requester_id ?? '—'}</td>
