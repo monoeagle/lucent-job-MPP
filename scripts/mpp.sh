@@ -162,11 +162,16 @@ start_backend() {
     export DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_dev
     export FLASK_APP=app
 
-    echo "  Datenbank-Migrationen..."
-    if ! alembic upgrade head 2>&1; then
-        echo -e "${RED}Migration fehlgeschlagen!${NC}"
+    echo "  Datenbank-Schema pruefen..."
+    python -c "
+from app.data.db.session import get_engine, Base
+from app.data.db.models import *
+engine = get_engine('$DATABASE_URL')
+Base.metadata.create_all(engine)
+" 2>&1 || {
+        echo -e "${RED}Schema-Erstellung fehlgeschlagen!${NC}"
         wait_for_enter; return
-    fi
+    }
 
     echo "  Demo-Daten laden..."
     python scripts/seed.py 2>&1
@@ -306,7 +311,12 @@ start_all() {
             source venv/bin/activate
             export AUTH_MODE=stub CMDB_MODE=stub FLASK_APP=app
             export DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_dev
-            alembic upgrade head > /dev/null 2>&1
+            python -c "
+from app.data.db.session import get_engine, Base
+from app.data.db.models import *
+engine = get_engine('$DATABASE_URL')
+Base.metadata.create_all(engine)
+" > /dev/null 2>&1
             python scripts/seed.py 2>/dev/null
             flask run --port 5000 > "$PROJECT_DIR/logs/backend.log" 2>&1 &
             BACKEND_PID=$!; sleep 1
