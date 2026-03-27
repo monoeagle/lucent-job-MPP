@@ -145,3 +145,19 @@ def admin_dashboard():
             "cmdb": cmdb_status,
         },
     }), 200
+
+
+@bp.route("/admin/dsgvo", methods=["GET"])
+@role_required("admin")
+def get_dsgvo_status():
+    enabled = current_app.config.get("DSGVO_ANONYMIZE", False)
+    return jsonify({"dsgvo_anonymize": enabled}), 200
+
+
+@bp.route("/admin/dsgvo", methods=["PUT"])
+@role_required("admin")
+def set_dsgvo_status():
+    data = request.get_json() or {}
+    enabled = data.get("dsgvo_anonymize", False)
+    current_app.config["DSGVO_ANONYMIZE"] = bool(enabled)
+    return jsonify({"dsgvo_anonymize": bool(enabled), "message": "DSGVO-Modus aktualisiert."}), 200
