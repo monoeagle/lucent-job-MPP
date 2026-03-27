@@ -22,6 +22,11 @@ export default function OrderItemCard({ item, onEdit, onRemove, readonly }: Prop
           <span className="text-sm font-medium">{item.display_name}</span>
           <span className="text-xs text-gray-400">v{item.template_version}</span>
           <StatusBadge status={item.validation_state} />
+          {item.quantity > 1 && (
+            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+              ×{item.quantity}
+            </span>
+          )}
         </div>
         {!readonly && (
           <div className="flex gap-2">
