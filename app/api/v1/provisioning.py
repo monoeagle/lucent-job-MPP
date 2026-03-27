@@ -5,6 +5,7 @@ from app.core.auth import role_required
 from app.data.repositories.dispatch_log_repository import DispatchLogRepository
 from app.data.repositories.order_repository import OrderRepository
 from app.services.provisioning_service import ProvisioningService
+from app.services.credential_service import CredentialService
 
 bp = Blueprint("provisioning", __name__, url_prefix="/api/v1")
 admin_bp = Blueprint("provisioning_admin", __name__, url_prefix="/api/v1/admin")
@@ -76,3 +77,32 @@ def dispatch_item(order_id, item_id):
     service = _get_provisioning_service()
     service.dispatch_item(order_id, item_id)
     return jsonify({"message": "Dispatch initiated."}), 202
+
+
+@admin_bp.route("/orders/<order_id>/items/<item_id>/credentials", methods=["POST"])
+@role_required("admin")
+def create_credential_link(order_id, item_id):
+    data = request.get_json(silent=True) or {}
+    credentials = data.get("credentials")
+    if not credentials:
+        return jsonify({"error": "credentials required"}), 400
+
+    service = CredentialService(g.db_session)
+    model, token = service.create_link(item_id, credentials)
+    return jsonify({
+        "token": token,
+        "url": f"/api/v1/credentials/{token}",
+        "expires_at": model.expires_at.isoformat(),
+    }), 201
+
+
+@bp.route("/credentials/<token>", methods=["GET"])
+def retrieve_credentials(token):
+    service = CredentialService(g.db_session)
+    try:
+        result = service.retrieve_credentials(token)
+        return jsonify(result), 200
+    except service.LinkNotFoundError:
+        return jsonify({"error": "Credential link not found."}), 404
+    except (service.LinkExpiredError, service.LinkConsumedError):
+        return jsonify({"error": "Credential link is no longer available."}), 410
