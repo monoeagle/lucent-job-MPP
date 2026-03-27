@@ -7,6 +7,5 @@ frontend/tsconfig.tsbuildinfo
 .pytest_cache/
 logs/
 screenshots/
-_TRANSFER_NON_DOCKER/
-_TRANSFER_NON_DOCKER_ALMA10/
+_TRANSFER_NON_DOCKER*/
 agents_md.zip
