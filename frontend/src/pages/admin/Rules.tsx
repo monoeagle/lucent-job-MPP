@@ -7,10 +7,24 @@ type TabKey = 'approvals' | 'availability' | 'restrictions' | 'tenants'
 
 const tabs: { key: TabKey; label: string }[] = [
   { key: 'approvals', label: 'Genehmigungsregeln' },
-  { key: 'availability', label: 'Verfügbarkeitsregeln' },
-  { key: 'restrictions', label: 'Kontextbeschränkungen' },
+  { key: 'availability', label: 'Verfuegbarkeitsregeln' },
+  { key: 'restrictions', label: 'Kontextbeschraenkungen' },
   { key: 'tenants', label: 'Mandantenzuweisungen' },
 ]
+
+function ActiveBadge({ active }: { active: boolean }) {
+  return (
+    <span className={`inline-flex px-2 py-0.5 text-xs font-medium rounded-full ${
+      active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+    }`}>
+      {active ? 'Aktiv' : 'Inaktiv'}
+    </span>
+  )
+}
+
+function EmptyState({ text }: { text: string }) {
+  return <p className="text-sm text-gray-400 py-6 text-center">{text}</p>
+}
 
 export default function Rules() {
   const token = useAuthStore((s) => s.token)
@@ -66,90 +80,112 @@ export default function Rules() {
 
       {isLoading && <p className="text-sm text-gray-500">Laden...</p>}
 
+      {/* Genehmigungsregeln */}
       {activeTab === 'approvals' && approvalRules && (
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Beschreibung</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rollen</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aktiv</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {approvalRules.map((rule) => (
-              <tr key={rule.id}>
-                <td className="px-4 py-3 text-sm font-medium">{rule.name}</td>
-                <td className="px-4 py-3 text-sm">{rule.description}</td>
-                <td className="px-4 py-3 text-sm">{rule.approver_roles.join(', ')}</td>
-                <td className="px-4 py-3 text-sm">{rule.active ? 'Ja' : 'Nein'}</td>
+        approvalRules.length === 0 ? <EmptyState text="Keine Genehmigungsregeln definiert." /> : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Typ</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Schwellwert</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {approvalRules.map((rule) => (
+                <tr key={rule.id}>
+                  <td className="px-4 py-3 text-sm font-medium">{rule.name}</td>
+                  <td className="px-4 py-3 text-sm">{rule.rule_type}</td>
+                  <td className="px-4 py-3 text-sm">{rule.threshold_eur !== null ? `${rule.threshold_eur} EUR` : '—'}</td>
+                  <td className="px-4 py-3 text-sm">{rule.service_type_slug ?? 'Alle'}</td>
+                  <td className="px-4 py-3"><ActiveBadge active={rule.is_active} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
       )}
 
+      {/* Verfuegbarkeitsregeln */}
       {activeTab === 'availability' && availabilityRules && (
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aktiv</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {availabilityRules.map((rule) => (
-              <tr key={rule.id}>
-                <td className="px-4 py-3 text-sm font-medium">{rule.name}</td>
-                <td className="px-4 py-3 text-sm">{rule.template_slug}</td>
-                <td className="px-4 py-3 text-sm">{rule.active ? 'Ja' : 'Nein'}</td>
+        availabilityRules.length === 0 ? <EmptyState text="Keine Verfuegbarkeitsregeln definiert." /> : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Typ</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prioritaet</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {availabilityRules.map((rule) => (
+                <tr key={rule.id}>
+                  <td className="px-4 py-3 text-sm font-medium">{rule.name}</td>
+                  <td className="px-4 py-3 text-sm">{rule.template_slug}</td>
+                  <td className="px-4 py-3 text-sm">{rule.rule_type}</td>
+                  <td className="px-4 py-3 text-sm">{rule.priority}</td>
+                  <td className="px-4 py-3"><ActiveBadge active={rule.is_active} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
       )}
 
+      {/* Kontextbeschraenkungen */}
       {activeTab === 'restrictions' && restrictions && (
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Typ</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aktiv</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {restrictions.map((r) => (
-              <tr key={r.id}>
-                <td className="px-4 py-3 text-sm font-medium">{r.name}</td>
-                <td className="px-4 py-3 text-sm">{r.restriction_type}</td>
-                <td className="px-4 py-3 text-sm">{r.active ? 'Ja' : 'Nein'}</td>
+        restrictions.length === 0 ? <EmptyState text="Keine Kontextbeschraenkungen definiert." /> : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Parameter</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Typ</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {restrictions.map((r) => (
+                <tr key={r.id}>
+                  <td className="px-4 py-3 text-sm font-medium">{r.name}</td>
+                  <td className="px-4 py-3 text-sm font-mono text-xs">{r.parameter_key}</td>
+                  <td className="px-4 py-3 text-sm">{r.restriction_type}</td>
+                  <td className="px-4 py-3 text-sm">{r.template_slug ?? 'Alle'}</td>
+                  <td className="px-4 py-3"><ActiveBadge active={r.is_active} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
       )}
 
+      {/* Mandantenzuweisungen */}
       {activeTab === 'tenants' && assignments && (
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mandant</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Template</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aktiv</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {assignments.map((a) => (
-              <tr key={a.id}>
-                <td className="px-4 py-3 text-sm font-medium">{a.tenant_name}</td>
-                <td className="px-4 py-3 text-sm">{a.template_slug}</td>
-                <td className="px-4 py-3 text-sm">{a.active ? 'Ja' : 'Nein'}</td>
+        assignments.length === 0 ? <EmptyState text="Keine Mandantenzuweisungen definiert." /> : (
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Benutzer</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mandant</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Erstellt</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {assignments.map((a) => (
+                <tr key={a.id}>
+                  <td className="px-4 py-3 text-sm font-medium">{a.user_id}</td>
+                  <td className="px-4 py-3 text-sm">{a.tenant_id}</td>
+                  <td className="px-4 py-3 text-sm text-gray-400">{new Date(a.created_at).toLocaleDateString('de-DE')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )
       )}
     </div>
   )

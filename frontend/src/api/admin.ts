@@ -32,10 +32,10 @@ export interface AuditLogResponse {
 export interface ApprovalRule {
   id: string
   name: string
-  description: string
-  conditions: Record<string, unknown>
-  approver_roles: string[]
-  active: boolean
+  rule_type: string
+  threshold_eur: number | null
+  service_type_slug: string | null
+  is_active: boolean
   created_at: string
 }
 
@@ -43,24 +43,28 @@ export interface AvailabilityRule {
   id: string
   name: string
   template_slug: string
+  rule_type: string
   conditions: Record<string, unknown>
-  active: boolean
+  priority: number
+  is_active: boolean
 }
 
 export interface ContextRestriction {
   id: string
   name: string
+  template_slug: string | null
+  parameter_key: string
   restriction_type: string
   conditions: Record<string, unknown>
-  active: boolean
+  effect: Record<string, unknown>
+  is_active: boolean
 }
 
 export interface TenantAssignment {
   id: string
+  user_id: string
   tenant_id: string
-  tenant_name: string
-  template_slug: string
-  active: boolean
+  created_at: string
 }
 
 export const adminApi = {
@@ -97,26 +101,26 @@ export const adminApi = {
   },
 
   async listApprovalRules(token: string): Promise<ApprovalRule[]> {
-    return (await apiClient.get('/api/v1/admin/rules/approvals', token)) as ApprovalRule[]
+    return (await apiClient.get('/api/v1/admin/approval-rules', token)) as ApprovalRule[]
   },
 
   async createApprovalRule(token: string, rule: Omit<ApprovalRule, 'id' | 'created_at'>): Promise<ApprovalRule> {
-    return (await apiClient.post('/api/v1/admin/rules/approvals', rule, token)) as ApprovalRule
+    return (await apiClient.post('/api/v1/admin/approval-rules', rule, token)) as ApprovalRule
   },
 
   async deleteApprovalRule(token: string, ruleId: string): Promise<void> {
-    await apiClient.del(`/api/v1/admin/rules/approvals/${ruleId}`, token)
+    await apiClient.del(`/api/v1/admin/approval-rules/${ruleId}`, token)
   },
 
   async listAvailabilityRules(token: string): Promise<AvailabilityRule[]> {
-    return (await apiClient.get('/api/v1/admin/rules/availability', token)) as AvailabilityRule[]
+    return (await apiClient.get('/api/v1/admin/context/availability-rules', token)) as AvailabilityRule[]
   },
 
   async listContextRestrictions(token: string): Promise<ContextRestriction[]> {
-    return (await apiClient.get('/api/v1/admin/rules/context-restrictions', token)) as ContextRestriction[]
+    return (await apiClient.get('/api/v1/admin/context/restrictions', token)) as ContextRestriction[]
   },
 
   async listTenantAssignments(token: string): Promise<TenantAssignment[]> {
-    return (await apiClient.get('/api/v1/admin/rules/tenant-assignments', token)) as TenantAssignment[]
+    return (await apiClient.get('/api/v1/admin/context/tenant-assignments', token)) as TenantAssignment[]
   },
 }

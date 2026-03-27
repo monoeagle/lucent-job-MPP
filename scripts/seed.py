@@ -663,6 +663,113 @@ def seed():
         order_repo.update_order_status(order.id, "pending_approval")
         print(f"  Created approval request for {order.order_number} (deadline: 48h)")
 
+    # ── Additional approval rules ─────────────────────────────
+    cost_rule = approval_repo.create_rule(
+        name="Kostengrenze 500 EUR",
+        rule_type="cost_threshold",
+        threshold_eur=500.00,
+    )
+    print(f"  Created approval rule: {cost_rule.name}")
+
+    svc_rule = approval_repo.create_rule(
+        name="Windows-VM Pflichtgenehmigung",
+        rule_type="service_type",
+        service_type_slug="vm-windows",
+    )
+    print(f"  Created approval rule: {svc_rule.name}")
+
+    # ── Availability rules ──────────────────────────────────
+    from app.data.repositories.context_rule_repository import ContextRuleRepository
+    ctx_rule_repo = ContextRuleRepository(session)
+
+    avail_rules = [
+        {
+            "name": "Linux VM — nur Werktags bestellbar",
+            "template_slug": "vm-linux",
+            "rule_type": "allow",
+            "conditions": {"weekdays": [1, 2, 3, 4, 5], "business_hours": True},
+            "priority": 10,
+        },
+        {
+            "name": "Windows VM — Standort2 gesperrt",
+            "template_slug": "vm-windows",
+            "rule_type": "deny",
+            "conditions": {"parameter_match": {"location": "standort2"}},
+            "priority": 20,
+        },
+        {
+            "name": "XL-Sizing nur mit Genehmigung",
+            "template_slug": "vm-linux",
+            "rule_type": "approval_required",
+            "conditions": {"parameter_match": {"tshirt_size": "xl"}},
+            "priority": 30,
+        },
+    ]
+    for ar in avail_rules:
+        ctx_rule_repo.create_availability_rule(**ar)
+        print(f"  Created availability rule: {ar['name']}")
+
+    # ── Context restrictions ─────────────────────────────────
+    restrictions = [
+        {
+            "name": "Tier 0 nur fuer Domain Controller",
+            "parameter_key": "ad_tier",
+            "restriction_type": "value_lock",
+            "conditions": {"when": {"system_type": {"neq": "dc"}}},
+            "effect": {"disable_values": ["tier0"]},
+            "priority": 10,
+        },
+        {
+            "name": "Dual-Site nur SecBereich1/2",
+            "parameter_key": "vmware_cluster",
+            "restriction_type": "value_lock",
+            "conditions": {"when": {"security_area": {"in": ["sec3"]}}},
+            "effect": {"disable_values": ["dual-site"]},
+            "priority": 20,
+        },
+        {
+            "name": "Management-Layer nur DB/DC",
+            "template_slug": "vm-linux",
+            "parameter_key": "network_layer",
+            "restriction_type": "value_lock",
+            "conditions": {"when": {"system_type": {"not_in": ["db", "dc"]}}},
+            "effect": {"disable_values": ["management"]},
+            "priority": 30,
+        },
+        {
+            "name": "Max 16 CPU fuer Nicht-DB-Server",
+            "parameter_key": "cpu_cores",
+            "restriction_type": "range_limit",
+            "conditions": {"when": {"system_type": {"neq": "db"}}},
+            "effect": {"max": 16},
+            "priority": 40,
+        },
+    ]
+    for r in restrictions:
+        ctx_rule_repo.create_restriction(**r)
+        print(f"  Created restriction: {r['name']}")
+
+    # ── Tenant assignments ──────────────────────────────────
+    from app.data.repositories.tenant_repository import TenantRepository
+    tenant_repo = TenantRepository(session)
+
+    tenant_assignments = [
+        ("test-requester", "a1"),
+        ("test-requester", "b1"),
+        ("test-approver", "a1"),
+        ("test-admin", "a1"),
+        ("test-admin", "b1"),
+        ("test-admin", "c1"),
+        ("test-multi", "a1"),
+        ("test-multi", "b1"),
+        ("test-superadmin", "a1"),
+        ("test-superadmin", "b1"),
+        ("test-superadmin", "c1"),
+    ]
+    for user_id, tenant_id in tenant_assignments:
+        tenant_repo.assign_tenant(user_id=user_id, tenant_id=tenant_id)
+    print(f"  Created {len(tenant_assignments)} tenant assignments")
+
     # ── Demo notifications ────────────────────────────────────
     from app.services.notification_service import NotificationService
     notif_service = NotificationService(session)
