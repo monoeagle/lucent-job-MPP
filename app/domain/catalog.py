@@ -116,6 +116,7 @@ class ParameterDefinition:
     group: str | None = None
     depends_on: list[DependencyRule] = field(default_factory=list)
     affects_options_of: list[str] = field(default_factory=list)
+    per_instance: bool | str = False
 
     def is_visible(self, current_values: dict) -> bool:
         visibility_rules = [r for r in self.depends_on if r.effect == "visible"]

@@ -79,6 +79,17 @@ class TemplateValidator:
                 f"Unbekannter Parametertyp '{param_type}'. Erlaubte Werte: "
                 f"{', '.join(sorted(ParameterType.all()))}."
             )
+        per_instance = param.get("per_instance", False)
+        if per_instance not in (False, True, "auto"):
+            errors.append(
+                f"Ungültiger per_instance-Wert '{per_instance}'. "
+                "Erlaubte Werte: false, true, 'auto'."
+            )
+        elif per_instance == "auto" and param_type != "string":
+            errors.append(
+                "per_instance='auto' ist nur für Parameter vom Typ 'string' erlaubt."
+            )
+
         return errors
 
     def validate_template(self, data: dict) -> list[str]:
