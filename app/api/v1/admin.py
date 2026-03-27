@@ -147,6 +147,61 @@ def admin_dashboard():
     }), 200
 
 
+@bp.route("/admin/config", methods=["GET"])
+@role_required("admin", "superadmin")
+def get_system_config():
+    cfg = current_app.config
+
+    # DB connection check
+    db_status = "ok"
+    try:
+        g.db_session.execute(func.now())
+    except Exception:
+        db_status = "error"
+
+    db_url = cfg.get("DATABASE_URL", "")
+    # mask password
+    if "@" in db_url:
+        before_at = db_url.split("@")[0]
+        after_at = db_url.split("@")[1]
+        user_part = before_at.rsplit(":", 1)[0] if ":" in before_at else before_at
+        db_url = f"{user_part}:***@{after_at}"
+
+    return jsonify({
+        "auth": {
+            "mode": cfg.get("AUTH_MODE", "unknown"),
+            "status": "ok",
+            "description": "Stub-Modus (lokale Testbenutzer)" if cfg.get("AUTH_MODE") == "stub" else "LDAP/AD-Anbindung",
+        },
+        "cmdb": {
+            "mode": cfg.get("CMDB_MODE", "unknown"),
+            "status": "ok",
+            "stub_data_path": cfg.get("CMDB_STUB_DATA_PATH", ""),
+            "description": "Stub-Modus (YAML-Dateien)" if cfg.get("CMDB_MODE") == "stub" else "Live-CMDB-Anbindung",
+        },
+        "database": {
+            "url": db_url,
+            "status": db_status,
+        },
+        "gitlab": {
+            "url": cfg.get("GITLAB_URL", "") or "(nicht konfiguriert)",
+            "project_id": cfg.get("GITLAB_PROJECT_ID", ""),
+            "status": "ok" if cfg.get("GITLAB_URL") else "nicht konfiguriert",
+        },
+        "email": {
+            "status": "nicht konfiguriert",
+            "description": "SMTP nicht konfiguriert — Benachrichtigungen nur In-App",
+        },
+        "dsgvo": {
+            "anonymize": cfg.get("DSGVO_ANONYMIZE", False),
+        },
+        "approvals": {
+            "default_deadline_hours": cfg.get("APPROVAL_DEFAULT_DEADLINE_HOURS", 48),
+            "allow_self_approval": cfg.get("APPROVAL_ALLOW_SELF_APPROVAL", False),
+        },
+    }), 200
+
+
 @bp.route("/admin/dsgvo", methods=["GET"])
 @role_required("superadmin")
 def get_dsgvo_status():

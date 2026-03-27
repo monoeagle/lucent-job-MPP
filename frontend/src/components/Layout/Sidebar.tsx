@@ -25,6 +25,7 @@ const mainItems: NavItem[] = [
 
 const adminItems: NavItem[] = [
   { to: '/admin', label: 'Admin Dashboard', icon: '⚙', roles: ['admin', 'superadmin'] },
+  { to: '/admin/config', label: 'Konfiguration', icon: '🔧', roles: ['admin', 'superadmin'] },
   { to: '/admin/rules', label: 'Rules', icon: '📏', roles: ['superadmin'] },
   { to: '/admin/audit-log', label: 'Audit Log', icon: '📜', roles: ['superadmin'] },
 ]

@@ -19,6 +19,7 @@ import SubscriptionDetail from './pages/SubscriptionDetail'
 import AdminDashboard from './pages/admin/Dashboard'
 import Rules from './pages/admin/Rules'
 import AuditLog from './pages/admin/AuditLog'
+import AdminConfig from './pages/admin/Config'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -83,6 +84,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute requiredRoles={['superadmin']}>
               <AuditLog />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/config"
+          element={
+            <ProtectedRoute requiredRoles={['admin', 'superadmin']}>
+              <AdminConfig />
             </ProtectedRoute>
           }
         />
