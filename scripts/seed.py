@@ -633,6 +633,33 @@ def seed():
         item_count = len(od["items"])
         print(f"  {order.order_number}: {od['title']} [{target}] ({item_count} item{'s' if item_count > 1 else ''})")
 
+    # ── Approval rules + requests ──────────────────────────────
+    from app.data.repositories.approval_repository import ApprovalRepository
+    from datetime import timedelta
+
+    approval_repo = ApprovalRepository(session)
+
+    # Create a default approval rule
+    rule = approval_repo.create_rule(
+        name="Standard-Genehmigung",
+        rule_type="always",
+    )
+    print(f"\n  Created approval rule: {rule.name} (ID: {rule.id})")
+
+    # Create pending approval requests for submitted orders
+    # Find submitted orders and create approval requests
+    from app.data.db.models.order import OrderModel
+    submitted_orders = session.query(OrderModel).filter(
+        OrderModel.status.in_(["submitted", "pending_approval"])
+    ).all()
+
+    for order in submitted_orders:
+        from datetime import datetime, timezone
+        deadline = datetime.now(timezone.utc) + timedelta(hours=48)
+        ar = approval_repo.create_request(order.id, [rule.id], deadline)
+        order_repo.update_order_status(order.id, "pending_approval")
+        print(f"  Created approval request for {order.order_number} (deadline: 48h)")
+
     # ── Demo notifications ────────────────────────────────────
     from app.services.notification_service import NotificationService
     notif_service = NotificationService(session)
