@@ -1,4 +1,4 @@
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, Link } from 'react-router-dom'
 import OrderList from './OrderList'
 
 type OrderTab = 'all' | 'mine'
@@ -18,6 +18,13 @@ export default function Workspace() {
 
   return (
     <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold">Bestellungen</h1>
+        <Link to="/shop"
+          className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">
+          Zum Shop
+        </Link>
+      </div>
       <div className="flex gap-1 mb-6 border-b border-gray-200">
         {TABS.map((tab) => (
           <button

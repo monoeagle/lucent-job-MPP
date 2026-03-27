@@ -49,8 +49,4 @@ describe('OrderList', () => {
     expect(screen.getByText('Web-Cluster')).toBeInTheDocument()
   })
 
-  it('shows Zum Shop link', async () => {
-    renderPage()
-    expect(await screen.findByText('Zum Shop')).toBeInTheDocument()
-  })
 })
