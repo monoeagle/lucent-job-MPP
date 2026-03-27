@@ -36,17 +36,13 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      {/* Stat Cards — alle Bestell-Status */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+      {/* Stat Cards — alle Status + Kennzahlen */}
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
         {Object.entries(data.order_counts).map(([status, count]) => {
           const cfg = STATUS_LABELS[status] ?? { label: status, color: 'text-blue-600' }
           return <StatCard key={status} label={cfg.label} value={count as number} color={cfg.color} />
         })}
-      </div>
-
-      {/* Zusaetzliche Kennzahlen */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <StatCard label="Ausstehende Genehmigungen" value={data.pending_approvals} color="text-yellow-600" />
+        <StatCard label="Genehm. offen" value={data.pending_approvals} color="text-yellow-600" />
         <StatCard label="Aktive Ressourcen" value={data.active_resources} color="text-green-600" />
       </div>
 

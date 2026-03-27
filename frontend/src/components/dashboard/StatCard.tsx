@@ -6,9 +6,9 @@ interface Props {
 
 export default function StatCard({ label, value, color = 'text-blue-600' }: Props) {
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4">
-      <p className={`text-3xl font-bold ${color}`}>{value}</p>
-      <p className="text-sm text-gray-500 mt-1">{label}</p>
+    <div className="bg-white border border-gray-200 rounded-lg p-3">
+      <p className={`text-2xl font-bold ${color}`}>{value}</p>
+      <p className="text-xs text-gray-500 mt-1 leading-tight">{label}</p>
     </div>
   )
 }

@@ -63,7 +63,7 @@ describe('Admin Dashboard', () => {
   it('shows pending approvals and active resources', async () => {
     renderAdminDashboard()
     await waitFor(() => {
-      expect(screen.getByText('Ausstehende Genehmigungen')).toBeInTheDocument()
+      expect(screen.getByText('Genehm. offen')).toBeInTheDocument()
       expect(screen.getByText('Aktive Ressourcen')).toBeInTheDocument()
       expect(screen.getByText('7')).toBeInTheDocument()
     })
