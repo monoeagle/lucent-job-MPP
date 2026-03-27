@@ -10,6 +10,8 @@ from app.data.repositories.tenant_repository import TenantRepository
 from app.services.catalog_service import CatalogService
 from app.services.context_service import ContextService
 from app.services.order_service import OrderService
+from app.data.repositories.dispatch_log_repository import DispatchLogRepository
+from app.services.provisioning_service import ProvisioningService
 
 bp = Blueprint("orders", __name__, url_prefix="/api/v1")
 
@@ -308,6 +310,22 @@ def submit_order(order_id):
         raise ConflictError(str(e))
 
     submitted = result["order"]
+
+    # Trigger dispatch if GitLab client is configured
+    gitlab_client = getattr(current_app, "gitlab_client", None)
+    if gitlab_client is not None:
+        try:
+            order_repo = OrderRepository(g.db_session)
+            dispatch_log_repo = DispatchLogRepository(g.db_session)
+            prov_service = ProvisioningService(
+                order_repo, dispatch_log_repo, gitlab_client,
+            )
+            prov_service.dispatch_order(order_id)
+            # Re-fetch to get updated status
+            submitted = order_repo.get_by_id(order_id)
+        except Exception:
+            pass  # Dispatch failure should not block submit
+
     return jsonify({
         "order_id": submitted.id,
         "order_number": submitted.order_number,

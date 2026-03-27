@@ -26,6 +26,9 @@ class Config:
         self.CMDB_STUB_DATA_PATH = os.environ.get(
             "CMDB_STUB_DATA_PATH", "./stubs/cmdb/"
         )
+        self.GITLAB_URL = os.environ.get("GITLAB_URL", "")
+        self.GITLAB_TOKEN = os.environ.get("GITLAB_TOKEN", "")
+        self.GITLAB_PROJECT_ID = os.environ.get("GITLAB_PROJECT_ID", "1")
 
         self._validate()
 

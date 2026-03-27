@@ -22,6 +22,9 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         DATABASE_URL=config.DATABASE_URL,
         CMDB_MODE=config.CMDB_MODE,
         CMDB_STUB_DATA_PATH=config.CMDB_STUB_DATA_PATH,
+        GITLAB_URL=config.GITLAB_URL,
+        GITLAB_TOKEN=config.GITLAB_TOKEN,
+        GITLAB_PROJECT_ID=config.GITLAB_PROJECT_ID,
     )
 
     register_middleware(app)
@@ -69,6 +72,19 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     from app.api.v1 import context
     app.register_blueprint(context.bp)
     app.register_blueprint(context.admin_bp)
+
+    from app.api.v1 import provisioning
+    app.register_blueprint(provisioning.bp)
+    app.register_blueprint(provisioning.admin_bp)
+
+    # GitLab client
+    if app.config.get("GITLAB_URL"):
+        from app.data.clients.gitlab_client import GitLabClient
+        app.gitlab_client = GitLabClient(
+            base_url=app.config["GITLAB_URL"],
+            token=app.config.get("GITLAB_TOKEN", ""),
+            project_id=int(app.config.get("GITLAB_PROJECT_ID", "1")),
+        )
 
     return app
 
