@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom'
 import { useAuthStore } from '../../store/authStore'
-import { isAdmin, isApprover } from '../../types/common'
 
 const navItems = [
   { to: '/catalog', label: 'Service Catalog', roles: null },
