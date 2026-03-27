@@ -177,7 +177,7 @@ def _assignment_to_dict(assignment):
 
 
 @admin_bp.route("/availability-rules", methods=["POST"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def create_availability_rule():
     data = request.get_json()
     repo = _rule_repo()
@@ -192,7 +192,7 @@ def create_availability_rule():
 
 
 @admin_bp.route("/availability-rules", methods=["GET"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def list_availability_rules():
     repo = _rule_repo()
     template_slug = request.args.get("template_slug")
@@ -201,7 +201,7 @@ def list_availability_rules():
 
 
 @admin_bp.route("/availability-rules/<rule_id>", methods=["PATCH"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def update_availability_rule(rule_id):
     data = request.get_json()
     repo = _rule_repo()
@@ -212,7 +212,7 @@ def update_availability_rule(rule_id):
 
 
 @admin_bp.route("/availability-rules/<rule_id>", methods=["DELETE"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def delete_availability_rule(rule_id):
     repo = _rule_repo()
     if not repo.delete_availability_rule(rule_id):
@@ -223,7 +223,7 @@ def delete_availability_rule(rule_id):
 # --- Admin: Context Restrictions ---
 
 @admin_bp.route("/restrictions", methods=["POST"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def create_restriction():
     data = request.get_json()
     repo = _rule_repo()
@@ -240,7 +240,7 @@ def create_restriction():
 
 
 @admin_bp.route("/restrictions", methods=["GET"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def list_restrictions():
     repo = _rule_repo()
     template_slug = request.args.get("template_slug")
@@ -249,7 +249,7 @@ def list_restrictions():
 
 
 @admin_bp.route("/restrictions/<restriction_id>", methods=["DELETE"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def delete_restriction(restriction_id):
     repo = _rule_repo()
     if not repo.delete_restriction(restriction_id):
@@ -260,7 +260,7 @@ def delete_restriction(restriction_id):
 # --- Admin: Tenant Assignments ---
 
 @admin_bp.route("/tenant-assignments", methods=["POST"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def create_tenant_assignment():
     data = request.get_json()
     repo = _tenant_repo()
@@ -275,7 +275,7 @@ def create_tenant_assignment():
 
 
 @admin_bp.route("/tenant-assignments", methods=["GET"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def list_tenant_assignments():
     repo = _tenant_repo()
     user_id = request.args.get("user_id")
@@ -284,7 +284,7 @@ def list_tenant_assignments():
 
 
 @admin_bp.route("/tenant-assignments/<assignment_id>", methods=["DELETE"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def delete_tenant_assignment(assignment_id):
     repo = _tenant_repo()
     if not repo.delete_assignment(assignment_id):
