@@ -3,6 +3,8 @@ from decimal import Decimal
 from flask import Blueprint, jsonify, request, g
 
 from app.core.auth import login_required, role_required
+from app.core.errors import ConflictError, NotFoundError, ValidationError
+from app.core.helpers import cap_limit
 from app.data.repositories.template_repository import TemplateRepository
 from app.domain.catalog import TemplateStatus
 from app.services.catalog_service import CatalogService
@@ -50,7 +52,7 @@ def list_templates():
     type_filter = request.args.get("type")
     category = request.args.get("category")
     search = request.args.get("q")
-    limit = request.args.get("limit", 20, type=int)
+    limit = cap_limit(request.args.get("limit", 20, type=int))
     offset = request.args.get("offset", 0, type=int)
 
     result = repo.list_templates(
@@ -84,13 +86,13 @@ def get_template(slug):
         # Check if any versions exist but are all disabled
         all_versions = repo.list_versions(slug, status_filter="all")
         if all_versions and all(v.status == "disabled" for v in all_versions):
-            return jsonify({"error": "Template is disabled", "slug": slug}), 410
-        return jsonify({"error": "Template not found"}), 404
+            raise NotFoundError("Template is disabled")
+        raise NotFoundError("Template not found")
 
     if template.status == "disabled":
         all_versions = repo.list_versions(slug, status_filter="all")
         if all(v.status == "disabled" for v in all_versions):
-            return jsonify({"error": "Template is disabled", "slug": slug}), 410
+            raise NotFoundError("Template is disabled")
 
     return jsonify(_template_to_dict(template))
 
@@ -117,7 +119,7 @@ def parameter_layout(slug):
     repo = _get_repo()
     template = repo.get_by_slug(slug, status="all")
     if template is None:
-        return jsonify({"error": "Template not found"}), 404
+        raise NotFoundError("Template not found")
 
     quantity = request.args.get("quantity", 1, type=int)
 
@@ -151,7 +153,7 @@ def validate_template_params(slug):
     repo = _get_repo()
     template = repo.get_by_slug(slug, status="all")
     if template is None:
-        return jsonify({"error": "Template not found"}), 404
+        raise NotFoundError("Template not found")
 
     data = request.get_json()
     parameters = data.get("parameters", {})
@@ -174,14 +176,14 @@ def diff_template_versions(slug):
     to_version = request.args.get("to_version")
 
     if not from_version or not to_version:
-        return jsonify({"error": "from_version and to_version are required"}), 400
+        raise ValidationError("from_version and to_version are required")
 
     repo = _get_repo()
     from_tmpl = repo.get_by_slug_and_version(slug, from_version)
     to_tmpl = repo.get_by_slug_and_version(slug, to_version)
 
     if from_tmpl is None or to_tmpl is None:
-        return jsonify({"error": "Version not found"}), 404
+        raise NotFoundError("Version not found")
 
     service = CatalogService(repo)
     changes = service.compute_diff(from_tmpl, to_tmpl)
@@ -200,7 +202,7 @@ def resolve_options(slug):
     repo = _get_repo()
     template = repo.get_by_slug(slug, status="all")
     if template is None:
-        return jsonify({"error": "Template not found"}), 404
+        raise NotFoundError("Template not found")
 
     data = request.get_json()
     parameter_key = data.get("parameter_key")
@@ -214,7 +216,7 @@ def resolve_options(slug):
             break
 
     if param_def is None:
-        return jsonify({"error": f"Parameter '{parameter_key}' not found"}), 400
+        raise ValidationError(f"Parameter '{parameter_key}' not found")
 
     service = CatalogService(repo)
     state = service.resolve_dependency_state(
@@ -233,13 +235,13 @@ def register_template():
     validator = TemplateValidator()
     errors = validator.validate_template(data)
     if errors:
-        return jsonify({"error": "Validation failed", "details": errors}), 400
+        raise ValidationError("Validation failed", details={"errors": errors})
 
     repo = _get_repo()
     try:
         template = repo.create(data)
     except TemplateRepository.DuplicateTemplateError as e:
-        return jsonify({"error": str(e)}), 409
+        raise ConflictError(str(e))
 
     return jsonify(_template_to_dict(template)), 201
 
@@ -253,16 +255,16 @@ def update_template_status(template_id):
     repo = _get_repo()
     template = repo.get_by_id(template_id)
     if template is None:
-        return jsonify({"error": "Template not found"}), 404
+        raise NotFoundError("Template not found")
 
     if not TemplateStatus.can_transition(template.status, new_status):
-        return jsonify({"error": f"Cannot transition from '{template.status}' to '{new_status}'"}), 409
+        raise ConflictError(f"Cannot transition from '{template.status}' to '{new_status}'")
 
     deprecated_by = data.get("deprecated_by")
     if new_status == "deprecated" and deprecated_by:
         replacement = repo.get_by_id(deprecated_by)
         if replacement is None or replacement.status != "active":
-            return jsonify({"error": "deprecated_by must reference an active template"}), 400
+            raise ValidationError("deprecated_by must reference an active template")
 
     template = repo.update_status(template_id, new_status, deprecated_by=deprecated_by)
     return jsonify(_template_to_dict(template)), 200

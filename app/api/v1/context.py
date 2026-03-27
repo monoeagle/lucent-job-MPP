@@ -3,6 +3,7 @@ from dataclasses import asdict
 from flask import Blueprint, jsonify, request, current_app, g
 
 from app.core.auth import login_required, role_required
+from app.core.errors import ConflictError, NotFoundError, ValidationError
 from app.data.repositories.context_rule_repository import ContextRuleRepository
 from app.data.repositories.tenant_repository import TenantRepository
 from app.services.context_service import ContextService
@@ -35,10 +36,7 @@ def resolve_context():
     network_id = body.get("network_id")
 
     if not location_id or not tenant_id or not security_zone_id:
-        return jsonify({
-            "error_code": "VALIDATION_FAILED",
-            "message": "location_id, tenant_id, and security_zone_id are required.",
-        }), 400
+        raise ValidationError("location_id, tenant_id, and security_zone_id are required.")
 
     svc = _service()
     try:
@@ -102,7 +100,7 @@ def check_availability():
     context = body.get("context", {})
 
     if not template_slug:
-        return jsonify({"error": "template_slug is required"}), 400
+        raise ValidationError("template_slug is required")
 
     repo = _rule_repo()
     result = repo.check_availability(template_slug, context)
@@ -118,7 +116,7 @@ def resolve_parameters():
     context = body.get("context", {})
 
     if not template_slug or not parameter_key:
-        return jsonify({"error": "template_slug and parameter_key are required"}), 400
+        raise ValidationError("template_slug and parameter_key are required")
 
     repo = _rule_repo()
     restrictions = repo.get_restrictions_for_context(template_slug, parameter_key, context)
@@ -209,7 +207,7 @@ def update_availability_rule(rule_id):
     repo = _rule_repo()
     rule = repo.update_availability_rule(rule_id, **data)
     if rule is None:
-        return jsonify({"error": "Rule not found"}), 404
+        raise NotFoundError("Rule not found")
     return jsonify(_rule_to_dict(rule)), 200
 
 
@@ -218,7 +216,7 @@ def update_availability_rule(rule_id):
 def delete_availability_rule(rule_id):
     repo = _rule_repo()
     if not repo.delete_availability_rule(rule_id):
-        return jsonify({"error": "Rule not found"}), 404
+        raise NotFoundError("Rule not found")
     return "", 204
 
 
@@ -255,7 +253,7 @@ def list_restrictions():
 def delete_restriction(restriction_id):
     repo = _rule_repo()
     if not repo.delete_restriction(restriction_id):
-        return jsonify({"error": "Restriction not found"}), 404
+        raise NotFoundError("Restriction not found")
     return "", 204
 
 
@@ -272,7 +270,7 @@ def create_tenant_assignment():
             tenant_id=data["tenant_id"],
         )
     except TenantRepository.DuplicateAssignmentError as e:
-        return jsonify({"error": str(e)}), 409
+        raise ConflictError(str(e))
     return jsonify(_assignment_to_dict(assignment)), 201
 
 
@@ -290,5 +288,5 @@ def list_tenant_assignments():
 def delete_tenant_assignment(assignment_id):
     repo = _tenant_repo()
     if not repo.delete_assignment(assignment_id):
-        return jsonify({"error": "Assignment not found"}), 404
+        raise NotFoundError("Assignment not found")
     return "", 204

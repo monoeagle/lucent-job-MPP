@@ -121,7 +121,7 @@ class TestGetTemplateDetail:
         resp = client.get("/api/v1/catalog/templates/nonexistent", headers=requester_headers)
         assert resp.status_code == 404
 
-    def test_all_versions_disabled_returns_410(self, client, db_session, requester_headers):
+    def test_all_versions_disabled_returns_404(self, client, db_session, requester_headers):
         repo = TemplateRepository(db_session)
         t = repo.create({
             "slug": "vm-disabled",
@@ -135,7 +135,8 @@ class TestGetTemplateDetail:
         })
         repo.update_status(t.id, "disabled")
         resp = client.get("/api/v1/catalog/templates/vm-disabled", headers=requester_headers)
-        assert resp.status_code == 410
+        assert resp.status_code == 404
+        assert resp.get_json()["error_code"] == "NOT_FOUND"
 
     def test_unauthenticated_returns_401(self, client, seeded_db):
         resp = client.get("/api/v1/catalog/templates/vm-linux")
