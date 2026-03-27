@@ -41,9 +41,9 @@ export default function OrderList() {
             </button>
           ))}
         </div>
-        <Link to="/orders/new"
+        <Link to="/shop"
           className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 shrink-0">
-          Neue Bestellung
+          Zum Shop
         </Link>
       </div>
 
