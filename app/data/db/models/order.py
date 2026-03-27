@@ -27,6 +27,10 @@ class OrderModel(Base):
     items = relationship("OrderItemModel", back_populates="order",
                          order_by="OrderItemModel.position",
                          cascade="all, delete-orphan")
+    groups = relationship("OrderItemGroupModel",
+                          order_by="OrderItemGroupModel.position",
+                          cascade="all, delete-orphan",
+                          foreign_keys="OrderItemGroupModel.order_id")
 
 
 class OrderItemModel(Base):
@@ -47,7 +51,13 @@ class OrderItemModel(Base):
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc))
 
+    group_id = Column(String(36), ForeignKey("order_item_groups.id", ondelete="SET NULL"), nullable=True, index=True)
+    quantity = Column(Integer, nullable=False, default=1)
+    instance_parameters = Column(JSONB, nullable=False, default=list)
+
     order = relationship("OrderModel", back_populates="items")
+    group = relationship("OrderItemGroupModel", back_populates="items",
+                         foreign_keys=[group_id])
 
     __table_args__ = (
         Index("ix_order_item_order_position", "order_id", "position"),
