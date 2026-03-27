@@ -700,7 +700,7 @@ def seed():
         {
             "name": "XL-Sizing nur mit Genehmigung",
             "template_slug": "vm-linux",
-            "rule_type": "approval_required",
+            "rule_type": "deny",
             "conditions": {"parameter_match": {"tshirt_size": "xl"}},
             "priority": 30,
         },
