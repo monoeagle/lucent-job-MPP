@@ -53,15 +53,20 @@ export default function ServiceRequest() {
   }
 
   const handleSubmit = async () => {
-    if (!template || !context || !token) return
+    if (!template || !token) return
+    const hasWizardConfig = !!(template.metadata?.wizard_config as { steps?: unknown[] } | undefined)?.steps
+    if (!hasWizardConfig && !context) return
     setSubmitting(true)
     try {
       let targetOrderId = orderId
       if (!targetOrderId) {
-        const order = await createOrder.mutateAsync({
+        const orderBody: { title: string; context?: Record<string, string> } = {
           title: `${template.display_name} Bestellung`,
-          context: context as unknown as Record<string, string>,
-        })
+        }
+        if (context) {
+          orderBody.context = context as unknown as Record<string, string>
+        }
+        const order = await createOrder.mutateAsync(orderBody)
         targetOrderId = order.id
       }
 
