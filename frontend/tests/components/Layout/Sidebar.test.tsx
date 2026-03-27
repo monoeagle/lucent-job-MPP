@@ -45,14 +45,20 @@ describe('Sidebar', () => {
       expect(screen.getByText('Dashboard')).toBeInTheDocument()
       expect(screen.getByText('Shop')).toBeInTheDocument()
       expect(screen.getByText('My Services')).toBeInTheDocument()
+      expect(screen.getByText('My Requests')).toBeInTheDocument()
       expect(screen.getByText('Notifications')).toBeInTheDocument()
     })
 
-    it('renders Subscriptions link', () => {
+    it('renders My Requests link', () => {
       renderSidebar()
-      const sub = screen.getByText('Subscriptions')
-      expect(sub).toBeInTheDocument()
-      expect(sub.closest('a')).toHaveAttribute('href', '/subscriptions')
+      const myRequests = screen.getByText('My Requests')
+      expect(myRequests).toBeInTheDocument()
+      expect(myRequests.closest('a')).toHaveAttribute('href', '/my-requests')
+    })
+
+    it('does not render Subscriptions as a nav item', () => {
+      renderSidebar()
+      expect(screen.queryByText('Subscriptions')).not.toBeInTheDocument()
     })
 
     it('hides Review Requests for regular user', () => {
