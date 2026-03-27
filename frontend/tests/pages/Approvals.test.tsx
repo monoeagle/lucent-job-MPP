@@ -12,6 +12,9 @@ vi.mock('../../src/api/approvals', () => ({
         {
           id: 'a1',
           order_id: 'o1',
+          order_title: 'Linux VM für Team A',
+          requester_name: 'Alice Muster',
+          estimated_cost: 120.5,
           status: 'pending',
           approval_rule_ids: ['r1'],
           requested_at: '2026-01-15T10:00:00Z',
@@ -23,6 +26,9 @@ vi.mock('../../src/api/approvals', () => ({
         {
           id: 'a2',
           order_id: 'o2',
+          order_title: 'PostgreSQL Datenbank',
+          requester_name: 'Bob Beispiel',
+          estimated_cost: 45.0,
           status: 'pending',
           approval_rule_ids: ['r2'],
           requested_at: '2026-01-16T10:00:00Z',
@@ -41,7 +47,10 @@ vi.mock('../../src/api/approvals', () => ({
 
 function renderApprovals() {
   useAuthStore.getState().setAuth('tok', {
-    username: 'admin', display_name: 'Admin', email: 'admin@test.local', roles: ['admin', 'approver'],
+    username: 'admin',
+    display_name: 'Admin',
+    email: 'admin@test.local',
+    roles: ['admin', 'approver'],
   })
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } })
   return render(
@@ -54,24 +63,40 @@ function renderApprovals() {
 }
 
 describe('Approvals', () => {
-  beforeEach(() => { vi.clearAllMocks(); useAuthStore.getState().logout() })
+  beforeEach(() => {
+    vi.clearAllMocks()
+    useAuthStore.getState().logout()
+  })
 
-  it('renders approval requests list', async () => {
+  it('renders heading "Review Requests"', async () => {
     renderApprovals()
     await waitFor(() => {
-      expect(screen.getByText('Genehmigungen')).toBeInTheDocument()
-      expect(screen.getByText('o1')).toBeInTheDocument()
-      expect(screen.getByText('o2')).toBeInTheDocument()
+      expect(screen.getByText('Review Requests')).toBeInTheDocument()
     })
   })
 
-  it('shows approve and reject buttons', async () => {
+  it('shows approval entries with order titles', async () => {
     renderApprovals()
     await waitFor(() => {
-      const approveButtons = screen.getAllByText('Genehmigen')
-      expect(approveButtons).toHaveLength(2)
-      const rejectButtons = screen.getAllByText('Ablehnen')
-      expect(rejectButtons).toHaveLength(2)
+      expect(screen.getByText('Linux VM für Team A')).toBeInTheDocument()
+      expect(screen.getByText('PostgreSQL Datenbank')).toBeInTheDocument()
+      expect(screen.getByText('Alice Muster')).toBeInTheDocument()
+      expect(screen.getByText('Bob Beispiel')).toBeInTheDocument()
+    })
+  })
+
+  it('shows bulk action buttons', async () => {
+    renderApprovals()
+    await waitFor(() => {
+      expect(screen.getByText('Ausgewählte genehmigen')).toBeInTheDocument()
+      expect(screen.getByText('Ausgewählte ablehnen')).toBeInTheDocument()
+    })
+  })
+
+  it('shows select-all checkbox', async () => {
+    renderApprovals()
+    await waitFor(() => {
+      expect(screen.getByTestId('select-all')).toBeInTheDocument()
     })
   })
 })

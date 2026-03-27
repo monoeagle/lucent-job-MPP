@@ -3,12 +3,44 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../store/authStore'
 import { approvalsApi } from '../api/approvals'
 import StatusBadge from '../components/StatusBadge'
+import type { ApprovalRequest } from '../types/approval'
+
+type StatusFilter = 'pending' | 'approved' | 'rejected' | 'all'
+
+const STATUS_TABS: { value: StatusFilter; label: string }[] = [
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'rejected', label: 'Rejected' },
+  { value: 'all', label: 'Alle' },
+]
+
+interface ExtendedApproval extends ApprovalRequest {
+  order_title?: string
+  requester_name?: string
+  estimated_cost?: number
+}
+
+function formatDeadline(isoDate: string): { text: string; colorClass: string } {
+  const deadline = new Date(isoDate)
+  const now = new Date()
+  const diffMs = deadline.getTime() - now.getTime()
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+  const text = deadline.toLocaleDateString('de-DE')
+
+  if (diffDays < 0) return { text, colorClass: 'text-red-600 font-semibold' }
+  if (diffDays <= 2) return { text, colorClass: 'text-orange-500 font-semibold' }
+  return { text, colorClass: 'text-gray-700' }
+}
 
 export default function Approvals() {
   const token = useAuthStore((s) => s.token)
   const queryClient = useQueryClient()
-  const [rejectId, setRejectId] = useState<string | null>(null)
-  const [rejectReason, setRejectReason] = useState('')
+
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('pending')
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const [bulkRejectOpen, setBulkRejectOpen] = useState(false)
+  const [bulkRejectReason, setBulkRejectReason] = useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['approvals'],
@@ -24,89 +56,263 @@ export default function Approvals() {
   const rejectMutation = useMutation({
     mutationFn: ({ id, reason }: { id: string; reason: string }) =>
       approvalsApi.reject(token!, id, reason),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['approvals'] })
-      setRejectId(null)
-      setRejectReason('')
-    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['approvals'] }),
   })
 
-  const handleReject = (id: string) => {
-    if (!rejectReason.trim()) return
-    rejectMutation.mutate({ id, reason: rejectReason })
+  const allItems: ExtendedApproval[] = data?.items ?? []
+
+  const visibleItems = statusFilter === 'all'
+    ? allItems
+    : allItems.filter((a) => a.status === statusFilter)
+
+  const pendingItems = visibleItems.filter((a) => a.status === 'pending')
+
+  const isAllSelected =
+    pendingItems.length > 0 && pendingItems.every((a) => selected.has(a.id))
+
+  function toggleSelectAll() {
+    if (isAllSelected) {
+      setSelected(new Set())
+    } else {
+      setSelected(new Set(pendingItems.map((a) => a.id)))
+    }
+  }
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  function toggleExpand(id: string) {
+    setExpanded((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  async function handleBulkApprove() {
+    for (const id of selected) {
+      await approveMutation.mutateAsync(id)
+    }
+    setSelected(new Set())
+    queryClient.invalidateQueries({ queryKey: ['approvals'] })
+  }
+
+  async function handleBulkReject() {
+    if (!bulkRejectReason.trim()) return
+    for (const id of selected) {
+      await rejectMutation.mutateAsync({ id, reason: bulkRejectReason })
+    }
+    setSelected(new Set())
+    setBulkRejectOpen(false)
+    setBulkRejectReason('')
+    queryClient.invalidateQueries({ queryKey: ['approvals'] })
   }
 
   if (isLoading) return <p className="text-sm text-gray-500">Laden...</p>
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Genehmigungen</h1>
+      <h1 className="text-2xl font-bold mb-6">Review Requests</h1>
 
-      {!data?.items.length ? (
-        <p className="text-sm text-gray-500">Keine ausstehenden Genehmigungen.</p>
+      {/* Status filter tabs */}
+      <div className="flex gap-2 mb-4 border-b border-gray-200">
+        {STATUS_TABS.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => setStatusFilter(tab.value)}
+            className={[
+              'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+              statusFilter === tab.value
+                ? 'border-blue-600 text-blue-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700',
+            ].join(' ')}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Bulk action bar */}
+      <div className="flex items-center gap-3 mb-4">
+        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <input
+            type="checkbox"
+            data-testid="select-all"
+            checked={isAllSelected}
+            onChange={toggleSelectAll}
+            className="w-4 h-4 rounded border-gray-300"
+          />
+          Alle auswählen
+        </label>
+
+        <button
+          onClick={handleBulkApprove}
+          disabled={selected.size === 0 || approveMutation.isPending}
+          className="px-4 py-1.5 bg-green-600 text-white text-sm rounded hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Ausgewählte genehmigen
+        </button>
+
+        <button
+          onClick={() => setBulkRejectOpen(true)}
+          disabled={selected.size === 0 || rejectMutation.isPending}
+          className="px-4 py-1.5 bg-red-600 text-white text-sm rounded hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Ausgewählte ablehnen
+        </button>
+      </div>
+
+      {/* Bulk reject dialog */}
+      {bulkRejectOpen && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 className="text-lg font-semibold mb-3">Ablehnung bestätigen</h2>
+            <p className="text-sm text-gray-600 mb-3">
+              {selected.size} Anfrage(n) werden abgelehnt. Bitte Grund angeben:
+            </p>
+            <textarea
+              value={bulkRejectReason}
+              onChange={(e) => setBulkRejectReason(e.target.value)}
+              placeholder="Ablehnungsgrund..."
+              className="w-full px-3 py-2 border border-gray-300 rounded text-sm resize-none"
+              rows={3}
+              data-testid="bulk-reject-reason"
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => { setBulkRejectOpen(false); setBulkRejectReason('') }}
+                className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleBulkReject}
+                disabled={!bulkRejectReason.trim() || rejectMutation.isPending}
+                className="px-4 py-2 bg-red-600 text-white text-sm rounded hover:bg-red-700 disabled:opacity-40"
+              >
+                Ablehnen bestätigen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Approval list */}
+      {visibleItems.length === 0 ? (
+        <p className="text-sm text-gray-500">Keine Einträge für diesen Filter.</p>
       ) : (
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bestell-ID</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Angefragt</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Frist</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aktionen</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {data.items.map((approval) => (
-              <tr key={approval.id}>
-                <td className="px-4 py-3 text-sm">{approval.order_id}</td>
-                <td className="px-4 py-3"><StatusBadge status={approval.status} /></td>
-                <td className="px-4 py-3 text-sm">{new Date(approval.requested_at).toLocaleDateString('de-DE')}</td>
-                <td className="px-4 py-3 text-sm">{new Date(approval.deadline_at).toLocaleDateString('de-DE')}</td>
-                <td className="px-4 py-3 text-sm space-x-2">
-                  <button
-                    onClick={() => approveMutation.mutate(approval.id)}
-                    disabled={approveMutation.isPending}
-                    className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 disabled:opacity-50"
-                    data-testid={`approve-${approval.id}`}
-                  >
-                    Genehmigen
-                  </button>
-                  {rejectId === approval.id ? (
-                    <span className="inline-flex items-center gap-2">
-                      <textarea
-                        value={rejectReason}
-                        onChange={(e) => setRejectReason(e.target.value)}
-                        placeholder="Ablehnungsgrund..."
-                        className="px-2 py-1 border border-gray-300 rounded text-xs"
-                        rows={1}
-                        data-testid="reject-reason"
-                      />
-                      <button
-                        onClick={() => handleReject(approval.id)}
-                        disabled={!rejectReason.trim() || rejectMutation.isPending}
-                        className="px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700 disabled:opacity-50"
-                      >
-                        Bestätigen
-                      </button>
-                      <button onClick={() => { setRejectId(null); setRejectReason('') }}
-                        className="px-2 py-1 text-gray-500 text-xs">
-                        Abbrechen
-                      </button>
-                    </span>
-                  ) : (
-                    <button
-                      onClick={() => setRejectId(approval.id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
-                      data-testid={`reject-${approval.id}`}
-                    >
-                      Ablehnen
-                    </button>
+        <div className="space-y-2">
+          {visibleItems.map((approval) => {
+            const isPending = approval.status === 'pending'
+            const isExpanded = expanded.has(approval.id)
+            const { text: deadlineText, colorClass: deadlineColor } = formatDeadline(
+              approval.deadline_at,
+            )
+
+            return (
+              <div
+                key={approval.id}
+                className="border border-gray-200 rounded-lg bg-white overflow-hidden"
+              >
+                {/* Row summary */}
+                <div className="flex items-center gap-3 px-4 py-3">
+                  {isPending && (
+                    <input
+                      type="checkbox"
+                      checked={selected.has(approval.id)}
+                      onChange={() => toggleSelect(approval.id)}
+                      className="w-4 h-4 rounded border-gray-300 shrink-0"
+                      aria-label={`Auswählen: ${approval.order_title ?? approval.order_id}`}
+                    />
                   )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+                  <button
+                    onClick={() => toggleExpand(approval.id)}
+                    className="flex-1 text-left"
+                    aria-expanded={isExpanded}
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {approval.order_title ?? approval.order_id}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {approval.requester_name ?? '—'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-4 shrink-0">
+                        {approval.estimated_cost !== undefined && (
+                          <span className="text-sm text-gray-700">
+                            {approval.estimated_cost.toFixed(2)} €/Monat
+                          </span>
+                        )}
+                        <span className={`text-xs ${deadlineColor}`}>{deadlineText}</span>
+                        <StatusBadge status={approval.status} />
+                        <span className="text-gray-400 text-xs">{isExpanded ? '▲' : '▼'}</span>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Expandable detail section */}
+                {isExpanded && (
+                  <div className="border-t border-gray-100 px-4 py-3 bg-gray-50 text-sm space-y-2">
+                    <div className="grid grid-cols-2 gap-2 text-gray-600">
+                      <span className="font-medium">Bestell-ID:</span>
+                      <span>{approval.order_id}</span>
+                      <span className="font-medium">Angefragt am:</span>
+                      <span>{new Date(approval.requested_at).toLocaleDateString('de-DE')}</span>
+                      <span className="font-medium">Frist:</span>
+                      <span className={deadlineColor}>{deadlineText}</span>
+                      {approval.decision_reason && (
+                        <>
+                          <span className="font-medium">Entscheidungsgrund:</span>
+                          <span>{approval.decision_reason}</span>
+                        </>
+                      )}
+                      {approval.decided_by && (
+                        <>
+                          <span className="font-medium">Entschieden von:</span>
+                          <span>{approval.decided_by}</span>
+                        </>
+                      )}
+                    </div>
+
+                    {isPending && (
+                      <div className="flex gap-2 pt-2">
+                        <button
+                          onClick={() => approveMutation.mutate(approval.id)}
+                          disabled={approveMutation.isPending}
+                          className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 disabled:opacity-50"
+                          data-testid={`approve-${approval.id}`}
+                        >
+                          Genehmigen
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelected(new Set([approval.id]))
+                            setBulkRejectOpen(true)
+                          }}
+                          className="px-3 py-1 bg-red-600 text-white rounded text-xs hover:bg-red-700"
+                          data-testid={`reject-${approval.id}`}
+                        >
+                          Ablehnen
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       )}
     </div>
   )
