@@ -1,38 +1,25 @@
 import { useSearchParams } from 'react-router-dom'
-import { useAuthStore } from '../store/authStore'
-import { useUnreadCount } from '../hooks/useNotifications'
 import OrderList from './OrderList'
-import Notifications from './Notifications'
-import Approvals from './Approvals'
 
-type WorkspaceTab = 'orders' | 'notifications' | 'reviews'
+type OrderTab = 'all' | 'mine'
 
-const TABS: Array<{ key: WorkspaceTab; label: string; roles?: string[] }> = [
-  { key: 'orders', label: 'Meine Bestellungen' },
-  { key: 'notifications', label: 'Notifications' },
-  { key: 'reviews', label: 'Review Requests', roles: ['approver', 'admin'] },
+const TABS: Array<{ key: OrderTab; label: string }> = [
+  { key: 'all', label: 'Alle Bestellungen' },
+  { key: 'mine', label: 'Meine Bestellungen' },
 ]
 
 export default function Workspace() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const activeTab = (searchParams.get('tab') as WorkspaceTab) || 'orders'
-  const user = useAuthStore((s) => s.user)
-  const { data: unreadData } = useUnreadCount()
-  const unreadCount = unreadData?.count ?? 0
+  const activeTab = (searchParams.get('tab') as OrderTab) || 'all'
 
-  const visibleTabs = TABS.filter((tab) => {
-    if (!tab.roles) return true
-    return tab.roles.some((role) => user?.roles.includes(role))
-  })
-
-  const setTab = (tab: WorkspaceTab) => {
+  const setTab = (tab: OrderTab) => {
     setSearchParams({ tab })
   }
 
   return (
     <div>
       <div className="flex gap-1 mb-6 border-b border-gray-200">
-        {visibleTabs.map((tab) => (
+        {TABS.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setTab(tab.key)}
@@ -43,18 +30,11 @@ export default function Workspace() {
             }`}
           >
             {tab.label}
-            {tab.key === 'notifications' && unreadCount > 0 && (
-              <span className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 inline-flex items-center justify-center">
-                {unreadCount > 99 ? '99+' : unreadCount}
-              </span>
-            )}
           </button>
         ))}
       </div>
 
-      {activeTab === 'orders' && <OrderList />}
-      {activeTab === 'notifications' && <Notifications />}
-      {activeTab === 'reviews' && <Approvals />}
+      <OrderList />
     </div>
   )
 }

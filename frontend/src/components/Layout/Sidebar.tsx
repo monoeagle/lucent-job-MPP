@@ -16,7 +16,9 @@ interface NavItem {
 const mainItems: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: '📊', roles: null },
   { to: '/shop', label: 'Shop', icon: '🛒', roles: null },
-  { to: '/workspace', label: 'Workspace', icon: '📋', roles: null },
+  { to: '/workspace', label: 'Bestellungen', icon: '📋', roles: null },
+  { to: '/notifications', label: 'Notifications', icon: '🔔', roles: null },
+  { to: '/reviews', label: 'Review Requests', icon: '✅', roles: ['approver', 'admin'] },
 ]
 
 const adminItems: NavItem[] = [
@@ -114,7 +116,7 @@ export default function Sidebar() {
             key={item.label}
             item={item}
             collapsed={collapsed}
-            badge={item.to === '/workspace' ? unreadCount : undefined}
+            badge={item.to === '/notifications' ? unreadCount : undefined}
           />
         ))}
 

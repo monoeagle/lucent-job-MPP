@@ -4,7 +4,9 @@ import GlobalSearch from '../dashboard/GlobalSearch'
 const ROUTE_CONFIG: Record<string, { title: string; showSearch?: boolean }> = {
   '/dashboard': { title: 'Dashboard', showSearch: true },
   '/shop': { title: 'Service Catalog' },
-  '/workspace': { title: 'Workspace' },
+  '/workspace': { title: 'Bestellungen' },
+  '/notifications': { title: 'Benachrichtigungen' },
+  '/reviews': { title: 'Review Requests' },
   '/orders': { title: 'Meine Bestellungen' },
   '/admin': { title: 'Admin Dashboard' },
   '/admin/rules': { title: 'Regelverwaltung' },

@@ -13,6 +13,8 @@ import OrderNew from './pages/OrderNew'
 import OrderDetail from './pages/OrderDetail'
 import OrderExport from './pages/OrderExport'
 import ServiceRequest from './pages/ServiceRequest'
+import Notifications from './pages/Notifications'
+import Approvals from './pages/Approvals'
 import SubscriptionDetail from './pages/SubscriptionDetail'
 import AdminDashboard from './pages/admin/Dashboard'
 import Rules from './pages/admin/Rules'
@@ -50,6 +52,15 @@ function AppRoutes() {
         <Route path="/orders/new" element={<OrderNew />} />
         <Route path="/orders/:orderId" element={<OrderDetail />} />
         <Route path="/orders/:orderId/export" element={<OrderExport />} />
+        <Route path="/notifications" element={<Notifications />} />
+        <Route
+          path="/reviews"
+          element={
+            <ProtectedRoute requiredRoles={['approver', 'admin']}>
+              <Approvals />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/subscriptions/:id" element={<SubscriptionDetail />} />
         <Route
           path="/admin"
@@ -77,13 +88,11 @@ function AppRoutes() {
         />
         {/* Redirects from old paths */}
         <Route path="/catalog" element={<Navigate to="/shop" replace />} />
-        <Route path="/my-services" element={<Navigate to="/workspace?tab=orders" replace />} />
-        <Route path="/my-requests" element={<Navigate to="/workspace?tab=orders" replace />} />
-        <Route path="/notifications" element={<Navigate to="/workspace?tab=notifications" replace />} />
-        <Route path="/reviews" element={<Navigate to="/workspace?tab=reviews" replace />} />
-        <Route path="/approvals" element={<Navigate to="/workspace?tab=reviews" replace />} />
-        <Route path="/resources" element={<Navigate to="/workspace?tab=orders" replace />} />
-        <Route path="/subscriptions" element={<Navigate to="/workspace?tab=orders" replace />} />
+        <Route path="/my-services" element={<Navigate to="/workspace" replace />} />
+        <Route path="/my-requests" element={<Navigate to="/workspace" replace />} />
+        <Route path="/approvals" element={<Navigate to="/reviews" replace />} />
+        <Route path="/resources" element={<Navigate to="/workspace" replace />} />
+        <Route path="/subscriptions" element={<Navigate to="/workspace" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
