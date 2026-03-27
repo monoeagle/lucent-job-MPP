@@ -4,6 +4,7 @@ from flask import Blueprint, jsonify, request, g, current_app
 from sqlalchemy import func
 
 from app.core.auth import role_required
+from app.core.helpers import cap_limit
 from app.data.repositories.audit_log_repository import AuditLogRepository
 from app.data.db.models.order import OrderModel, OrderItemModel
 from app.data.db.models.approval import ApprovalRequestModel
@@ -50,7 +51,7 @@ def _serialize_entry(entry) -> dict:
 @role_required("admin")
 def list_audit_log():
     filters = _parse_filters()
-    limit = request.args.get("limit", 50, type=int)
+    limit = cap_limit(request.args.get("limit", 50, type=int))
     offset = request.args.get("offset", 0, type=int)
 
     service = _get_audit_service()

@@ -6,6 +6,7 @@ from flask import Blueprint, jsonify, request, g, current_app
 logger = logging.getLogger(__name__)
 
 from app.core.auth import login_required
+from app.core.helpers import cap_limit
 from app.core.errors import NotFoundError, ForbiddenError, ConflictError, ValidationError
 from app.data.repositories.order_repository import OrderRepository, DuplicateGroupError, GroupNotEmptyError
 from app.data.repositories.template_repository import TemplateRepository
@@ -155,7 +156,7 @@ def get_order(order_id):
 def list_orders():
     repo = _get_repo()
     status = request.args.get("status")
-    limit = request.args.get("limit", 20, type=int)
+    limit = cap_limit(request.args.get("limit", 20, type=int))
     offset = request.args.get("offset", 0, type=int)
 
     user = g.current_user

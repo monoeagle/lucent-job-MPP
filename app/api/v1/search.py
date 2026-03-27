@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, g
 from app.core.auth import login_required
+from app.core.helpers import cap_limit
 from app.data.db.models.order import OrderModel
 from app.data.db.models.service_template import ServiceTemplateModel
 
@@ -10,7 +11,7 @@ bp = Blueprint("search", __name__, url_prefix="/api/v1")
 @login_required
 def global_search():
     q = request.args.get("q", "").strip()
-    limit = request.args.get("limit", 5, type=int)
+    limit = cap_limit(request.args.get("limit", 5, type=int))
 
     if len(q) < 1:
         return jsonify({"query": q, "orders": [], "templates": [], "resources": []}), 200

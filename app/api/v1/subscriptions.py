@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, g
 
 from app.core.auth import login_required, role_required
+from app.core.helpers import cap_limit
 from app.core.errors import NotFoundError, ForbiddenError, ConflictError
 from app.data.repositories.subscription_repository import SubscriptionRepository
 from app.services.subscription_service import SubscriptionService
@@ -58,7 +59,7 @@ def list_subscriptions():
     repo = _get_repo()
     user = g.current_user
     status = request.args.get("status")
-    limit = request.args.get("limit", 20, type=int)
+    limit = cap_limit(request.args.get("limit", 20, type=int))
     offset = request.args.get("offset", 0, type=int)
 
     requester_id = None if user.is_admin else user.username
@@ -194,7 +195,7 @@ def request_cancel(subscription_id):
 def admin_list_subscriptions():
     repo = _get_repo()
     status = request.args.get("status")
-    limit = request.args.get("limit", 20, type=int)
+    limit = cap_limit(request.args.get("limit", 20, type=int))
     offset = request.args.get("offset", 0, type=int)
 
     result = repo.list_subscriptions(

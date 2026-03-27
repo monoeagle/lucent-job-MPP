@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, g
 
 from app.core.auth import login_required, role_required
+from app.core.helpers import cap_limit
 from app.core.errors import NotFoundError, ForbiddenError
 from app.services.notification_service import NotificationService
 
@@ -34,7 +35,7 @@ def _serialize(notif) -> dict:
 def admin_list_notifications():
     service = _get_service()
     status = request.args.get("status")
-    limit = request.args.get("limit", 50, type=int)
+    limit = cap_limit(request.args.get("limit", 50, type=int))
     offset = request.args.get("offset", 0, type=int)
 
     result = service.list_notifications(status=status, limit=limit, offset=offset)
@@ -86,7 +87,7 @@ def mark_read(notification_id):
 def list_own_notifications():
     user = g.current_user
     service = _get_service()
-    limit = request.args.get("limit", 50, type=int)
+    limit = cap_limit(request.args.get("limit", 50, type=int))
     offset = request.args.get("offset", 0, type=int)
 
     result = service.list_notifications(
