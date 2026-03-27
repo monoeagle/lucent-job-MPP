@@ -66,7 +66,7 @@ def list_audit_log():
 
 
 @bp.route("/admin/audit-log/export", methods=["GET"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def export_audit_log():
     filters = _parse_filters()
     service = _get_audit_service()
@@ -75,7 +75,7 @@ def export_audit_log():
 
 
 @bp.route("/admin/dashboard", methods=["GET"])
-@role_required("admin")
+@role_required("admin", "superadmin")
 def admin_dashboard():
     session = g.db_session
 
