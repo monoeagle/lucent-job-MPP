@@ -29,6 +29,12 @@ class Config:
         self.GITLAB_URL = os.environ.get("GITLAB_URL", "")
         self.GITLAB_TOKEN = os.environ.get("GITLAB_TOKEN", "")
         self.GITLAB_PROJECT_ID = os.environ.get("GITLAB_PROJECT_ID", "1")
+        self.APPROVAL_DEFAULT_DEADLINE_HOURS = int(
+            os.environ.get("APPROVAL_DEFAULT_DEADLINE_HOURS", "48")
+        )
+        self.APPROVAL_ALLOW_SELF_APPROVAL = (
+            os.environ.get("APPROVAL_ALLOW_SELF_APPROVAL", "false").lower() == "true"
+        )
 
         self._validate()
 

@@ -25,6 +25,8 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         GITLAB_URL=config.GITLAB_URL,
         GITLAB_TOKEN=config.GITLAB_TOKEN,
         GITLAB_PROJECT_ID=config.GITLAB_PROJECT_ID,
+        APPROVAL_DEFAULT_DEADLINE_HOURS=config.APPROVAL_DEFAULT_DEADLINE_HOURS,
+        APPROVAL_ALLOW_SELF_APPROVAL=config.APPROVAL_ALLOW_SELF_APPROVAL,
     )
 
     register_middleware(app)
@@ -76,6 +78,10 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     from app.api.v1 import provisioning
     app.register_blueprint(provisioning.bp)
     app.register_blueprint(provisioning.admin_bp)
+
+    from app.api.v1 import approvals
+    app.register_blueprint(approvals.admin_bp)
+    app.register_blueprint(approvals.approvals_bp)
 
     # GitLab client
     if app.config.get("GITLAB_URL"):
