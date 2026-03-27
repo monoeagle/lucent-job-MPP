@@ -624,6 +624,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rollen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions-Layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsgvo-anonymisierungs-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DSGVO-Anonymisierungs-Middleware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ports" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1263,6 +1296,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rollen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions-Layer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsgvo-anonymisierungs-middleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DSGVO-Anonymisierungs-Middleware
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ports" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1375,7 +1441,7 @@
 <tr>
 <td>Auth</td>
 <td>LDAP/AD</td>
-<td>Auth-Stub (4 Dummy-User)</td>
+<td>Auth-Stub (5 Dummy-User)</td>
 </tr>
 <tr>
 <td>CMDB</td>
@@ -1390,6 +1456,40 @@
 </tbody>
 </table>
 <p>Alle externen Systeme sind ueber konfigurierbare Modi austauschbar. Details unter <a href="../../betrieb/stubs-mocks/">Stubs &amp; Mocks</a>.</p>
+<hr />
+<h2 id="rollen">Rollen<a class="headerlink" href="#rollen" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Rolle</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>requester</td>
+<td>Standard-Benutzer, bestellt Services</td>
+</tr>
+<tr>
+<td>approver</td>
+<td>Genehmigt/lehnt Bestellungen ab</td>
+</tr>
+<tr>
+<td>admin</td>
+<td>Verwaltung von Regeln, Templates, Audit-Log, Dashboard</td>
+</tr>
+<tr>
+<td>superadmin</td>
+<td>Erweiterte Admin-Rechte: DSGVO-Anonymisierung, Rules, Audit-Zugang</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="subscriptions-layer">Subscriptions-Layer<a class="headerlink" href="#subscriptions-layer" title="Permanent link">&para;</a></h2>
+<p>Subscriptions erweitern den Order-Lifecycle um Change- und Cancel-Operationen. Aenderungen an bestehenden Bestellungen durchlaufen denselben Approval-Workflow wie Neubestellungen.</p>
+<hr />
+<h2 id="dsgvo-anonymisierungs-middleware">DSGVO-Anonymisierungs-Middleware<a class="headerlink" href="#dsgvo-anonymisierungs-middleware" title="Permanent link">&para;</a></h2>
+<p>Backend-Middleware fuer datenschutzkonforme Anonymisierung personenbezogener Daten. Per Admin-Toggle aktivierbar. Anonymisiert Benutzer-IDs, E-Mail-Adressen und Namen in API-Responses und Datenbank-Eintraegen.</p>
 <hr />
 <h2 id="ports">Ports<a class="headerlink" href="#ports" title="Permanent link">&para;</a></h2>
 <table>

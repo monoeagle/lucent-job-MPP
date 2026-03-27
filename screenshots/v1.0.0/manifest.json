@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "timestamp": "2026-03-27 23:23:49",
+  "screenshots": 12,
+  "users": [
+    "test-requester",
+    "test-approver",
+    "test-admin",
+    "test-multi",
+    "test-superadmin"
+  ],
+  "viewports": [
+    "desktop"
+  ],
+  "browser": "firefox",
+  "format": "webp",
+  "files": [
+    "01_login.webp",
+    "02_dashboard.webp",
+    "03_shop.webp",
+    "04_bestellungen.webp",
+    "05_bestellungen_meine.webp",
+    "06_notifications.webp",
+    "07_reviews.webp",
+    "08_admin_dashboard.webp",
+    "09_admin_rules.webp",
+    "10_admin_audit.webp",
+    "10_shop_windows.webp",
+    "11_shop_linux.webp"
+  ]
+}

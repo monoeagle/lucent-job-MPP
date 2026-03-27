@@ -838,6 +838,83 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#order-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Groups
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-items-erweitert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Items (erweitert)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Actions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsgvo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DSGVO
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1451,6 +1528,83 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#order-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Groups
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-items-erweitert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Items (erweitert)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Actions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsgvo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DSGVO
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1467,7 +1621,7 @@
                   
 
 <h1 id="api-referenz">API-Referenz<a class="headerlink" href="#api-referenz" title="Permanent link">&para;</a></h1>
-<p>Basis-Prefix: <code>/api/v1</code> — 76 Endpoints insgesamt.</p>
+<p>Basis-Prefix: <code>/api/v1</code> — 96 Endpoints insgesamt, verteilt auf 17 Module.</p>
 <hr />
 <h2 id="auth-level-legende">Auth-Level-Legende<a class="headerlink" href="#auth-level-legende" title="Permanent link">&para;</a></h2>
 <table>
@@ -1493,6 +1647,10 @@
 <tr>
 <td>admin</td>
 <td>Rolle <code>admin</code></td>
+</tr>
+<tr>
+<td>superadmin</td>
+<td>Rolle <code>superadmin</code> (DSGVO, erweiterte Admin-Rechte)</td>
 </tr>
 </tbody>
 </table>
@@ -2252,6 +2410,244 @@
 <td><code>/notifications</code></td>
 <td>login</td>
 <td>Eigene Benachrichtigungen</td>
+</tr>
+<tr>
+<td>78</td>
+<td>PATCH</td>
+<td><code>/notifications/&lt;id&gt;/read</code></td>
+<td>login</td>
+<td>Benachrichtigung als gelesen markieren</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="order-groups">Order Groups<a class="headerlink" href="#order-groups" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>79</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/groups</code></td>
+<td>login</td>
+<td>Gruppe erstellen</td>
+</tr>
+<tr>
+<td>80</td>
+<td>GET</td>
+<td><code>/orders/&lt;id&gt;/groups</code></td>
+<td>login</td>
+<td>Gruppen auflisten</td>
+</tr>
+<tr>
+<td>81</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;/groups/&lt;group_id&gt;</code></td>
+<td>login</td>
+<td>Gruppe aktualisieren</td>
+</tr>
+<tr>
+<td>82</td>
+<td>DELETE</td>
+<td><code>/orders/&lt;id&gt;/groups/&lt;group_id&gt;</code></td>
+<td>login</td>
+<td>Gruppe loeschen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="order-items-erweitert">Order Items (erweitert)<a class="headerlink" href="#order-items-erweitert" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>83</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;/items/&lt;item_id&gt;/quantity</code></td>
+<td>login</td>
+<td>Menge aktualisieren</td>
+</tr>
+<tr>
+<td>84</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;/items/&lt;item_id&gt;/instance-parameters</code></td>
+<td>login</td>
+<td>Per-Instance-Parameter setzen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="order-actions">Order Actions<a class="headerlink" href="#order-actions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>85</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/cancel</code></td>
+<td>login</td>
+<td>Bestellung stornieren</td>
+</tr>
+<tr>
+<td>86</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/change</code></td>
+<td>login</td>
+<td>Aenderung an bestehender Bestellung</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="subscriptions">Subscriptions<a class="headerlink" href="#subscriptions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>87</td>
+<td>GET</td>
+<td><code>/subscriptions</code></td>
+<td>login</td>
+<td>Eigene Subscriptions auflisten</td>
+</tr>
+<tr>
+<td>88</td>
+<td>GET</td>
+<td><code>/subscriptions/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Einzelne Subscription abrufen</td>
+</tr>
+<tr>
+<td>89</td>
+<td>POST</td>
+<td><code>/subscriptions/&lt;id&gt;/change</code></td>
+<td>login</td>
+<td>Aenderung beantragen</td>
+</tr>
+<tr>
+<td>90</td>
+<td>POST</td>
+<td><code>/subscriptions/&lt;id&gt;/cancel</code></td>
+<td>login</td>
+<td>Kuendigung beantragen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="dashboard">Dashboard<a class="headerlink" href="#dashboard" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>91</td>
+<td>GET</td>
+<td><code>/dashboard/stats</code></td>
+<td>login</td>
+<td>Dashboard-Statistiken</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>92</td>
+<td>GET</td>
+<td><code>/search</code></td>
+<td>login</td>
+<td>Globale Suche ueber alle Entitaeten</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="dsgvo">DSGVO<a class="headerlink" href="#dsgvo" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>93</td>
+<td>POST</td>
+<td><code>/admin/dsgvo/anonymize/&lt;user_id&gt;</code></td>
+<td>superadmin</td>
+<td>Benutzer anonymisieren</td>
+</tr>
+<tr>
+<td>94</td>
+<td>GET</td>
+<td><code>/admin/dsgvo/status</code></td>
+<td>superadmin</td>
+<td>DSGVO-Status abfragen</td>
+</tr>
+<tr>
+<td>95</td>
+<td>PUT</td>
+<td><code>/admin/dsgvo/settings</code></td>
+<td>superadmin</td>
+<td>DSGVO-Einstellungen aendern</td>
+</tr>
+<tr>
+<td>96</td>
+<td>GET</td>
+<td><code>/admin/dsgvo/report/&lt;user_id&gt;</code></td>
+<td>superadmin</td>
+<td>DSGVO-Auskunft generieren</td>
 </tr>
 </tbody>
 </table>

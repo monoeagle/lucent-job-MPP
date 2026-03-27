@@ -1525,7 +1525,7 @@
 <hr />
 <h2 id="auth-stub">Auth-Stub<a class="headerlink" href="#auth-stub" title="Permanent link">&para;</a></h2>
 <p><strong>Problem:</strong> Kein Active Directory / LDAP in der Entwicklungsumgebung.</p>
-<p><strong>Loesung:</strong> Konfigurierbarer Auth-Modus mit 4 vordefinierten Dummy-Benutzern.</p>
+<p><strong>Loesung:</strong> Konfigurierbarer Auth-Modus mit 5 vordefinierten Dummy-Benutzern.</p>
 <h3 id="konfiguration">Konfiguration<a class="headerlink" href="#konfiguration" title="Permanent link">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">AUTH_MODE</span><span class="o">=</span>stub<span class="w">        </span><span class="c1"># Aktiviert den Stub-Modus</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">ENV</span><span class="o">=</span>development<span class="w">       </span><span class="c1"># Muss != production sein</span>
@@ -1559,6 +1559,11 @@
 <td>test-multi</td>
 <td>requester, approver</td>
 <td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#109;&#117;&#108;&#116;&#105;&#64;&#116;&#101;&#115;&#116;&#46;&#108;&#111;&#99;&#97;&#108;">&#109;&#117;&#108;&#116;&#105;&#64;&#116;&#101;&#115;&#116;&#46;&#108;&#111;&#99;&#97;&#108;</a></td>
+</tr>
+<tr>
+<td>test-superadmin</td>
+<td>superadmin</td>
+<td><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#117;&#112;&#101;&#114;&#97;&#100;&#109;&#105;&#110;&#64;&#116;&#101;&#115;&#116;&#46;&#108;&#111;&#99;&#97;&#108;">&#115;&#117;&#112;&#101;&#114;&#97;&#100;&#109;&#105;&#110;&#64;&#116;&#101;&#115;&#116;&#46;&#108;&#111;&#99;&#97;&#108;</a></td>
 </tr>
 </tbody>
 </table>

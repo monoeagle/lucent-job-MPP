@@ -640,6 +640,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#docker-offline-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker / Offline-Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker &#x2f; Offline-Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#voraussetzungen_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voraussetzungen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Starten
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bundle-builder-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bundle Builder (Offline)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dateien" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dateien
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#verifikation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1407,6 +1468,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#docker-offline-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker / Offline-Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Docker &#x2f; Offline-Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#voraussetzungen_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Voraussetzungen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#starten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Starten
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bundle-builder-offline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bundle Builder (Offline)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dateien" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dateien
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#verifikation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1522,6 +1644,29 @@
 <li>Tests ausfuehren</li>
 <li>Demo-Daten laden</li>
 </ol>
+<hr />
+<h2 id="docker-offline-installation">Docker / Offline-Installation<a class="headerlink" href="#docker-offline-installation" title="Permanent link">&para;</a></h2>
+<p>MPP kann auch komplett Docker-basiert betrieben werden — ideal fuer Offline-Umgebungen oder schnelles Setup.</p>
+<h3 id="voraussetzungen_1">Voraussetzungen<a class="headerlink" href="#voraussetzungen_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Docker 24+</li>
+<li>Docker Compose 2.x</li>
+</ul>
+<h3 id="starten">Starten<a class="headerlink" href="#starten" title="Permanent link">&para;</a></h3>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+</span></code></pre></div>
+<p>Das startet Backend, Frontend, PostgreSQL und den GitLab-Mock in separaten Containern.</p>
+<h3 id="bundle-builder-offline">Bundle Builder (Offline)<a class="headerlink" href="#bundle-builder-offline" title="Permanent link">&para;</a></h3>
+<p>Fuer Air-Gapped-Umgebungen kann ein vollstaendiges Bundle erstellt werden:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>bash<span class="w"> </span>scripts/bundle-builder.sh
+</span></code></pre></div>
+<p>Das erzeugt ein tar-Archiv mit allen Docker-Images, Konfigurationen und Seed-Daten. Das Bundle kann auf dem Zielsystem mit <code>docker compose load</code> importiert werden.</p>
+<h3 id="dateien">Dateien<a class="headerlink" href="#dateien" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>Dockerfile</code> — Multi-Stage-Build (Backend + Frontend)</li>
+<li><code>docker-compose.yml</code> — Orchestrierung aller Dienste</li>
+<li><code>scripts/bundle-builder.sh</code> — Offline-Bundle-Erstellung</li>
+</ul>
 <hr />
 <h2 id="verifikation">Verifikation<a class="headerlink" href="#verifikation" title="Permanent link">&para;</a></h2>
 <p>Nach dem Start:</p>

@@ -601,10 +601,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-naechste-schritte" class="md-nav__link">
+  <a href="#5-datenbank-zuruecksetzen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Naechste Schritte
+        5. Datenbank zuruecksetzen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-screenshot-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Screenshot-Tool
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-naechste-schritte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Naechste Schritte
       
     </span>
   </a>
@@ -1273,10 +1295,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-naechste-schritte" class="md-nav__link">
+  <a href="#5-datenbank-zuruecksetzen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Naechste Schritte
+        5. Datenbank zuruecksetzen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-screenshot-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Screenshot-Tool
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-naechste-schritte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Naechste Schritte
       
     </span>
   </a>
@@ -1317,24 +1361,34 @@
 <tr>
 <th>Benutzer</th>
 <th>Rolle(n)</th>
+<th>Passwort</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>test-requester</td>
 <td>requester</td>
+<td>(keins / beliebig)</td>
 </tr>
 <tr>
 <td>test-approver</td>
 <td>approver</td>
+<td>(keins / beliebig)</td>
 </tr>
 <tr>
 <td>test-admin</td>
 <td>admin</td>
+<td>(keins / beliebig)</td>
 </tr>
 <tr>
 <td>test-multi</td>
 <td>requester + approver</td>
+<td>(keins / beliebig)</td>
+</tr>
+<tr>
+<td>test-superadmin</td>
+<td>superadmin</td>
+<td>(keins / beliebig)</td>
 </tr>
 </tbody>
 </table>
@@ -1364,11 +1418,26 @@
 <li>Zur Genehmigung vorgelegt (Status → <code>pending_approval</code>)</li>
 </ul>
 <hr />
-<h2 id="5-naechste-schritte">5. Naechste Schritte<a class="headerlink" href="#5-naechste-schritte" title="Permanent link">&para;</a></h2>
+<h2 id="5-datenbank-zuruecksetzen">5. Datenbank zuruecksetzen<a class="headerlink" href="#5-datenbank-zuruecksetzen" title="Permanent link">&para;</a></h2>
+<p>Falls die Datenbank in einen inkonsistenten Zustand geraet:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Datenbank komplett neu aufsetzen</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>alembic<span class="w"> </span>downgrade<span class="w"> </span>base
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>python3<span class="w"> </span>scripts/seed.py
+</span></code></pre></div>
+<hr />
+<h2 id="6-screenshot-tool">6. Screenshot-Tool<a class="headerlink" href="#6-screenshot-tool" title="Permanent link">&para;</a></h2>
+<p>Automatische Screenshots aller Seiten (rollenspezifisch) mit Playwright:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python3<span class="w"> </span>scripts/screenshot.py
+</span></code></pre></div>
+<p>Screenshots werden im WebP-Format erzeugt und nach Benutzerrolle gruppiert.</p>
+<hr />
+<h2 id="7-naechste-schritte">7. Naechste Schritte<a class="headerlink" href="#7-naechste-schritte" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Approval testen:</strong> Als <code>test-approver</code> einloggen und offene Genehmigungen bearbeiten</li>
 <li><strong>Admin-Dashboard:</strong> Als <code>test-admin</code> einloggen fuer Statistiken und Audit-Log</li>
-<li><strong>API erkunden:</strong> <a href="../../referenz/api-referenz/">API-Referenz</a> fuer alle 76 Endpoints</li>
+<li><strong>Superadmin testen:</strong> Als <code>test-superadmin</code> einloggen fuer DSGVO-Anonymisierung</li>
+<li><strong>API erkunden:</strong> <a href="../../referenz/api-referenz/">API-Referenz</a> fuer alle 96 Endpoints</li>
 </ul>
 
 

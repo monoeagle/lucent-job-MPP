@@ -1175,13 +1175,22 @@
 <h2 id="was-kann-mpp">Was kann MPP?<a class="headerlink" href="#was-kann-mpp" title="Permanent link">&para;</a></h2>
 <ul>
 <li><strong>Services bestellen</strong> — VMs, Datenbanken, Container aus einem konfigurierbaren Servicekatalog</li>
+<li><strong>Shop Wizard</strong> — Wizard/Formular-Toggle mit T-Shirt-Sizes und wizard_config</li>
 <li><strong>Order-Lifecycle</strong> — Draft → Validated → Submitted → Provisioning → Done</li>
+<li><strong>Order Groups + Quantity</strong> — Gruppierte Items mit Mengenangabe und Per-Instance-Parametern</li>
+<li><strong>Subscriptions</strong> — Lifecycle-Management mit Change/Cancel und Approval-Integration</li>
 <li><strong>Kontextabhaengig</strong> — Standort, Mandant, Sicherheitsbereich beeinflussen Verfuegbarkeit und Parameter</li>
+<li><strong>Dependency Matrix</strong> — 15 Cross-Field-Abhaengigkeiten mit ~45.000 validen Kombinationen</li>
 <li><strong>Approval-Workflow</strong> — Automatische Genehmigungspflicht fuer kostenintensive Bestellungen</li>
 <li><strong>Automatische Provisionierung</strong> — GitLab-Pipeline-Integration mit OpenTofu</li>
-<li><strong>Rollenbasiert</strong> — Requester, Approver, Admin mit abgestuften Berechtigungen</li>
+<li><strong>Rollenbasiert</strong> — Requester, Approver, Admin, Superadmin mit abgestuften Berechtigungen</li>
+<li><strong>Dashboard</strong> — Statistiken, Suche und Recharts-Charts</li>
+<li><strong>Notifications</strong> — Read/Unread-Status, Event-Trigger, E-Mail-Stub</li>
+<li><strong>DSGVO-Anonymisierung</strong> — Middleware fuer datenschutzkonforme Anonymisierung (Admin-Toggle)</li>
 <li><strong>Audit-Trail</strong> — Vollstaendige Protokollierung aller Aktionen</li>
 <li><strong>Einmal-Links</strong> — Sichere Zustellung von Zugangsdaten nach Provisionierung</li>
+<li><strong>Offline-Installer</strong> — Docker-basierte Installation (Dockerfile, docker-compose, Bundle Builder)</li>
+<li><strong>Screenshot-Tool</strong> — Playwright-basiert, WebP-Format, rollenspezifisch</li>
 </ul>
 <h2 id="tech-stack">Tech-Stack<a class="headerlink" href="#tech-stack" title="Permanent link">&para;</a></h2>
 <table>
@@ -1237,39 +1246,43 @@
 <tbody>
 <tr>
 <td>Backend-Tests</td>
-<td>594</td>
+<td>756</td>
 </tr>
 <tr>
 <td>Frontend-Tests</td>
-<td>47</td>
+<td>106</td>
 </tr>
 <tr>
 <td>Tests gesamt</td>
-<td>641</td>
+<td>862</td>
 </tr>
 <tr>
 <td>API-Endpoints</td>
-<td>76</td>
+<td>96</td>
+</tr>
+<tr>
+<td>API-Module</td>
+<td>17</td>
 </tr>
 <tr>
 <td>Datenbanktabellen</td>
-<td>12</td>
-</tr>
-<tr>
-<td>Alembic-Migrationen</td>
-<td>9</td>
+<td>15</td>
 </tr>
 <tr>
 <td>Frontend-Seiten</td>
-<td>11</td>
+<td>17</td>
 </tr>
 <tr>
-<td>Backend-Services</td>
+<td>Frontend-API-Module</td>
 <td>10</td>
 </tr>
 <tr>
-<td>Commits</td>
-<td>77</td>
+<td>Frontend-Hook-Module</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Backend-Services</td>
+<td>13</td>
 </tr>
 </tbody>
 </table>

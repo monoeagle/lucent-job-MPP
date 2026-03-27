@@ -1433,7 +1433,7 @@
                   
 
 <h1 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h1>
-<p>MPP wurde vollstaendig mit <strong>Test-Driven Development (TDD)</strong> entwickelt. 594 Backend-Tests + 47 Frontend-Tests = <strong>641 Tests</strong> insgesamt.</p>
+<p>MPP wurde vollstaendig mit <strong>Test-Driven Development (TDD)</strong> entwickelt. 756 Backend-Tests + 106 Frontend-Tests = <strong>862 Tests</strong> insgesamt.</p>
 <hr />
 <h2 id="uebersicht">Uebersicht<a class="headerlink" href="#uebersicht" title="Permanent link">&para;</a></h2>
 <table>
@@ -1449,31 +1449,31 @@
 <tr>
 <td>Backend Unit</td>
 <td>pytest</td>
-<td>~400</td>
+<td>~500</td>
 <td><code>tests/unit/</code></td>
 </tr>
 <tr>
 <td>Backend Int.</td>
 <td>pytest</td>
-<td>~180</td>
+<td>~230</td>
 <td><code>tests/integration/</code></td>
 </tr>
 <tr>
 <td>Backend E2E</td>
 <td>pytest</td>
-<td>~14</td>
+<td>~26</td>
 <td><code>tests/e2e/</code></td>
 </tr>
 <tr>
 <td>Frontend</td>
 <td>vitest + RTL</td>
-<td>47</td>
+<td>106</td>
 <td><code>frontend/tests/</code></td>
 </tr>
 <tr>
 <td><strong>Gesamt</strong></td>
 <td></td>
-<td><strong>641</strong></td>
+<td><strong>862</strong></td>
 <td></td>
 </tr>
 </tbody>
@@ -1536,6 +1536,10 @@
 <li><code>test_approval_service.py</code> — Regel-Evaluation, Approve/Reject</li>
 <li><code>test_context_service.py</code> — CMDB-Resolution, Tenant-Pruefung</li>
 <li><code>test_template_validator.py</code> — Template-Registrierungs-Validierung</li>
+<li><code>test_subscription_service.py</code> — Subscription-Lifecycle, Change, Cancel</li>
+<li><code>test_dashboard_service.py</code> — Dashboard-Statistiken und Aggregation</li>
+<li><code>test_search_service.py</code> — Globale Suche, Relevanz-Ranking</li>
+<li><code>test_dsgvo.py</code> — DSGVO-Anonymisierung, Datenschutz-Middleware</li>
 </ul>
 <h3 id="integration-tests-testsintegration">Integration-Tests (<code>tests/integration/</code>)<a class="headerlink" href="#integration-tests-testsintegration" title="Permanent link">&para;</a></h3>
 <p>Testen Services mit echter Datenbankinteraktion. Verwenden eine separate Test-Datenbank (<code>mpp_test</code>).</p>
@@ -1551,6 +1555,8 @@
 <li>Kompletter Bestell-Flow (Create → Add Items → Validate → Submit → Provision)</li>
 <li>Approval-Flow (Submit → Pending → Approve/Reject)</li>
 <li>CMDB-Integration (Kontext-Aufloesung mit Verfuegbarkeitspruefung)</li>
+<li>Subscription-Flow (Order → Done → Subscription → Change/Cancel)</li>
+<li>Post-Submit-Flow (Genehmigung → Provisionierung → Credential-Link)</li>
 </ul>
 <hr />
 <h2 id="frontend-teststruktur">Frontend-Teststruktur<a class="headerlink" href="#frontend-teststruktur" title="Permanent link">&para;</a></h2>

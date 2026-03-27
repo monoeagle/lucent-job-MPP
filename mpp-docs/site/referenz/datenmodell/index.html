@@ -765,6 +765,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#group_subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        group_subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#order_item_groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        order_item_groups
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1388,6 +1421,39 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#group_subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        group_subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#order_item_groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        order_item_groups
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1431,7 +1497,7 @@
                   
 
 <h1 id="datenmodell">Datenmodell<a class="headerlink" href="#datenmodell" title="Permanent link">&para;</a></h1>
-<p>PostgreSQL mit SQLAlchemy 2.0 ORM. 9 Alembic-Migrationen. JSONB fuer flexible Parameter-Speicherung.</p>
+<p>PostgreSQL mit SQLAlchemy 2.0 ORM. 15 Tabellen. JSONB fuer flexible Parameter-Speicherung.</p>
 <hr />
 <h2 id="tabellen-uebersicht">Tabellen-Uebersicht<a class="headerlink" href="#tabellen-uebersicht" title="Permanent link">&para;</a></h2>
 <table>
@@ -1489,6 +1555,18 @@
 <tr>
 <td><code>credential_links</code></td>
 <td>Einmal-Links fuer Zugangsdaten-Abruf</td>
+</tr>
+<tr>
+<td><code>subscriptions</code></td>
+<td>Aktive Subscriptions aus provisionierten Orders</td>
+</tr>
+<tr>
+<td><code>group_subscriptions</code></td>
+<td>Subscription-Zuordnung zu Order-Item-Groups</td>
+</tr>
+<tr>
+<td><code>order_item_groups</code></td>
+<td>Gruppierung von Order-Items mit Mengenangabe</td>
 </tr>
 </tbody>
 </table>
@@ -2243,6 +2321,123 @@
 </tr>
 </tbody>
 </table>
+<h3 id="subscriptions">subscriptions<a class="headerlink" href="#subscriptions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Spalte</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>String(36) PK</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td><code>order_id</code></td>
+<td>String(36) FK</td>
+<td>Referenz auf orders.id</td>
+</tr>
+<tr>
+<td><code>order_item_id</code></td>
+<td>String(36) FK</td>
+<td>Referenz auf order_items.id</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>String(20)</td>
+<td>active / change_pending / cancelled</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>DateTime(tz)</td>
+<td>Erstellungszeitpunkt</td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>DateTime(tz)</td>
+<td>Letzte Aenderung</td>
+</tr>
+</tbody>
+</table>
+<h3 id="group_subscriptions">group_subscriptions<a class="headerlink" href="#group_subscriptions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Spalte</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>String(36) PK</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td><code>subscription_id</code></td>
+<td>String(36) FK</td>
+<td>Referenz auf subscriptions.id</td>
+</tr>
+<tr>
+<td><code>group_id</code></td>
+<td>String(36) FK</td>
+<td>Referenz auf order_item_groups.id</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>DateTime(tz)</td>
+<td>Erstellungszeitpunkt</td>
+</tr>
+</tbody>
+</table>
+<h3 id="order_item_groups">order_item_groups<a class="headerlink" href="#order_item_groups" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Spalte</th>
+<th>Typ</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>String(36) PK</td>
+<td>UUID</td>
+</tr>
+<tr>
+<td><code>order_id</code></td>
+<td>String(36) FK</td>
+<td>Referenz auf orders.id</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>String(100)</td>
+<td>Gruppenname</td>
+</tr>
+<tr>
+<td><code>quantity</code></td>
+<td>Integer</td>
+<td>Anzahl Instanzen</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>DateTime(tz)</td>
+<td>Erstellungszeitpunkt</td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>DateTime(tz)</td>
+<td>Letzte Aenderung</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Beziehung:</strong> <code>order_item_groups.order_id → orders.id</code> (CASCADE DELETE)</p>
 <hr />
 <h2 id="beziehungen">Beziehungen<a class="headerlink" href="#beziehungen" title="Permanent link">&para;</a></h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>service_templates
@@ -2251,11 +2446,17 @@
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    ↑
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>dispatch_logs (order_item_id)
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>credential_links (order_item_id)
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>approval_requests ──→ orders (FK: order_id)
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>availability_rules ──→ service_templates (template_slug, logisch)
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>context_restrictions ──→ service_templates (template_slug, logisch)
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>subscriptions (order_item_id)
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>order_item_groups ──→ orders (FK: order_id, CASCADE)
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>group_subscriptions ──→ subscriptions (FK: subscription_id)
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>group_subscriptions ──→ order_item_groups (FK: group_id)
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>approval_requests ──→ orders (FK: order_id)
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>availability_rules ──→ service_templates (template_slug, logisch)
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>context_restrictions ──→ service_templates (template_slug, logisch)
 </span></code></pre></div>
 <hr />
 <h2 id="jsonb-felder-wichtigste">JSONB-Felder (wichtigste)<a class="headerlink" href="#jsonb-felder-wichtigste" title="Permanent link">&para;</a></h2>

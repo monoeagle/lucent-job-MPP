@@ -855,6 +855,39 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#dashboardservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DashboardService
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#searchservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SearchService
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptionservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SubscriptionService
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1429,6 +1462,39 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#dashboardservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DashboardService
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#searchservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SearchService
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptionservice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SubscriptionService
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1445,7 +1511,7 @@
                   
 
 <h1 id="services">Services<a class="headerlink" href="#services" title="Permanent link">&para;</a></h1>
-<p>10 Backend-Services implementieren die gesamte Business-Logik. Jeder Service ist ein eigenstaendiges Modul unter <code>app/services/</code>.</p>
+<p>13 Backend-Services implementieren die gesamte Business-Logik. Jeder Service ist ein eigenstaendiges Modul unter <code>app/services/</code>.</p>
 <hr />
 <h2 id="services-uebersicht">Services-Uebersicht<a class="headerlink" href="#services-uebersicht" title="Permanent link">&para;</a></h2>
 <table>
@@ -1507,6 +1573,21 @@
 <td><code>services/template_validator.py</code></td>
 <td>Validierung neuer Templates bei Registrierung</td>
 </tr>
+<tr>
+<td>DashboardService</td>
+<td><code>services/dashboard_service.py</code></td>
+<td>Statistiken, Aggregation fuer Dashboard-Endpoint</td>
+</tr>
+<tr>
+<td>SearchService</td>
+<td><code>services/search_service.py</code></td>
+<td>Globale Suche ueber Orders, Templates, Ressourcen</td>
+</tr>
+<tr>
+<td>SubscriptionService</td>
+<td><code>services/subscription_service.py</code></td>
+<td>Subscription-Lifecycle: Change, Cancel, Approval</td>
+</tr>
 </tbody>
 </table>
 <hr />
@@ -1519,7 +1600,7 @@
 </ul>
 <p><strong>Auth-Modi:</strong></p>
 <ul>
-<li><code>stub</code>: 4 Dummy-Benutzer, kein Passwort noetig, JWT mit konfigurierbarer TTL</li>
+<li><code>stub</code>: 5 Dummy-Benutzer, kein Passwort noetig, JWT mit konfigurierbarer TTL</li>
 <li><code>ldap</code>: Nicht implementiert (Platzhalter fuer Produktion)</li>
 </ul>
 <p><strong>Sicherheitsregel:</strong> Stub-Modus darf nicht in Produktion (<code>ENV=production</code>) aktiv sein.</p>
@@ -1678,6 +1759,15 @@
 <hr />
 <h2 id="credentialservice">CredentialService<a class="headerlink" href="#credentialservice" title="Permanent link">&para;</a></h2>
 <p>Erzeugt Einmal-Links (One-Time-Token) fuer die sichere Zustellung von Zugangsdaten nach erfolgreicher Provisionierung. Token werden als SHA-256-Hash gespeichert und sind nach einmaligem Abruf oder Ablauf ungueltig.</p>
+<hr />
+<h2 id="dashboardservice">DashboardService<a class="headerlink" href="#dashboardservice" title="Permanent link">&para;</a></h2>
+<p>Aggregiert Statistiken fuer das Dashboard: Bestellungen nach Status, Approval-Auslastung, Provisioning-Erfolgsraten. Liefert Daten fuer Recharts-Charts im Frontend.</p>
+<hr />
+<h2 id="searchservice">SearchService<a class="headerlink" href="#searchservice" title="Permanent link">&para;</a></h2>
+<p>Globale Suche ueber Orders, Templates und Ressourcen. Unterstuetzt Volltextsuche mit Relevanz-Ranking und rollenbasierter Filterung.</p>
+<hr />
+<h2 id="subscriptionservice">SubscriptionService<a class="headerlink" href="#subscriptionservice" title="Permanent link">&para;</a></h2>
+<p>Verwaltet den Lifecycle aktiver Subscriptions. Unterstuetzt Change-Requests (Parameter-Aenderung) und Cancel-Requests (Kuendigung), die jeweils den Approval-Workflow durchlaufen koennen.</p>
 
 
 
