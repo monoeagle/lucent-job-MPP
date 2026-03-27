@@ -131,11 +131,117 @@ Alle relevanten Aenderungen in chronologischer Reihenfolge, gruppiert nach Phase
 
 ---
 
+## Phase B8: Order Groups, Quantity, Per-Instance Parameters
+
+- `76dbfdbb` feat: add OrderItemGroup model and extend OrderItem with group_id, quantity, instance_parameters
+- `e8a71ca5` feat: add per_instance field to ParameterDefinition (false/true/auto)
+- `e5130a80` feat: add group CRUD API endpoints for orders (16 Tests)
+- `f6282644` feat: add quantity and instance_parameters support to order items API (5 Tests)
+- `fec79e33` feat: add per-instance parameter support to catalog and order validation (8 Tests)
+- `d870799c` test: add E2E test for groups + quantity + per-instance parameters
+- `a475f839` feat(frontend): extend order types and API for groups + quantity
+- `4654725a` feat(frontend): add group sections, quantity selector, and per-instance UI
+
+## Sidebar Navigation Redesign
+
+- `902a3bd4` feat(frontend): add Notifications placeholder page
+- `feed9b83` feat(frontend): rewrite Sidebar with collapsible layout, new menu structure, role-based sections (11 Tests)
+- `9e0490b7` feat(frontend): update AppLayout for collapsible sidebar, simplify Header
+
+## Phase 9: Shop Wizard
+
+- `feat(frontend)` add StepIndicator, RequestSummary, WizardView, FormView components
+- `feat(frontend)` add ServiceRequest page with wizard/form toggle
+- `feat(frontend)` add /shop/:slug/request route and Bestellen button
+- `feat(frontend)` add copy-shortcut — Aehnlichen Service hinzufuegen
+
+## Dashboard Redesign
+
+- `feat` add dashboard stats API endpoint (5 Tests)
+- `feat` add global search API endpoint (5 Tests)
+- `feat(frontend)` add recharts, StatCard, GlobalSearch, OrderStatusChart, OrderTimelineChart
+- `feat(frontend)` add RecentOrders, PopularServices, PendingApprovals widgets
+- `feat(frontend)` rewrite Dashboard with stat cards, charts, search, role-based widgets
+
+## Notifications System
+
+- `feat` add read/unread notification endpoints with read_at field (8 Tests)
+- `feat` add EmailSender interface and StubEmailSender (2 Tests)
+- `feat` add create_event_notification with templates and email sender (4 Tests)
+- `feat` trigger order_submitted notification on order submit
+- `feat(frontend)` add notifications API client, hooks with polling
+- `feat(frontend)` rewrite Notifications page with read/unread, sidebar badge
+
+## Subscriptions System
+
+- `feat` add SubscriptionModel and GroupSubscriptionModel
+- `feat` add SubscriptionRepository with CRUD, status, changes, groups (22 Tests)
+- `feat` add SubscriptionService with change/cancel/create lifecycle (30 Tests)
+- `feat` add subscription REST API endpoints (7 Tests)
+- `feat` create subscriptions automatically on order submit
+- `feat(frontend)` add subscription types, API, hooks, pages, components
+
+## Security Audit + Fixes
+
+- `docs` add consolidated 3-way audit report (Security + Architecture + Quality)
+- `security` fix critical findings — webhook auth, credential auth, exception logging
+- `docs` add security-engineer, auditor, devops-engineer agents
+
+## Architektur-Audit Fixes
+
+- `fix` add pagination cap (max 200) to all paginated endpoints
+- `fix` use consistent AppError classes in catalog and context API
+- `refactor` split orders.py (679 lines) into 4 focused modules
+- `refactor` move post-submit orchestration to OrderService
+- `refactor` extract DashboardService, SearchService, ResourceService
+
+## UI Consolidation
+
+- `feat(frontend)` consolidate into Workspace page (Bestellungen tabs)
+- `feat(frontend)` move page titles to Header bar with dynamic routes
+- `fix(frontend)` sidebar stays fixed, only content area scrolls
+- `feat(frontend)` split layout in FormView — form left, sticky summary right
+
+## VM Templates + Abhaengigkeitsmatrix
+
+- `feat` comprehensive Windows + Linux VM templates (30 params, 9 groups each)
+- `feat` T-Shirt Size auto-fill + metadata-based option filtering
+- `feat` comprehensive dependency matrix — 15 cross-field dependencies (~45K valid combos)
+- `feat(frontend)` red border on required empty/invalid fields, submit gate
+
+## Rollen + DSGVO
+
+- `feat` introduce superadmin role — Rules, Audit Log, DSGVO restricted
+- `feat` DSGVO anonymization middleware + admin toggle
+- `fix` approvals API supports all statuses (pending/approved/rejected)
+- `feat` show order details in review requests, Besteller column
+
+## DevOps + Tools
+
+- `feat` add Dockerfiles, docker-compose, nginx, offline installer scripts
+- `feat` add Screenshot-Tool (Playwright, WebP, per user role)
+- `feat` show demo credentials in launcher, version v1.0.0 on login
+- `feat` add DB Reset + Reseed option to dev launcher
+- `feat` 8 demo orders + notifications + approval requests in seed
+
+## Dokumentation
+
+- `docs` add comprehensive README.md
+- `docs` update CLAUDE.md to reflect current project state
+- `docs` comprehensive update of mpp-docs (11 files)
+- `docs` add design specs + implementation plans for all features
+
+---
+
 ## Statistik
 
-- **77 Commits** insgesamt
-- **594 Backend-Tests**, **47 Frontend-Tests** = **641 Tests**
-- **76 API-Endpoints**
-- **12 Datenbanktabellen**, **9 Alembic-Migrationen**
-- **11 Frontend-Seiten**
-- **9 Feature-Spezifikationen**
+- **199 Commits** insgesamt (77 Phase 1 + 122 Phase 2)
+- **756 Backend-Tests**, **106 Frontend-Tests** = **862 Tests**
+- **96 API-Endpoints** in **17 Modulen**
+- **15 Datenbanktabellen**
+- **13 Backend-Services**
+- **17 Frontend-Seiten**
+- **5 Rollen** (requester, approver, admin, superadmin + multi)
+- **15 Design-Specs**, **12 Implementation Plans**
+- **Docker Offline-Installer** (Backend + Frontend + PostgreSQL)
+- **Screenshot-Tool** (Playwright, WebP, 5 Benutzerrollen)
