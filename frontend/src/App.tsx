@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './components/Layout/AppLayout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Catalog from './pages/Catalog'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,7 +32,7 @@ function AppRoutes() {
         }
       >
         <Route index element={<Navigate to="/orders" replace />} />
-        <Route path="/catalog" element={<Dashboard />} />
+        <Route path="/catalog" element={<Catalog />} />
         <Route path="/orders" element={<Dashboard />} />
         <Route path="/resources" element={<Dashboard />} />
         <Route path="/approvals" element={<Dashboard />} />
