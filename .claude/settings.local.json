@@ -114,7 +114,19 @@
       "Bash(chmod:*)",
       "Bash(python scripts/seed.py)",
       "Bash(pytest tests/e2e/ -v --tb=short)",
-      "Bash(find frontend/tests -name *.ts -o -name *.tsx)"
+      "Bash(find frontend/tests -name *.ts -o -name *.tsx)",
+      "Bash(python -m pytest tests/integration/test_order_group_db.py -x)",
+      "Bash(python -m pytest tests/integration/test_order_group_db.py -v)",
+      "Bash(python -m pytest --ignore=tests/e2e --tb=short)",
+      "Bash(python -m pytest tests/integration/ --tb=short)",
+      "Bash(python -m pytest tests/integration/test_order_group_db.py -v --tb=short)",
+      "Bash(python -m pytest tests/unit/test_per_instance_param.py -v)",
+      "Bash(python -m pytest --co -q)",
+      "Bash(python -m pytest tests/unit/test_order_groups_service.py -x -q)",
+      "Bash(python -m pytest tests/integration/test_order_groups_repo.py -x -q)",
+      "Bash(python -m pytest tests/integration/test_order_groups_repo.py -v)",
+      "Bash(python -m pytest tests/unit/test_order_groups_service.py -v)",
+      "Bash(python -m pytest -q)"
     ]
   }
 }

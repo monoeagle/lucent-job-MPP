@@ -64,7 +64,8 @@ class OrderService:
 
     def add_item(self, order_id: str, requester_id: str,
                  template_slug: str, template_version: str,
-                 parameters: dict) -> dict:
+                 parameters: dict, quantity: int = 1,
+                 instance_parameters: list | None = None) -> dict:
         order = self._get_order_for_requester(order_id, requester_id)
         self._assert_editable(order)
 
@@ -80,6 +81,7 @@ class OrderService:
 
         item = self.order_repo.add_item(
             order_id, template_slug, template_version, template.display_name, parameters,
+            quantity=quantity, instance_parameters=instance_parameters or [],
         )
         return {"item": item, "warning": warning}
 
@@ -114,9 +116,27 @@ class OrderService:
             template = self.template_repo.get_by_slug_and_version(
                 item.template_slug, item.template_version,
             )
+
+            # Validate shared parameters
+            shared_params = [p for p in template.parameters
+                            if not p.get("per_instance")]
             violations = self.catalog_service.validate_parameters(
-                template.parameters, item.parameters, template.cross_parameter_rules,
+                shared_params, item.parameters, template.cross_parameter_rules,
             )
+
+            # For quantity > 1, validate per-instance parameters for each instance
+            quantity = getattr(item, "quantity", 1) or 1
+            instance_params_list = getattr(item, "instance_parameters", []) or []
+            per_instance_defs = [p for p in template.parameters
+                                if p.get("per_instance")]
+
+            if quantity > 1 and per_instance_defs:
+                for inst_params in instance_params_list:
+                    inst_violations = self.catalog_service.validate_parameters(
+                        per_instance_defs, inst_params, [],
+                    )
+                    violations.extend(inst_violations)
+
             if violations:
                 state = ItemValidationState.INVALID
                 all_valid = False
@@ -158,8 +178,15 @@ class OrderService:
             template = self.template_repo.get_by_slug_and_version(
                 item.template_slug, item.template_version,
             )
-            variables = {}
+
+            # Build shared variables (non per-instance params)
+            shared_variables = {}
+            per_instance_defs = []
             for p in template.parameters:
+                if p.get("per_instance"):
+                    per_instance_defs.append(p)
+                    continue
+
                 depends_on = p.get("depends_on", [])
                 if depends_on:
                     dep_state = self.catalog_service.resolve_dependency_state(
@@ -170,13 +197,70 @@ class OrderService:
 
                 key = p["key"]
                 if key in item.parameters:
-                    variables[p["tofu_variable_name"]] = item.parameters[key]
+                    shared_variables[p["tofu_variable_name"]] = item.parameters[key]
 
-            exported_items.append({
-                "template_slug": item.template_slug,
-                "template_version": item.template_version,
-                "module_source": template.tofu_module_source,
-                "variables": variables,
-            })
+            quantity = getattr(item, "quantity", 1) or 1
+            instance_params_list = getattr(item, "instance_parameters", []) or []
+
+            if quantity > 1 and instance_params_list:
+                for inst_params in instance_params_list:
+                    variables = dict(shared_variables)
+                    for p in per_instance_defs:
+                        key = p["key"]
+                        if key in inst_params:
+                            variables[p["tofu_variable_name"]] = inst_params[key]
+                    exported_items.append({
+                        "template_slug": item.template_slug,
+                        "template_version": item.template_version,
+                        "module_source": template.tofu_module_source,
+                        "variables": variables,
+                    })
+            else:
+                exported_items.append({
+                    "template_slug": item.template_slug,
+                    "template_version": item.template_version,
+                    "module_source": template.tofu_module_source,
+                    "variables": shared_variables,
+                })
 
         return {"order_id": order_id, "items": exported_items}
+
+    # ── Group management ──────────────────────────────────────────
+
+    def create_group(self, order_id: str, requester_id: str,
+                     name: str, description: str | None = None) -> dict:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order)
+        group = self.order_repo.create_group(order_id, name, description)
+        return {"group": group}
+
+    def update_group(self, order_id: str, group_id: str,
+                     requester_id: str, **fields) -> dict:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order)
+        group = self.order_repo.update_group(group_id, **fields)
+        return {"group": group}
+
+    def delete_group(self, order_id: str, group_id: str,
+                     requester_id: str) -> None:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order)
+        self.order_repo.delete_group(group_id)
+
+    def assign_item_to_group(self, order_id: str, item_id: str,
+                             requester_id: str, group_id: str | None) -> None:
+        order = self._get_order_for_requester(order_id, requester_id)
+        self._assert_editable(order)
+
+        item = self.order_repo.get_item_by_id(item_id)
+        if item is None:
+            raise ValueError(f"Item '{item_id}' not found.")
+
+        if group_id is not None:
+            group = self.order_repo.get_group(group_id)
+            if group is None:
+                raise ValueError(f"Group '{group_id}' not found.")
+            if group.order_id != order_id:
+                raise ValueError("Group does not belong to the same order.")
+
+        self.order_repo.assign_item_to_group(item_id, group_id)

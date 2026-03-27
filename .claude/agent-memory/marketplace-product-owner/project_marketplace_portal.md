@@ -116,3 +116,16 @@ Wir bauen ein Marketplace Portal für automatisierte IT-Services (VMs, Datenbank
 - Pseudoparameter `__context_security_zone` für Tenant-Sicherheitsbereich-Sperren (Feature 10.2 REQ-19)
 - Erweiterung von Endpoint 37 (service-catalog.md) um Kontext-Parameter (location_id, tenant_id, security_zone_id, hide_unavailable)
 - Order speichert OrderContext unveränderlich nach Submit; Änderung im Draft invalidiert alle Order-Items
+
+**OrderItemGroup, Quantity & Per-Instance-Parameter (order-groups-quantity.md, v1.0, erstellt 2026-03-26):**
+- Spec: docs/specs/order-groups-quantity.md
+- Gruppe 11: OrderItemGroup (11.1), Quantity-Skalierung (11.2), Per-Instance-Parameter (11.3)
+- Nummerierungsstand Gruppe 11: REQ-01..49, VAL-01..31, EC-01..38, Endpoints 1..17
+- Kernkonzepte: OrderItemGroup (logische UI-Einheit, nicht atomarer Dispatch-Block), quantity (1–50, N Dispatch-Events beim Submit), per_instance (false/true/"auto" am ParameterDefinition)
+- Rollback-Entscheidung: Fehlschlag eines Items rollt nur dieses Item zurück, nicht die gesamte Gruppe
+- Neuer Item-Status: `partial_failure` (einige Instanzen done, einige failed)
+- Auto-Generierung: hostname_sequence (Prefix + laufende Nr., atomarer Batch) und ipam_reservation (N IPs via IPAM, Batch-Rollback bei Teilfehler)
+- Dispatch-Event-Format erweitert um: instance_id, instance_index, group_id, group_name
+- Kostenkalkulation für Approval: item_cost = estimated_cost_eur_per_month × quantity
+- Erweiterungen: ParameterDefinition um per_instance, OrderItem um group_id/quantity/instance_parameters/generated_parameters, Order-Response um groups[]/ungrouped_items
+- Rückwärtskompatibel: Items ohne group_id und quantity=1 verhalten sich wie bisher
