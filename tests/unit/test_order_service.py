@@ -18,7 +18,8 @@ def _make_order(order_id="ord-1", requester_id="user-1", status="draft",
 
 
 def _make_item(item_id="item-1", order_id="ord-1", template_slug="vm-basic",
-               template_version="1.0.0", parameters=None, validation_state="unchecked"):
+               template_version="1.0.0", parameters=None, validation_state="unchecked",
+               quantity=1, instance_parameters=None):
     item = MagicMock()
     item.id = item_id
     item.order_id = order_id
@@ -27,6 +28,8 @@ def _make_item(item_id="item-1", order_id="ord-1", template_slug="vm-basic",
     item.parameters = parameters or {"cpu": 4}
     item.validation_state = validation_state
     item.validation_errors = []
+    item.quantity = quantity
+    item.instance_parameters = instance_parameters or []
     return item
 
 
@@ -109,6 +112,7 @@ class TestAddItem:
         assert result.get("warning") is None
         self.order_repo.add_item.assert_called_once_with(
             "ord-1", "vm-basic", "1.0.0", "Basic VM", {"cpu": 4},
+            quantity=1, instance_parameters=[],
         )
 
     def test_add_item_order_not_found(self):

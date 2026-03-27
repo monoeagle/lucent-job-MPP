@@ -4,7 +4,7 @@ from flask import Blueprint, jsonify, request, g, current_app
 
 from app.core.auth import login_required
 from app.core.errors import NotFoundError, ForbiddenError, ConflictError, ValidationError
-from app.data.repositories.order_repository import OrderRepository
+from app.data.repositories.order_repository import OrderRepository, DuplicateGroupError, GroupNotEmptyError
 from app.data.repositories.template_repository import TemplateRepository
 from app.data.repositories.tenant_repository import TenantRepository
 from app.services.catalog_service import CatalogService
@@ -37,6 +37,17 @@ def _get_repo() -> OrderRepository:
 
 
 def _serialize_order(order) -> dict:
+    repo = OrderRepository(g.db_session)
+    groups = repo.list_groups(order.id)
+    grouped_item_ids = set()
+    serialized_groups = []
+    for grp in groups:
+        serialized_groups.append(_serialize_group(grp))
+        for item in grp.items:
+            grouped_item_ids.add(item.id)
+
+    ungrouped = [_serialize_item(i) for i in order.items if i.id not in grouped_item_ids]
+
     return {
         "id": order.id,
         "order_number": order.order_number,
@@ -50,6 +61,8 @@ def _serialize_order(order) -> dict:
         "submitted_at": order.submitted_at.isoformat() if order.submitted_at else None,
         "context": order.context,
         "items": [_serialize_item(i) for i in order.items],
+        "groups": serialized_groups,
+        "ungrouped_items": ungrouped,
     }
 
 
@@ -64,6 +77,20 @@ def _serialize_item(item) -> dict:
         "position": item.position,
         "validation_state": item.validation_state,
         "validation_errors": item.validation_errors,
+        "group_id": item.group_id,
+        "quantity": item.quantity,
+        "instance_parameters": item.instance_parameters,
+    }
+
+
+def _serialize_group(group) -> dict:
+    return {
+        "id": group.id,
+        "order_id": group.order_id,
+        "name": group.name,
+        "description": group.description,
+        "position": group.position,
+        "items": [_serialize_item(i) for i in group.items],
     }
 
 
@@ -226,17 +253,34 @@ def update_item(order_id, item_id):
 
     data = request.get_json() or {}
     service = _get_service()
-    try:
-        result = service.update_item(
-            order_id=order_id,
-            item_id=item_id,
-            requester_id=g.current_user.username,
-            parameters=data.get("parameters", {}),
-        )
-    except ValueError as e:
-        raise ConflictError(str(e))
 
-    return jsonify({"item": _serialize_item(result["item"])}), 200
+    # Handle group_id assignment
+    if "group_id" in data:
+        try:
+            service.assign_item_to_group(
+                order_id=order_id,
+                item_id=item_id,
+                requester_id=g.current_user.username,
+                group_id=data["group_id"],
+            )
+        except ValueError as e:
+            raise ConflictError(str(e))
+
+    if "parameters" in data:
+        try:
+            result = service.update_item(
+                order_id=order_id,
+                item_id=item_id,
+                requester_id=g.current_user.username,
+                parameters=data["parameters"],
+            )
+        except ValueError as e:
+            raise ConflictError(str(e))
+
+    # Re-fetch item for response
+    repo = _get_repo()
+    item = repo.get_item_by_id(item_id)
+    return jsonify({"item": _serialize_item(item)}), 200
 
 
 @bp.route("/orders/<order_id>/items/<item_id>", methods=["DELETE"])
@@ -452,6 +496,111 @@ def export_order_tofu(order_id):
         "readonly_notice": readonly_notice,
         "items": items,
     }), 200
+
+
+# ── Group management endpoints ───────────────────────────────
+
+
+@bp.route("/orders/<order_id>/groups", methods=["POST"])
+@login_required
+def create_group(order_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    data = request.get_json() or {}
+    service = _get_service()
+    try:
+        result = service.create_group(
+            order_id=order_id,
+            requester_id=g.current_user.username,
+            name=data.get("name", ""),
+            description=data.get("description"),
+        )
+    except DuplicateGroupError as e:
+        raise ConflictError(str(e))
+    except ValueError as e:
+        msg = str(e)
+        if "draft" in msg.lower():
+            raise ConflictError(msg)
+        raise ValidationError(msg)
+
+    return jsonify({"group": _serialize_group(result["group"])}), 201
+
+
+@bp.route("/orders/<order_id>/groups/<group_id>", methods=["PATCH"])
+@login_required
+def update_group(order_id, group_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    data = request.get_json() or {}
+    service = _get_service()
+    fields = {}
+    for key in ("name", "description"):
+        if key in data:
+            fields[key] = data[key]
+
+    try:
+        result = service.update_group(
+            order_id=order_id,
+            group_id=group_id,
+            requester_id=g.current_user.username,
+            **fields,
+        )
+    except ValueError as e:
+        raise ConflictError(str(e))
+
+    return jsonify({"group": _serialize_group(result["group"])}), 200
+
+
+@bp.route("/orders/<order_id>/groups/<group_id>", methods=["DELETE"])
+@login_required
+def delete_group(order_id, group_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    service = _get_service()
+    try:
+        service.delete_group(
+            order_id=order_id,
+            group_id=group_id,
+            requester_id=g.current_user.username,
+        )
+    except GroupNotEmptyError as e:
+        raise ConflictError(str(e))
+    except ValueError as e:
+        raise ConflictError(str(e))
+
+    return "", 204
+
+
+@bp.route("/orders/<order_id>/groups/reorder", methods=["PUT"])
+@login_required
+def reorder_groups(order_id):
+    repo = _get_repo()
+    order = repo.get_by_id(order_id)
+    if order is None:
+        raise NotFoundError("Order not found.")
+    _check_owner(order)
+
+    if order.status != "draft":
+        raise ConflictError("Order must be in draft status to reorder groups.")
+
+    data = request.get_json() or {}
+    positions = data.get("positions", [])
+    repo.reorder_groups(order_id, positions)
+
+    groups = repo.list_groups(order_id)
+    return jsonify({"groups": [_serialize_group(g_) for g_ in groups]}), 200
 
 
 @bp.route("/orders/<order_id>/items/<item_id>/export/tofu", methods=["GET"])
