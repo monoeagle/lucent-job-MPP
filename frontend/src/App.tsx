@@ -11,6 +11,7 @@ import OrderList from './pages/OrderList'
 import OrderNew from './pages/OrderNew'
 import OrderDetail from './pages/OrderDetail'
 import OrderExport from './pages/OrderExport'
+import ServiceRequest from './pages/ServiceRequest'
 import Approvals from './pages/Approvals'
 import Resources from './pages/Resources'
 import Notifications from './pages/Notifications'
@@ -49,6 +50,7 @@ function AppRoutes() {
         <Route path="/orders/new" element={<OrderNew />} />
         <Route path="/orders/:orderId" element={<OrderDetail />} />
         <Route path="/orders/:orderId/export" element={<OrderExport />} />
+        <Route path="/shop/:slug/request" element={<ServiceRequest />} />
         <Route path="/my-services" element={<Resources />} />
         <Route path="/resources" element={<Navigate to="/my-services" replace />} />
         <Route path="/notifications" element={<Notifications />} />
