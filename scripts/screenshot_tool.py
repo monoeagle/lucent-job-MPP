@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """
 screenshot_tool.py — MPP UI Screenshot-Tool
-Erzeugt Screenshots aller Seiten als WebP.
+Erzeugt Screenshots aller Seiten als WebP, pro Benutzerrolle in eigenen Unterordnern.
 
-Verwendet Playwright (headless Firefox/Chromium).
-Loggt sich automatisch als test-multi (alle Rollen) ein.
+Ordnerstruktur: screenshots/v{version}/{user}/{viewport}/
 
 Verwendung:
-    python3 scripts/screenshot_tool.py                     # Desktop, alle Seiten
+    python3 scripts/screenshot_tool.py                     # Alle User, Desktop
     python3 scripts/screenshot_tool.py --quick             # Nur Hauptseiten
-    python3 scripts/screenshot_tool.py --browser chromium  # Chromium statt Firefox
-    python3 scripts/screenshot_tool.py --port 3000         # Anderer Port
-    python3 scripts/screenshot_tool.py --mobile            # Auch Mobile-Viewport
+    python3 scripts/screenshot_tool.py --user test-admin   # Nur ein User
+    python3 scripts/screenshot_tool.py --mobile            # Desktop + Mobile
+    python3 scripts/screenshot_tool.py --browser chromium  # Chromium
+    python3 scripts/screenshot_tool.py --png               # PNG statt WebP
 
 Voraussetzung:
     pip install playwright pillow
     playwright install firefox
-    Frontend muss auf dem angegebenen Port laufen!
+    Frontend + Backend muessen laufen!
 """
 
 import os
@@ -32,34 +32,76 @@ VIEWPORTS = {
     'mobile':  {'width': 390,  'height': 844},
 }
 
-# Alle MPP-Seiten die screenshotted werden
-MPP_PAGES = [
-    ('01_login',             '/login',                     False),
-    ('02_dashboard',         '/dashboard',                 True),
-    ('03_shop',              '/shop',                      True),
-    ('04_bestellungen',      '/workspace',                 True),
-    ('05_bestellungen_meine','/workspace?tab=mine',        True),
-    ('06_notifications',     '/notifications',             True),
-    ('07_reviews',           '/reviews',                   True),
-    ('08_admin_dashboard',   '/admin',                     True),
-    ('09_admin_rules',       '/admin/rules',               True),
-    ('10_admin_audit',       '/admin/audit-log',           True),
-]
+# Benutzer mit ihren Rollen und sichtbaren Seiten
+USERS = {
+    'test-requester': {
+        'label': 'Besteller',
+        'pages': [
+            ('01_login',              '/login',              False),
+            ('02_dashboard',          '/dashboard',          True),
+            ('03_shop',               '/shop',               True),
+            ('04_bestellungen',       '/workspace',          True),
+            ('05_bestellungen_meine', '/workspace?tab=mine', True),
+            ('06_notifications',      '/notifications',      True),
+            ('10_shop_windows',       '/shop/vm-windows/request', True),
+            ('11_shop_linux',         '/shop/vm-linux/request',   True),
+        ],
+    },
+    'test-approver': {
+        'label': 'Genehmiger',
+        'pages': [
+            ('01_login',              '/login',              False),
+            ('02_dashboard',          '/dashboard',          True),
+            ('03_shop',               '/shop',               True),
+            ('04_bestellungen',       '/workspace',          True),
+            ('06_notifications',      '/notifications',      True),
+            ('07_reviews',            '/reviews',            True),
+        ],
+    },
+    'test-admin': {
+        'label': 'Administrator',
+        'pages': [
+            ('01_login',              '/login',              False),
+            ('02_dashboard',          '/dashboard',          True),
+            ('03_shop',               '/shop',               True),
+            ('04_bestellungen',       '/workspace',          True),
+            ('06_notifications',      '/notifications',      True),
+            ('07_reviews',            '/reviews',            True),
+            ('08_admin_dashboard',    '/admin',              True),
+        ],
+    },
+    'test-multi': {
+        'label': 'Alle Rollen',
+        'pages': [
+            ('01_login',              '/login',              False),
+            ('02_dashboard',          '/dashboard',          True),
+            ('03_shop',               '/shop',               True),
+            ('04_bestellungen',       '/workspace',          True),
+            ('05_bestellungen_meine', '/workspace?tab=mine', True),
+            ('06_notifications',      '/notifications',      True),
+            ('07_reviews',            '/reviews',            True),
+            ('08_admin_dashboard',    '/admin',              True),
+            ('10_shop_windows',       '/shop/vm-windows/request', True),
+            ('11_shop_linux',         '/shop/vm-linux/request',   True),
+        ],
+    },
+    'test-superadmin': {
+        'label': 'Super Admin',
+        'pages': [
+            ('01_login',              '/login',              False),
+            ('02_dashboard',          '/dashboard',          True),
+            ('03_shop',               '/shop',               True),
+            ('04_bestellungen',       '/workspace',          True),
+            ('06_notifications',      '/notifications',      True),
+            ('07_reviews',            '/reviews',            True),
+            ('08_admin_dashboard',    '/admin',              True),
+            ('09_admin_rules',        '/admin/rules',        True),
+            ('10_admin_audit',        '/admin/audit-log',    True),
+        ],
+    },
+}
 
-# Quick-Modus: nur Hauptseiten
-MPP_PAGES_QUICK = [
-    ('01_login',             '/login',                     False),
-    ('02_dashboard',         '/dashboard',                 True),
-    ('03_shop',              '/shop',                      True),
-    ('04_bestellungen',      '/workspace',                 True),
-]
-
-# Zusaetzliche Seiten die Interaktion brauchen
-MPP_INTERACTIVE = [
-    # (name, path, needs_auth, action_description)
-    ('20_shop_windows_bestellen', '/shop/vm-windows/request', True),
-    ('21_shop_linux_bestellen',   '/shop/vm-linux/request',   True),
-]
+QUICK_PATHS = {'/login', '/dashboard', '/shop', '/workspace'}
 
 
 def _shot(page, output_dir, name, full_page=True, delay=500, webp=True):
@@ -77,7 +119,6 @@ def _shot(page, output_dir, name, full_page=True, delay=500, webp=True):
                 img = Image.open(_io.BytesIO(buf))
                 img.save(filepath, 'WEBP', quality=85)
             except ImportError:
-                # Fallback: PNG wenn Pillow fehlt
                 filepath = os.path.join(output_dir, f'{name}.png')
                 page.screenshot(path=filepath, full_page=full_page)
         else:
@@ -85,17 +126,16 @@ def _shot(page, output_dir, name, full_page=True, delay=500, webp=True):
 
         return filepath
     except Exception as e:
-        print(f"    x {name}: {e}")
+        print(f"      x {name}: {e}")
         return None
 
 
-def _login(page, base_url, username='test-multi'):
+def _login(page, base_url, username):
     """Login ueber die API und Token im localStorage setzen."""
     try:
         import urllib.request
         import json as _json
 
-        # Login via API
         req = urllib.request.Request(
             f'{base_url}/api/v1/auth/login',
             data=_json.dumps({'username': username}).encode(),
@@ -106,11 +146,9 @@ def _login(page, base_url, username='test-multi'):
         token = data['token']
         user = data['user']
 
-        # Token + User in localStorage setzen (wie zustand persist)
         page.goto(f'{base_url}/login', wait_until='networkidle', timeout=10000)
         page.wait_for_timeout(500)
 
-        # zustand auth store schreibt in localStorage
         page.evaluate(f"""
             const state = {{
                 state: {{
@@ -125,12 +163,13 @@ def _login(page, base_url, username='test-multi'):
         page.wait_for_timeout(200)
         return True
     except Exception as e:
-        print(f"    x Login fehlgeschlagen: {e}")
+        print(f"      x Login als {username} fehlgeschlagen: {e}")
         return False
 
 
 def take_screenshots(port=3000, viewports_list=None, version='1.0.0',
-                     browser_name='firefox', quick=False, webp=True):
+                     browser_name='firefox', quick=False, webp=True,
+                     user_filter=None):
 
     try:
         from playwright.sync_api import sync_playwright
@@ -144,90 +183,94 @@ def take_screenshots(port=3000, viewports_list=None, version='1.0.0',
     base_url = f'http://127.0.0.1:{port}'
     results = {}
 
-    pages = MPP_PAGES_QUICK if quick else MPP_PAGES
-    out_base = os.path.join(BASE_DIR, 'screenshots', f'v{version}')
+    users_to_run = {k: v for k, v in USERS.items()
+                    if not user_filter or k == user_filter}
+
+    total_pages = sum(len(u['pages']) for u in users_to_run.values())
 
     print(f"\n=== MPP Screenshot-Tool v{version} ===")
     print(f"   Server:    {base_url}")
+    print(f"   Benutzer:  {len(users_to_run)} ({', '.join(users_to_run.keys())})")
     print(f"   Viewports: {', '.join(viewports_list)}")
     print(f"   Format:    {'WebP' if webp else 'PNG'}")
     print(f"   Quick:     {'ja' if quick else 'nein'}")
-    print(f"   Seiten:    {len(pages)}")
+    print(f"   Seiten:    ~{total_pages}")
     print()
 
     with sync_playwright() as p:
         browser_type = getattr(p, browser_name, p.firefox)
         browser = browser_type.launch(headless=True)
 
-        for vp_name in viewports_list:
-            vp = VIEWPORTS.get(vp_name, VIEWPORTS['desktop'])
-            is_mob = (vp_name == 'mobile')
+        for username, user_config in users_to_run.items():
+            label = user_config['label']
+            pages = user_config['pages']
 
-            out = os.path.join(out_base, vp_name)
-            os.makedirs(out, exist_ok=True)
+            if quick:
+                pages = [(n, path, auth) for n, path, auth in pages
+                         if path.split('?')[0] in QUICK_PATHS]
 
-            ctx = browser.new_context(
-                viewport=vp,
-                device_scale_factor=2 if is_mob else 1,
-            )
-            pg = ctx.new_page()
+            print(f"  ── {username} ({label}) ──")
 
-            print(f"  -- {vp_name} ({vp['width']}x{vp['height']}) --")
+            for vp_name in viewports_list:
+                vp = VIEWPORTS.get(vp_name, VIEWPORTS['desktop'])
+                is_mob = (vp_name == 'mobile')
 
-            # Login-Seite zuerst (ohne Auth)
-            login_page = pages[0]
-            pg.goto(f'{base_url}{login_page[1]}', wait_until='networkidle', timeout=15000)
-            pg.wait_for_timeout(500)
-            r = _shot(pg, out, login_page[0], full_page=False, webp=webp)
-            if r:
-                results[os.path.basename(r)] = r
-                print(f"    + {login_page[0]}")
+                # screenshots/v1.0.0/test-requester/desktop/
+                out = os.path.join(BASE_DIR, 'screenshots', f'v{version}',
+                                   username, vp_name)
+                os.makedirs(out, exist_ok=True)
 
-            # Login
-            if not _login(pg, base_url):
-                print("    x Abbruch: Login fehlgeschlagen")
-                ctx.close()
-                continue
-            print("    + Login erfolgreich (test-multi)")
+                ctx = browser.new_context(
+                    viewport=vp,
+                    device_scale_factor=2 if is_mob else 1,
+                )
+                pg = ctx.new_page()
 
-            # Alle Seiten mit Auth
-            for name, path, needs_auth in pages[1:]:
-                if not needs_auth:
+                print(f"    {vp_name} ({vp['width']}x{vp['height']})")
+
+                # Login-Seite (ohne Auth)
+                pg.goto(f'{base_url}/login', wait_until='networkidle', timeout=15000)
+                pg.wait_for_timeout(500)
+                r = _shot(pg, out, '01_login', full_page=False, webp=webp)
+                if r:
+                    results[os.path.basename(r)] = r
+                    print(f"      + 01_login")
+
+                # Login als dieser User
+                if not _login(pg, base_url, username):
+                    print(f"      x Abbruch: Login fehlgeschlagen")
+                    ctx.close()
                     continue
-                try:
-                    pg.goto(f'{base_url}{path}', wait_until='networkidle', timeout=15000)
-                    pg.wait_for_timeout(800)
-                    r = _shot(pg, out, name, full_page=True, webp=webp)
-                    if r:
-                        results[os.path.basename(r)] = r
-                        print(f"    + {name}")
-                except Exception as e:
-                    print(f"    x {name}: {e}")
+                print(f"      + Login OK")
 
-            # Interaktive Seiten (nicht im Quick-Modus)
-            if not quick:
-                print("    -- Interaktiv --")
-                for name, path, needs_auth in MPP_INTERACTIVE:
+                # Alle Seiten mit Auth
+                for name, path, needs_auth in pages:
+                    if not needs_auth:
+                        continue
                     try:
-                        pg.goto(f'{base_url}{path}', wait_until='networkidle', timeout=15000)
-                        pg.wait_for_timeout(1000)
+                        pg.goto(f'{base_url}{path}', wait_until='networkidle',
+                                timeout=15000)
+                        pg.wait_for_timeout(800)
                         r = _shot(pg, out, name, full_page=True, webp=webp)
                         if r:
                             results[os.path.basename(r)] = r
-                            print(f"    + {name}")
+                            print(f"      + {name}")
                     except Exception as e:
-                        print(f"    x {name}: {e}")
+                        print(f"      x {name}: {e}")
 
-            ctx.close()
+                ctx.close()
+
             print()
 
         browser.close()
 
-    # Manifest
+    # Manifest pro Version
+    out_base = os.path.join(BASE_DIR, 'screenshots', f'v{version}')
     manifest = {
         'version':     version,
         'timestamp':   time.strftime('%Y-%m-%d %H:%M:%S'),
         'screenshots': len(results),
+        'users':       list(users_to_run.keys()),
         'viewports':   viewports_list,
         'browser':     browser_name,
         'format':      'webp' if webp else 'png',
@@ -237,17 +280,24 @@ def take_screenshots(port=3000, viewports_list=None, version='1.0.0',
     with open(os.path.join(out_base, 'manifest.json'), 'w', encoding='utf-8') as f:
         json.dump(manifest, f, indent=2, ensure_ascii=False)
 
-    print(f"\n=== {len(results)} Screenshots -> screenshots/v{version}/ ===")
+    print(f"=== {len(results)} Screenshots -> screenshots/v{version}/ ===")
     return results
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='MPP Screenshot-Tool')
     parser.add_argument('--port',     type=int, default=3000)
-    parser.add_argument('--browser',  choices=['firefox', 'chromium', 'webkit'], default='firefox')
-    parser.add_argument('--mobile',   action='store_true', help='Auch Mobile-Viewport')
-    parser.add_argument('--quick',    action='store_true', help='Nur Hauptseiten')
-    parser.add_argument('--png',      action='store_true', help='PNG statt WebP')
+    parser.add_argument('--browser',  choices=['firefox', 'chromium', 'webkit'],
+                        default='firefox')
+    parser.add_argument('--mobile',   action='store_true',
+                        help='Auch Mobile-Viewport')
+    parser.add_argument('--quick',    action='store_true',
+                        help='Nur Hauptseiten')
+    parser.add_argument('--png',      action='store_true',
+                        help='PNG statt WebP')
+    parser.add_argument('--user',     type=str, default=None,
+                        choices=list(USERS.keys()),
+                        help='Nur ein bestimmter Benutzer')
     parser.add_argument('--version',  type=str, default='1.0.0')
     args = parser.parse_args()
 
@@ -262,4 +312,5 @@ if __name__ == '__main__':
         browser_name=args.browser,
         quick=args.quick,
         webp=not args.png,
+        user_filter=args.user,
     )
