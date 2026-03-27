@@ -633,13 +633,46 @@ def seed():
         item_count = len(od["items"])
         print(f"  {order.order_number}: {od['title']} [{target}] ({item_count} item{'s' if item_count > 1 else ''})")
 
+    # ── Demo notifications ────────────────────────────────────
+    from app.services.notification_service import NotificationService
+    notif_service = NotificationService(session)
+    demo_notifs = [
+        ("order_submitted", "test-requester", "requester@test.local",
+         "Bestellung ORD-2026-00003 eingereicht",
+         "Ihre Bestellung 'Produktions-Webserver' wurde erfolgreich eingereicht."),
+        ("order_submitted", "test-requester", "requester@test.local",
+         "Bestellung ORD-2026-00005 eingereicht",
+         "Ihre Bestellung 'SAP Application Server' wurde bereitgestellt."),
+        ("order_submitted", "test-requester", "requester@test.local",
+         "Bestellung ORD-2026-00006 eingereicht",
+         "Ihre Bestellung 'Monitoring Stack' wurde bereitgestellt."),
+        ("approval_requested", "test-approver", "approver@test.local",
+         "Genehmigung erforderlich: ORD-2026-00003",
+         "Bestellung ORD-2026-00003 von test-requester erfordert Ihre Genehmigung."),
+        ("approval_requested", "test-multi", "multi@test.local",
+         "Genehmigung erforderlich: ORD-2026-00003",
+         "Bestellung ORD-2026-00003 von test-requester erfordert Ihre Genehmigung."),
+        ("approval_requested", "test-multi", "multi@test.local",
+         "Genehmigung erforderlich: ORD-2026-00008",
+         "Bestellung ORD-2026-00008 von test-approver erfordert Ihre Genehmigung."),
+        ("order_submitted", "test-admin", "admin@test.local",
+         "Bestellung ORD-2026-00007 eingereicht",
+         "Ihre Bestellung 'Domain Controller Standort2' wurde eingereicht."),
+        ("order_submitted", "test-approver", "approver@test.local",
+         "Bestellung ORD-2026-00008 eingereicht",
+         "Ihre Bestellung 'Fileserver Abteilung Finanzen' wurde eingereicht."),
+    ]
+    for evt, rid, email, subj, body in demo_notifs:
+        notif_service.send(evt, email, rid, subj, body)
+    print(f"  Created {len(demo_notifs)} notifications")
+
     session.close()
-    print(f"\nSeed complete! {len(templates)} templates + {len(demo_orders)} orders.")
+    print(f"\nSeed complete! {len(templates)} templates + {len(demo_orders)} orders + {len(demo_notifs)} notifications.")
     print("\nLogin:")
-    print("  test-requester  — 5 eigene Bestellungen")
-    print("  test-approver   — 1 eigene Bestellung")
-    print("  test-admin      — 1 eigene Bestellung, sieht alle")
-    print("  test-multi      — alle Rollen")
+    print("  test-requester  — 6 eigene Bestellungen, 3 Notifications")
+    print("  test-approver   — 1 eigene Bestellung, 2 Notifications")
+    print("  test-admin      — 1 eigene Bestellung, 1 Notification, sieht alle")
+    print("  test-multi      — alle Rollen, 2 Notifications, sieht alle")
 
 
 if __name__ == "__main__":

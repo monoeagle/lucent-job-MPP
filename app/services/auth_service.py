@@ -27,7 +27,7 @@ STUB_USERS = [
         username="test-multi",
         display_name="Test Multi Role",
         email="multi@test.local",
-        roles=[Role.REQUESTER, Role.APPROVER],
+        roles=[Role.REQUESTER, Role.APPROVER, Role.ADMIN],
     ),
 ]
 

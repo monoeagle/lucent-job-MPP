@@ -464,8 +464,14 @@ reset_database() {
         createdb -O mpp mpp_dev 2>/dev/null
     }
 
-    echo -e "  ${YELLOW}Migrationen ausführen...${NC}"
-    alembic upgrade head 2>&1
+    echo -e "  ${YELLOW}Schema erstellen...${NC}"
+    python -c "
+from app.data.db.session import get_engine, Base
+from app.data.db.models import *
+engine = get_engine('$DATABASE_URL')
+Base.metadata.create_all(engine)
+print('  Schema erstellt.')
+" 2>&1
 
     echo -e "  ${YELLOW}Demo-Daten laden...${NC}"
     python scripts/seed.py 2>&1
