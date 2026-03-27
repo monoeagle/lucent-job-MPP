@@ -1,6 +1,9 @@
+import logging
 from datetime import datetime, timezone
 
 from flask import Blueprint, jsonify, request, g, current_app
+
+logger = logging.getLogger(__name__)
 
 from app.core.auth import login_required
 from app.core.errors import NotFoundError, ForbiddenError, ConflictError, ValidationError
@@ -388,7 +391,7 @@ def submit_order(order_id):
                 prov_service.dispatch_order(order_id)
                 submitted = order_repo.get_by_id(order_id)
             except Exception:
-                pass  # Dispatch failure should not block submit
+                logger.exception("Dispatch failed for order %s", order_id)
 
     # Send notification
     from app.services.notification_service import NotificationService
@@ -404,7 +407,7 @@ def submit_order(order_id):
             },
         )
     except Exception:
-        pass  # Notification failure should not block submit
+        logger.exception("Notification failed for order %s", submitted.order_number)
 
     # Create subscriptions
     from app.data.repositories.subscription_repository import SubscriptionRepository
@@ -414,7 +417,7 @@ def submit_order(order_id):
         sub_service = SubscriptionService(sub_repo)
         sub_service.create_from_order(submitted, template_costs={})
     except Exception:
-        pass  # Subscription creation failure should not block submit
+        logger.exception("Subscription creation failed for order %s", submitted.order_number)
 
     return jsonify({
         "order_id": submitted.id,

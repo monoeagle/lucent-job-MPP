@@ -104,7 +104,7 @@ class TestCreateCredentialLink:
 
 
 class TestRetrieveCredentials:
-    def test_retrieve_credentials_with_token(self, cred_client, admin_header, seed_order):
+    def test_retrieve_credentials_with_token(self, cred_client, admin_header, requester_header, seed_order):
         order_id, item_id = seed_order
         create_resp = cred_client.post(
             f"/api/v1/admin/orders/{order_id}/items/{item_id}/credentials",
@@ -113,8 +113,8 @@ class TestRetrieveCredentials:
         )
         token = create_resp.get_json()["token"]
 
-        # No auth required
-        resp = cred_client.get(f"/api/v1/credentials/{token}")
+        # Auth required now
+        resp = cred_client.get(f"/api/v1/credentials/{token}", headers=requester_header)
         assert resp.status_code == 200
         data = resp.get_json()
         assert data["credentials"]["username"] == "admin"
@@ -122,7 +122,18 @@ class TestRetrieveCredentials:
         assert data["credentials"]["host"] == "10.0.0.1"
         assert "accessed_at" in data
 
-    def test_retrieve_same_token_again_returns_410(self, cred_client, admin_header, seed_order):
+    def test_retrieve_without_auth_returns_401(self, cred_client, admin_header, seed_order):
+        order_id, item_id = seed_order
+        create_resp = cred_client.post(
+            f"/api/v1/admin/orders/{order_id}/items/{item_id}/credentials",
+            headers=admin_header,
+            json={"credentials": {"username": "admin", "password": "s3cret", "host": "10.0.0.1"}},
+        )
+        token = create_resp.get_json()["token"]
+        resp = cred_client.get(f"/api/v1/credentials/{token}")
+        assert resp.status_code == 401
+
+    def test_retrieve_same_token_again_returns_410(self, cred_client, admin_header, requester_header, seed_order):
         order_id, item_id = seed_order
         create_resp = cred_client.post(
             f"/api/v1/admin/orders/{order_id}/items/{item_id}/credentials",
@@ -132,16 +143,16 @@ class TestRetrieveCredentials:
         token = create_resp.get_json()["token"]
 
         # First access
-        cred_client.get(f"/api/v1/credentials/{token}")
+        cred_client.get(f"/api/v1/credentials/{token}", headers=requester_header)
         # Second access — consumed
-        resp = cred_client.get(f"/api/v1/credentials/{token}")
+        resp = cred_client.get(f"/api/v1/credentials/{token}", headers=requester_header)
         assert resp.status_code == 410
 
-    def test_retrieve_invalid_token_returns_404(self, cred_client):
-        resp = cred_client.get("/api/v1/credentials/invalid-token-value")
+    def test_retrieve_invalid_token_returns_404(self, cred_client, requester_header):
+        resp = cred_client.get("/api/v1/credentials/invalid-token-value", headers=requester_header)
         assert resp.status_code == 404
 
-    def test_retrieve_after_expiry_returns_410(self, cred_client, admin_header, seed_order, cred_app):
+    def test_retrieve_after_expiry_returns_410(self, cred_client, admin_header, requester_header, seed_order, cred_app):
         order_id, item_id = seed_order
         create_resp = cred_client.post(
             f"/api/v1/admin/orders/{order_id}/items/{item_id}/credentials",
@@ -162,5 +173,5 @@ class TestRetrieveCredentials:
             session.commit()
             session.close()
 
-        resp = cred_client.get(f"/api/v1/credentials/{token}")
+        resp = cred_client.get(f"/api/v1/credentials/{token}", headers=requester_header)
         assert resp.status_code == 410

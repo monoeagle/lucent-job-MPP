@@ -29,6 +29,7 @@ class Config:
         self.GITLAB_URL = os.environ.get("GITLAB_URL", "")
         self.GITLAB_TOKEN = os.environ.get("GITLAB_TOKEN", "")
         self.GITLAB_PROJECT_ID = os.environ.get("GITLAB_PROJECT_ID", "1")
+        self.GITLAB_WEBHOOK_SECRET = os.environ.get("GITLAB_WEBHOOK_SECRET", "")
         self.APPROVAL_DEFAULT_DEADLINE_HOURS = int(
             os.environ.get("APPROVAL_DEFAULT_DEADLINE_HOURS", "48")
         )

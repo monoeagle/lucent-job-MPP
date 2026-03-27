@@ -1,7 +1,11 @@
 # app/api/v1/provisioning.py
+import logging
+
 from flask import Blueprint, jsonify, request, g, current_app
 
-from app.core.auth import role_required
+from app.core.auth import login_required, role_required
+
+logger = logging.getLogger(__name__)
 from app.data.repositories.dispatch_log_repository import DispatchLogRepository
 from app.data.repositories.order_repository import OrderRepository
 from app.services.provisioning_service import ProvisioningService
@@ -32,10 +36,17 @@ def _serialize_log(log) -> dict:
     }
 
 
-# ── Webhook (no auth) ────────────────────────────────────────
+# ── Webhook (token-auth) ─────────────────────────────────────
 
 @bp.route("/webhooks/gitlab", methods=["POST"])
 def gitlab_webhook():
+    expected_token = current_app.config.get("GITLAB_WEBHOOK_SECRET", "")
+    received_token = request.headers.get("X-Gitlab-Token", "")
+
+    if not expected_token or received_token != expected_token:
+        logger.warning("Webhook rejected: invalid or missing X-Gitlab-Token")
+        return jsonify({"error": "Unauthorized"}), 401
+
     data = request.get_json(silent=True) or {}
     obj = data.get("object_attributes", {})
     pipeline_id = obj.get("id")
@@ -46,7 +57,7 @@ def gitlab_webhook():
             service = _get_provisioning_service()
             service.handle_webhook(pipeline_id, status)
         except Exception:
-            pass  # Webhook must always return 200
+            logger.exception("Webhook processing failed for pipeline %s", pipeline_id)
 
     return jsonify({"received": True}), 200
 
@@ -97,6 +108,7 @@ def create_credential_link(order_id, item_id):
 
 
 @bp.route("/credentials/<token>", methods=["GET"])
+@login_required
 def retrieve_credentials(token):
     service = CredentialService(g.db_session)
     try:

@@ -17,9 +17,26 @@ def db_session(app):
 
 
 class TestWebhookEndpoint:
-    def test_webhook_pipeline_status_returns_200(self, client, db_session):
+    def test_webhook_without_token_returns_401(self, client, db_session):
         resp = client.post(
             "/api/v1/webhooks/gitlab",
+            json={"object_attributes": {"id": 42, "status": "success"}},
+        )
+        assert resp.status_code == 401
+
+    def test_webhook_with_wrong_token_returns_401(self, client, db_session):
+        resp = client.post(
+            "/api/v1/webhooks/gitlab",
+            headers={"X-Gitlab-Token": "wrong-token"},
+            json={"object_attributes": {"id": 42, "status": "success"}},
+        )
+        assert resp.status_code == 401
+
+    def test_webhook_with_valid_token_returns_200(self, client, db_session, app):
+        app.config["GITLAB_WEBHOOK_SECRET"] = "test-webhook-secret"
+        resp = client.post(
+            "/api/v1/webhooks/gitlab",
+            headers={"X-Gitlab-Token": "test-webhook-secret"},
             json={
                 "object_kind": "pipeline",
                 "object_attributes": {"id": 42, "status": "success"},
@@ -27,9 +44,11 @@ class TestWebhookEndpoint:
         )
         assert resp.status_code == 200
 
-    def test_webhook_missing_body_returns_200(self, client, db_session):
+    def test_webhook_empty_body_with_valid_token_returns_200(self, client, db_session, app):
+        app.config["GITLAB_WEBHOOK_SECRET"] = "test-webhook-secret"
         resp = client.post(
             "/api/v1/webhooks/gitlab",
+            headers={"X-Gitlab-Token": "test-webhook-secret"},
             json={},
         )
         assert resp.status_code == 200
