@@ -7,6 +7,10 @@ import AppLayout from './components/Layout/AppLayout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Catalog from './pages/Catalog'
+import OrderList from './pages/OrderList'
+import OrderNew from './pages/OrderNew'
+import OrderDetail from './pages/OrderDetail'
+import OrderExport from './pages/OrderExport'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,7 +37,10 @@ function AppRoutes() {
       >
         <Route index element={<Navigate to="/orders" replace />} />
         <Route path="/catalog" element={<Catalog />} />
-        <Route path="/orders" element={<Dashboard />} />
+        <Route path="/orders" element={<OrderList />} />
+        <Route path="/orders/new" element={<OrderNew />} />
+        <Route path="/orders/:orderId" element={<OrderDetail />} />
+        <Route path="/orders/:orderId/export" element={<OrderExport />} />
         <Route path="/resources" element={<Dashboard />} />
         <Route path="/approvals" element={<Dashboard />} />
         <Route path="/admin/*" element={<Dashboard />} />
