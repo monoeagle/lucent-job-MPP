@@ -6,3 +6,6 @@ frontend/tsconfig.tsbuildinfo
 *.pyc
 .pytest_cache/
 logs/
+screenshots/
+_TRANSFER_NON_DOCKER/
+agents_md.zip
