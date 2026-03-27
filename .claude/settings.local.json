@@ -126,7 +126,13 @@
       "Bash(python -m pytest tests/integration/test_order_groups_repo.py -x -q)",
       "Bash(python -m pytest tests/integration/test_order_groups_repo.py -v)",
       "Bash(python -m pytest tests/unit/test_order_groups_service.py -v)",
-      "Bash(python -m pytest -q)"
+      "Bash(python -m pytest -q)",
+      "Bash(DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_test pytest tests/integration/test_order_groups_repo.py tests/unit/test_order_groups_service.py -v --tb=short)",
+      "Bash(DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_test pytest tests/integration/test_order_groups_api.py -v --tb=short)",
+      "Bash(DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_test pytest tests/ -q --tb=short)",
+      "Bash(DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_test pytest tests/unit/test_order_service.py -v --tb=short)",
+      "Bash(DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_test pytest tests/integration/test_order_quantity_api.py -v --tb=short)",
+      "Bash(DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_test pytest tests/integration/test_order_export_api.py tests/integration/test_order_quantity_api.py -v --tb=short)"
     ]
   }
 }
