@@ -99,7 +99,22 @@
       "Read(//home/meagle/.nvm/**)",
       "Read(//home/meagle/.nvm/alias/**)",
       "Bash(export PATH=\"$HOME/.nvm/versions/node/v22.22.2/bin:$PATH\")",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Read(//home/meagle/Dokumente/CLAUDE/lucent-hub-apps/lucent-app-mpp-TDD/$HOME/.nvm/**)",
+      "Bash(source $HOME/.nvm/nvm.sh)",
+      "Bash(nvm ls:*)",
+      "Bash(bash -c 'export NVM_DIR=\"$HOME/.nvm\" && source \"$NVM_DIR/nvm.sh\" && nvm use 22 && node --version')",
+      "Bash(bash -l -c 'nvm use 22 && node --version' 2>&1)",
+      "Bash(npx tsc:*)",
+      "Bash(bash -l -c 'cd /home/meagle/Dokumente/CLAUDE/lucent-hub-apps/lucent-app-mpp-TDD/frontend && node -v && npx vitest --version' 2>&1)",
+      "Bash(bash -l -c 'export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 22 && node -v && cd /home/meagle/Dokumente/CLAUDE/lucent-hub-apps/lucent-app-mpp-TDD/frontend && npx vitest run 2>&1')",
+      "Bash(bash -l -c 'export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 22 && node -v' 2>&1)",
+      "Bash(bash -l -c 'export NVM_DIR=\"$HOME/.nvm\" && [ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm ls' 2>&1)",
+      "Bash(source /home/meagle/Dokumente/CLAUDE/lucent-hub-apps/lucent-app-mpp-TDD/venv/bin/activate)",
+      "Bash(chmod:*)",
+      "Bash(python scripts/seed.py)",
+      "Bash(pytest tests/e2e/ -v --tb=short)",
+      "Bash(find frontend/tests -name *.ts -o -name *.tsx)"
     ]
   }
 }
