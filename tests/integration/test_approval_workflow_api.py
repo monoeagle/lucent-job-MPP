@@ -72,8 +72,8 @@ class TestListPendingApprovals:
         resp = workflow_client.get("/api/v1/approvals", headers=approver_header)
         assert resp.status_code == 200
         data = resp.get_json()
-        assert len(data) >= 1
-        assert any(a["id"] == approval_id for a in data)
+        assert len(data["items"]) >= 1
+        assert any(a["id"] == approval_id for a in data["items"])
 
     def test_requester_sees_own_orders_only(self, workflow_client, workflow_session):
         _create_pending_approval(workflow_session, requester_id="test-requester")
@@ -84,7 +84,7 @@ class TestListPendingApprovals:
         assert resp.status_code == 200
         data = resp.get_json()
         # Requester should only see their own
-        for item in data:
+        for item in data["items"]:
             assert item["requester_id"] == "test-requester"
 
 

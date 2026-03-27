@@ -56,4 +56,4 @@ class TestAuthLogin:
             json={"username": "test-multi", "password": "stub-password"},
         )
         data = response.get_json()
-        assert set(data["user"]["roles"]) == {"requester", "approver"}
+        assert set(data["user"]["roles"]) == {"requester", "approver", "admin"}

@@ -235,7 +235,7 @@ class TestApproveTriggersProvisioning:
         # Find the approval request
         approver_header = _auth_header(integ_client, "test-approver")
         resp = integ_client.get("/api/v1/approvals", headers=approver_header)
-        approvals = resp.get_json()
+        approvals = resp.get_json()["items"]
         approval_id = next(a["id"] for a in approvals if a["order_id"] == order_id)
 
         # Approve

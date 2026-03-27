@@ -32,7 +32,7 @@ class TestAuthServiceStub:
 
     def test_login_multi_role_user(self):
         result = self.service.login("test-multi", "stub-password")
-        assert set(result["user"]["roles"]) == {"requester", "approver"}
+        assert set(result["user"]["roles"]) == {"requester", "approver", "admin"}
 
     def test_token_contains_correct_claims(self):
         result = self.service.login("test-admin", "stub-password")
