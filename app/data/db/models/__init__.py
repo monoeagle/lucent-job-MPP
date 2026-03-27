@@ -7,3 +7,4 @@ from app.data.db.models.context_rule import (
 )
 from app.data.db.models.dispatch_log import DispatchLogModel
 from app.data.db.models.approval import ApprovalRuleModel, ApprovalRequestModel
+from app.data.db.models.audit_log import AuditLogModel

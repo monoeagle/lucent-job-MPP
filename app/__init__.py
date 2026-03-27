@@ -83,6 +83,9 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     app.register_blueprint(approvals.admin_bp)
     app.register_blueprint(approvals.approvals_bp)
 
+    from app.api.v1 import admin
+    app.register_blueprint(admin.bp)
+
     # GitLab client
     if app.config.get("GITLAB_URL"):
         from app.data.clients.gitlab_client import GitLabClient
