@@ -77,13 +77,13 @@ function AppRoutes() {
         />
         {/* Redirects from old paths */}
         <Route path="/catalog" element={<Navigate to="/shop" replace />} />
-        <Route path="/my-services" element={<Navigate to="/workspace?tab=services" replace />} />
-        <Route path="/my-requests" element={<Navigate to="/workspace?tab=requests" replace />} />
+        <Route path="/my-services" element={<Navigate to="/workspace?tab=orders" replace />} />
+        <Route path="/my-requests" element={<Navigate to="/workspace?tab=orders" replace />} />
         <Route path="/notifications" element={<Navigate to="/workspace?tab=notifications" replace />} />
         <Route path="/reviews" element={<Navigate to="/workspace?tab=reviews" replace />} />
         <Route path="/approvals" element={<Navigate to="/workspace?tab=reviews" replace />} />
-        <Route path="/resources" element={<Navigate to="/workspace?tab=services" replace />} />
-        <Route path="/subscriptions" element={<Navigate to="/workspace?tab=services" replace />} />
+        <Route path="/resources" element={<Navigate to="/workspace?tab=orders" replace />} />
+        <Route path="/subscriptions" element={<Navigate to="/workspace?tab=orders" replace />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

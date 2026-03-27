@@ -1,23 +1,21 @@
 import { useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { useUnreadCount } from '../hooks/useNotifications'
-import MyServices from './MyServices'
-import MyRequests from './MyRequests'
+import OrderList from './OrderList'
 import Notifications from './Notifications'
 import Approvals from './Approvals'
 
-type WorkspaceTab = 'services' | 'requests' | 'notifications' | 'reviews'
+type WorkspaceTab = 'orders' | 'notifications' | 'reviews'
 
 const TABS: Array<{ key: WorkspaceTab; label: string; roles?: string[] }> = [
-  { key: 'services', label: 'My Services' },
-  { key: 'requests', label: 'My Requests' },
+  { key: 'orders', label: 'Meine Bestellungen' },
   { key: 'notifications', label: 'Notifications' },
   { key: 'reviews', label: 'Review Requests', roles: ['approver', 'admin'] },
 ]
 
 export default function Workspace() {
   const [searchParams, setSearchParams] = useSearchParams()
-  const activeTab = (searchParams.get('tab') as WorkspaceTab) || 'services'
+  const activeTab = (searchParams.get('tab') as WorkspaceTab) || 'orders'
   const user = useAuthStore((s) => s.user)
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
@@ -33,7 +31,6 @@ export default function Workspace() {
 
   return (
     <div>
-      {/* Tab bar */}
       <div className="flex gap-1 mb-6 border-b border-gray-200">
         {visibleTabs.map((tab) => (
           <button
@@ -55,9 +52,7 @@ export default function Workspace() {
         ))}
       </div>
 
-      {/* Tab content */}
-      {activeTab === 'services' && <MyServices />}
-      {activeTab === 'requests' && <MyRequests />}
+      {activeTab === 'orders' && <OrderList />}
       {activeTab === 'notifications' && <Notifications />}
       {activeTab === 'reviews' && <Approvals />}
     </div>

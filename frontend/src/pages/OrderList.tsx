@@ -1,9 +1,22 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useOrders } from '../hooks/useOrders'
 import StatusBadge from '../components/StatusBadge'
 
+const STATUS_FILTERS = [
+  { value: '', label: 'Alle' },
+  { value: 'draft', label: 'Entwurf' },
+  { value: 'submitted', label: 'Eingereicht' },
+  { value: 'pending_approval', label: 'Genehmigung' },
+  { value: 'provisioning', label: 'Bereitstellung' },
+  { value: 'done', label: 'Aktiv' },
+  { value: 'cancelled', label: 'Storniert' },
+  { value: 'failed', label: 'Fehlgeschlagen' },
+]
+
 export default function OrderList() {
-  const { data, isLoading, error } = useOrders()
+  const [statusFilter, setStatusFilter] = useState('')
+  const { data, isLoading, error } = useOrders(statusFilter ? { status: statusFilter } : undefined)
 
   if (isLoading) return <p className="text-gray-500">Lade Bestellungen...</p>
   if (error) return <p className="text-red-500">Fehler beim Laden der Bestellungen.</p>
@@ -12,16 +25,30 @@ export default function OrderList() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Bestellungen</h1>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex gap-1 flex-wrap">
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => setStatusFilter(f.value)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                statusFilter === f.value
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
         <Link to="/orders/new"
-          className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700">
+          className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 shrink-0">
           Neue Bestellung
         </Link>
       </div>
 
       {orders.length === 0 ? (
-        <p className="text-gray-500">Keine Bestellungen vorhanden.</p>
+        <p className="text-gray-400 text-sm py-8 text-center">Keine Bestellungen gefunden.</p>
       ) : (
         <table className="w-full text-sm">
           <thead>
