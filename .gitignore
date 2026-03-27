@@ -1,2 +1,7 @@
 __pycache__/
 node_modules/
+venv/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
+*.pyc
+.pytest_cache/
