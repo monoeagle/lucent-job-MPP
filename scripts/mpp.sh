@@ -416,6 +416,66 @@ run_tests() {
     wait_for_enter
 }
 
+# ── DB Reset ───────────────────────────────────────────────
+
+reset_database() {
+    echo -e "${RED}╔══════════════════════════════════════════════╗${NC}"
+    echo -e "${RED}║  ACHTUNG: Datenbank wird komplett gelöscht!  ║${NC}"
+    echo -e "${RED}╚══════════════════════════════════════════════╝${NC}"
+    echo ""
+    echo "  Dies löscht ALLE Daten (Orders, Templates, Subscriptions, etc.)"
+    echo "  und spielt die Demo-Daten neu ein."
+    echo ""
+    read -rp "  Wirklich fortfahren? (j/N) " -n 1
+    echo ""
+
+    if [[ ! $REPLY =~ ^[jJyY]$ ]]; then
+        echo "  Abgebrochen."
+        wait_for_enter
+        return
+    fi
+
+    # Stop backend if running
+    if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
+        echo -e "  ${YELLOW}Backend wird gestoppt...${NC}"
+        kill "$BACKEND_PID" 2>/dev/null
+        BACKEND_PID=""
+        sleep 1
+    fi
+
+    cd "$PROJECT_DIR"
+    if ! check_venv > /dev/null 2>&1; then
+        echo -e "${RED}Python venv nicht gefunden.${NC}"
+        wait_for_enter; return
+    fi
+    if ! check_postgres > /dev/null 2>&1; then
+        echo -e "${RED}PostgreSQL muss laufen.${NC}"
+        wait_for_enter; return
+    fi
+
+    source venv/bin/activate
+    export DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_dev
+
+    echo ""
+    echo -e "  ${YELLOW}Lösche Datenbank...${NC}"
+    psql "$DATABASE_URL" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>&1 || {
+        echo -e "  ${RED}DB-Drop fehlgeschlagen. Versuche dropdb/createdb...${NC}"
+        dropdb mpp_dev 2>/dev/null
+        createdb -O mpp mpp_dev 2>/dev/null
+    }
+
+    echo -e "  ${YELLOW}Migrationen ausführen...${NC}"
+    alembic upgrade head 2>&1
+
+    echo -e "  ${YELLOW}Demo-Daten laden...${NC}"
+    python scripts/seed.py 2>&1
+
+    echo ""
+    echo -e "  ${GREEN}✓ Datenbank zurückgesetzt und neu befüllt!${NC}"
+    echo -e "  ${GREEN}  Alle Templates mit aktuellen Parametern geladen.${NC}"
+    wait_for_enter
+}
+
 # ── Main ────────────────────────────────────────────────────
 
 mkdir -p "$PROJECT_DIR/logs"
@@ -443,6 +503,7 @@ while true; do
     echo -e "${CYAN}Tools:${NC}"
     echo "  [8] Logs anzeigen"
     echo "  [9] Tests ausführen"
+    echo -e "  [r] ${RED}DB Reset + Neu-Seed${NC}"
     echo ""
     echo "  [q] Beenden"
     echo ""
@@ -458,6 +519,7 @@ while true; do
         7) stop_docs ;;
         8) show_logs ;;
         9) run_tests ;;
+        r|R) reset_database ;;
         q|Q) echo -e "${YELLOW}Bye!${NC}"; exit 0 ;;
         *) echo -e "${RED}Ungültige Eingabe.${NC}"; sleep 1 ;;
     esac
