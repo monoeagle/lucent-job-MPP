@@ -1,6 +1,10 @@
 # app/services/order_service.py
+import logging
+
 from app.domain.order import OrderStatus, ItemValidationState
 from app.domain.catalog import DependencyRule
+
+logger = logging.getLogger(__name__)
 
 
 class OrderService:
@@ -167,6 +171,84 @@ class OrderService:
 
         updated = self.order_repo.update_order_status(order_id, OrderStatus.SUBMITTED)
         return {"order": updated}
+
+    def post_submit(self, order, db_session, app_config):
+        """Orchestrate post-submission steps: approval, dispatch, notification, subscription."""
+        from app.data.repositories.approval_repository import ApprovalRepository
+        from app.data.repositories.dispatch_log_repository import DispatchLogRepository
+        from app.data.repositories.subscription_repository import SubscriptionRepository
+        from app.services.approval_service import ApprovalService
+        from app.services.notification_service import NotificationService
+        from app.services.provisioning_service import ProvisioningService
+        from app.services.subscription_service import SubscriptionService
+
+        order_repo = self.order_repo
+
+        # 1. Approval evaluation
+        try:
+            template_repo = self.template_repo
+            approval_repo = ApprovalRepository(db_session)
+            approval_service = ApprovalService(
+                approval_repo=approval_repo,
+                order_repo=order_repo,
+                template_repo=template_repo,
+                allow_self_approval=app_config.config.get(
+                    "APPROVAL_ALLOW_SELF_APPROVAL", False),
+                default_deadline_hours=app_config.config.get(
+                    "APPROVAL_DEFAULT_DEADLINE_HOURS", 48),
+            )
+            matched_rules = approval_service.evaluate_rules(order)
+        except Exception:
+            logger.exception("Approval evaluation failed for order %s", order.id)
+            matched_rules = None
+
+        # 2. Create approval request or dispatch
+        if matched_rules:
+            try:
+                approval_service.create_approval_request(order.id, matched_rules)
+                order_repo.update_order_status(order.id, "pending_approval")
+                order = order_repo.get_by_id(order.id)
+            except Exception:
+                logger.exception("Approval request creation failed for order %s", order.id)
+        elif matched_rules is not None:
+            # No approval needed -- trigger dispatch if GitLab client is configured
+            gitlab_client = getattr(app_config, "gitlab_client", None)
+            if gitlab_client is not None:
+                try:
+                    dispatch_log_repo = DispatchLogRepository(db_session)
+                    prov_service = ProvisioningService(
+                        order_repo, dispatch_log_repo, gitlab_client,
+                    )
+                    prov_service.dispatch_order(order.id)
+                    order = order_repo.get_by_id(order.id)
+                except Exception:
+                    logger.exception("Dispatch failed for order %s", order.id)
+
+        # 3. Notification
+        try:
+            notif_service = NotificationService(db_session)
+            notif_service.create_event_notification(
+                event_type="order_submitted",
+                recipient_id=order.requester_id,
+                recipient_email=f"{order.requester_id}@marketplace.local",
+                context={
+                    "order_number": order.order_number,
+                    "title": order.title or "",
+                },
+            )
+        except Exception:
+            logger.exception("Notification failed for order %s", order.order_number)
+
+        # 4. Subscription creation
+        try:
+            sub_repo = SubscriptionRepository(db_session)
+            sub_service = SubscriptionService(sub_repo)
+            sub_service.create_from_order(order, template_costs={})
+        except Exception:
+            logger.exception(
+                "Subscription creation failed for order %s", order.order_number)
+
+        return order
 
     def export_tofu(self, order_id: str, requester_id: str) -> dict:
         order = self._get_order_for_requester(order_id, requester_id)
