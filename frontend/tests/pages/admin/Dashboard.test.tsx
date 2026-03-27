@@ -47,7 +47,7 @@ describe('Admin Dashboard', () => {
     })
     expect(screen.getByText('Eingereicht')).toBeInTheDocument()
     expect(screen.getByText('Genehmigt')).toBeInTheDocument()
-    expect(screen.getByText('Aktiv')).toBeInTheDocument()
+    expect(screen.getByText('Abgeschlossen')).toBeInTheDocument()
     expect(screen.getByText('Abgelehnt')).toBeInTheDocument()
   })
 

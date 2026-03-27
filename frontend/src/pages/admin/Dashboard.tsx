@@ -14,7 +14,7 @@ const STATUS_LABELS: Record<string, { label: string; color: string }> = {
   pending_approval: { label: 'Genehmigung offen',  color: 'text-yellow-600' },
   approved:         { label: 'Genehmigt',          color: 'text-green-500' },
   provisioning:     { label: 'Bereitstellung',     color: 'text-purple-600' },
-  done:             { label: 'Aktiv',              color: 'text-green-600' },
+  done:             { label: 'Abgeschlossen',       color: 'text-green-600' },
   cancelled:        { label: 'Storniert',          color: 'text-gray-400' },
   rejected:         { label: 'Abgelehnt',          color: 'text-red-500' },
   failed:           { label: 'Fehlgeschlagen',     color: 'text-red-600' },
