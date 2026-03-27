@@ -94,6 +94,12 @@ export default function OrderDetail() {
 
   return (
     <div>
+      <button
+        onClick={() => navigate(-1)}
+        className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center gap-1"
+      >
+        ← Zurück
+      </button>
       <div className="flex items-center gap-4 mb-6">
         <div>
           <p className="text-sm text-gray-400">{order.order_number}</p>

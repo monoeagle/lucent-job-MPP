@@ -5,6 +5,7 @@ interface AuthState {
   token: string | null
   user: User | null
   isAuthenticated: boolean
+  isRestored: boolean
   setAuth: (token: string, user: User) => void
   logout: () => void
   restoreSession: () => void
@@ -14,17 +15,18 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   user: null,
   isAuthenticated: false,
+  isRestored: false,
 
   setAuth: (token: string, user: User) => {
     localStorage.setItem('auth-token', token)
     localStorage.setItem('auth-user', JSON.stringify(user))
-    set({ token, user, isAuthenticated: true })
+    set({ token, user, isAuthenticated: true, isRestored: true })
   },
 
   logout: () => {
     localStorage.removeItem('auth-token')
     localStorage.removeItem('auth-user')
-    set({ token: null, user: null, isAuthenticated: false })
+    set({ token: null, user: null, isAuthenticated: false, isRestored: true })
   },
 
   restoreSession: () => {
@@ -33,11 +35,14 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (token && userStr) {
       try {
         const user = JSON.parse(userStr) as User
-        set({ token, user, isAuthenticated: true })
+        set({ token, user, isAuthenticated: true, isRestored: true })
       } catch {
         localStorage.removeItem('auth-token')
         localStorage.removeItem('auth-user')
+        set({ isRestored: true })
       }
+    } else {
+      set({ isRestored: true })
     }
   },
 }))

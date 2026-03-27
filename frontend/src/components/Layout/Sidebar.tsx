@@ -77,7 +77,7 @@ export default function Sidebar() {
   const { data: unreadData } = useUnreadCount()
   const unreadCount = unreadData?.count ?? 0
 
-  const isApprover = user?.roles.includes('approver') || user?.roles.includes('admin')
+  const isApprover = user?.roles.some((r) => ['approver', 'admin', 'superadmin'].includes(r))
   const { data: approvalsData } = useQuery({
     queryKey: ['pending-approvals-count'],
     queryFn: () => approvalsApi.listPendingApprovals(token!),

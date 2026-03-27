@@ -27,6 +27,7 @@ export default function ServiceRequest() {
   const { slug } = useParams<{ slug: string }>()
   const [searchParams] = useSearchParams()
   const orderId = searchParams.get('orderId')
+  const viewParam = searchParams.get('view') as ViewMode | null
   const navigate = useNavigate()
   const { data: template, isLoading } = useTemplate(slug ?? null)
 
@@ -40,11 +41,13 @@ export default function ServiceRequest() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (template) {
+    if (viewParam === 'wizard' || viewParam === 'form') {
+      setView(viewParam)
+    } else if (template) {
       const stored = getStoredView(template.slug)
       setView(stored ?? getDefaultView(template.metadata))
     }
-  }, [template])
+  }, [template, viewParam])
 
   // Listen for view toggle from Header
   useEffect(() => {

@@ -492,6 +492,86 @@ print('  Schema erstellt.')
     wait_for_enter
 }
 
+# ── Screenshots ───────────────────────────────────────────
+
+run_screenshots() {
+    echo -e "${CYAN}Screenshots erstellen...${NC}"
+    echo ""
+
+    # Pruefen ob Backend laeuft
+    BE_OK=false
+    if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
+        BE_OK=true
+    elif curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:5000/api/v1/health" 2>/dev/null | grep -q "200"; then
+        BE_OK=true
+    fi
+
+    if [ "$BE_OK" = false ]; then
+        echo -e "  ${RED}Backend nicht erreichbar (Port 5000)!${NC}"
+        echo -e "  ${YELLOW}Screenshots brauchen Backend + Frontend.${NC}"
+        echo -e "  ${YELLOW}Bitte zuerst [1] Backend oder [4] Alles starten.${NC}"
+        wait_for_enter
+        return
+    fi
+    echo -e "  Backend:  ${GREEN}erreichbar${NC}"
+
+    # Pruefen ob Frontend laeuft
+    FE_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:3000/" 2>/dev/null || echo "000")
+    if [[ "$FE_CODE" != "200" && "$FE_CODE" != "304" ]]; then
+        echo -e "  ${RED}Frontend nicht erreichbar (Port 3000)!${NC}"
+        echo -e "  ${YELLOW}Bitte zuerst [2] Frontend oder [4] Alles starten.${NC}"
+        wait_for_enter
+        return
+    fi
+    echo -e "  Frontend: ${GREEN}erreichbar${NC}"
+    echo ""
+
+    echo "  [1] Alle Benutzer, alle Seiten"
+    echo "  [2] Alle Benutzer, nur Hauptseiten (Quick)"
+    echo "  [3] Einzelner Benutzer wählen"
+    echo "  [4] Desktop + Mobile"
+    echo "  [0] Zurück"
+    echo ""
+    read -rp "Wahl: " scr_choice
+
+    cd "$PROJECT_DIR"
+    source venv/bin/activate
+
+    case $scr_choice in
+        1)
+            python3 scripts/screenshot_tool.py --port 3000
+            ;;
+        2)
+            python3 scripts/screenshot_tool.py --port 3000 --quick
+            ;;
+        3)
+            echo ""
+            echo "  [1] test-requester  (Besteller)"
+            echo "  [2] test-approver   (Genehmiger)"
+            echo "  [3] test-admin      (Administrator)"
+            echo "  [4] test-multi      (Alle Rollen)"
+            echo "  [5] test-superadmin (Super Admin)"
+            echo ""
+            read -rp "Benutzer: " user_choice
+            case $user_choice in
+                1) USR="test-requester" ;;
+                2) USR="test-approver" ;;
+                3) USR="test-admin" ;;
+                4) USR="test-multi" ;;
+                5) USR="test-superadmin" ;;
+                *) echo "Ungültig."; wait_for_enter; return ;;
+            esac
+            python3 scripts/screenshot_tool.py --port 3000 --user "$USR"
+            ;;
+        4)
+            python3 scripts/screenshot_tool.py --port 3000 --mobile
+            ;;
+        0) return ;;
+        *) echo -e "${RED}Ungültige Eingabe.${NC}" ;;
+    esac
+    wait_for_enter
+}
+
 # ── Main ────────────────────────────────────────────────────
 
 mkdir -p "$PROJECT_DIR/logs"
@@ -544,7 +624,7 @@ while true; do
         7) stop_docs ;;
         8) show_logs ;;
         9) run_tests ;;
-        s|S) echo -e "${CYAN}Screenshots erstellen...${NC}"; bash "$PROJECT_DIR/scripts/run_screenshots.sh"; wait_for_enter ;;
+        s|S) run_screenshots ;;
         r|R) reset_database ;;
         q|Q) echo -e "${YELLOW}Bye!${NC}"; exit 0 ;;
         *) echo -e "${RED}Ungültige Eingabe.${NC}"; sleep 1 ;;

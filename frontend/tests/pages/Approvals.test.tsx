@@ -7,7 +7,7 @@ import { useAuthStore } from '../../src/store/authStore'
 
 vi.mock('../../src/api/approvals', () => ({
   approvalsApi: {
-    listPendingApprovals: vi.fn().mockResolvedValue({
+    listAllApprovals: vi.fn().mockResolvedValue({
       items: [
         {
           id: 'a1',

@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useSubscription, useRequestCancel } from '../hooks/useSubscriptions'
 import StatusBadge from '../components/StatusBadge'
 
 export default function SubscriptionDetail() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { data: sub, isLoading } = useSubscription(id ?? null)
   const requestCancel = useRequestCancel(id ?? '')
 
@@ -25,6 +26,12 @@ export default function SubscriptionDetail() {
 
   return (
     <div>
+      <button
+        onClick={() => navigate(-1)}
+        className="text-sm text-gray-500 hover:text-gray-700 mb-4 flex items-center gap-1"
+      >
+        ← Zurück
+      </button>
       <div className="flex items-center gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-bold">{sub.display_name}</h1>

@@ -86,13 +86,28 @@ describe('Sidebar', () => {
       expect(screen.getByText('Review Requests')).toBeInTheDocument()
     })
 
-    it('shows admin section for admin', () => {
+    it('shows admin section for admin (only Admin Dashboard)', () => {
       useAuthStore.setState({
         user: {
           username: 'admin',
           display_name: 'Admin',
           email: 'admin@example.com',
           roles: ['admin'],
+        },
+      })
+      renderSidebar()
+      expect(screen.getByText('Admin Dashboard')).toBeInTheDocument()
+      expect(screen.queryByText('Rules')).not.toBeInTheDocument()
+      expect(screen.queryByText('Audit Log')).not.toBeInTheDocument()
+    })
+
+    it('shows full admin section for superadmin', () => {
+      useAuthStore.setState({
+        user: {
+          username: 'superadmin',
+          display_name: 'Super Admin',
+          email: 'superadmin@example.com',
+          roles: ['superadmin'],
         },
       })
       renderSidebar()

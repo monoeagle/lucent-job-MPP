@@ -33,70 +33,134 @@ VIEWPORTS = {
 }
 
 # Benutzer mit ihren Rollen und sichtbaren Seiten
+# ── Page Actions ──────────────────────────────────────────────
+# Aktionen die nach dem Laden einer Seite ausgefuehrt werden,
+# bevor der Screenshot gemacht wird.
+
+def _action_fill_windows_form(page):
+    """Windows-VM-Formular mit Beispieldaten ausfuellen."""
+    _fill_service_form(page, {
+        'system_type': 'app',
+        'mandant': 'a1',
+        'security_area': 'sec1',
+        'org_area': 'ou1',
+        'location': 'standort1',
+        'ad_tier': 'tier1',
+        'network_layer': 'backend',
+        'network_vlan': 'vlan100',
+        'ad_assignment': 'prod',
+        'vmware_cluster': 'single-site',
+        'os_template': 'win2022',
+        'tshirt_size': 'm',
+    })
+    page.locator('#param-dns_server').fill('10.0.1.53')
+    page.wait_for_timeout(500)
+
+
+def _action_fill_linux_form(page):
+    """Linux-VM-Formular mit Beispieldaten ausfuellen."""
+    _fill_service_form(page, {
+        'system_type': 'db',
+        'mandant': 'b1',
+        'security_area': 'sec1',
+        'org_area': 'ou2',
+        'location': 'standort1',
+        'ad_tier': 'tier1',
+        'network_layer': 'backend',
+        'network_vlan': 'vlan100',
+        'ad_assignment': 'app',
+        'vmware_cluster': 'dual-site',
+        'os_template': 'ubuntu2404',
+        'tshirt_size': 'l',
+    })
+    page.locator('#param-dns_server').fill('10.0.2.53')
+    page.wait_for_timeout(500)
+
+
+def _fill_service_form(page, selects):
+    """Enum-Felder (select) in der FormView setzen — mit Locator-API fuer korrekte Events."""
+    for key, value in selects.items():
+        loc = page.locator(f'#param-{key}')
+        if loc.count() > 0:
+            loc.select_option(value=value)
+            page.wait_for_timeout(200)
+
+
+def _action_expand_reviews(page):
+    """Erste 2 Review-Eintraege aufklappen."""
+    rows = page.query_selector_all('[aria-expanded]')
+    for row in rows[:2]:
+        row.click()
+        page.wait_for_timeout(300)
+
+
+# ── Seiten-Definitionen ──────────────────────────────────────
+# Tuple: (name, path, needs_auth, action_fn|None)
+
 USERS = {
     'test-requester': {
         'label': 'Besteller',
         'pages': [
-            ('01_login',              '/login',              False),
-            ('02_dashboard',          '/dashboard',          True),
-            ('03_shop',               '/shop',               True),
-            ('04_bestellungen',       '/workspace',          True),
-            ('05_bestellungen_meine', '/workspace?tab=mine', True),
-            ('06_notifications',      '/notifications',      True),
-            ('10_shop_windows',       '/shop/vm-windows/request', True),
-            ('11_shop_linux',         '/shop/vm-linux/request',   True),
+            ('01_login',              '/login',              False, None),
+            ('02_dashboard',          '/dashboard',          True,  None),
+            ('03_shop',               '/shop',               True,  None),
+            ('04_bestellungen',       '/workspace',          True,  None),
+            ('05_bestellungen_meine', '/workspace?tab=mine', True,  None),
+            ('06_notifications',      '/notifications',      True,  None),
+            ('10_shop_windows',       '/shop/vm-windows/request?view=form', True, _action_fill_windows_form),
+            ('11_shop_linux',         '/shop/vm-linux/request?view=form',   True, _action_fill_linux_form),
         ],
     },
     'test-approver': {
         'label': 'Genehmiger',
         'pages': [
-            ('01_login',              '/login',              False),
-            ('02_dashboard',          '/dashboard',          True),
-            ('03_shop',               '/shop',               True),
-            ('04_bestellungen',       '/workspace',          True),
-            ('06_notifications',      '/notifications',      True),
-            ('07_reviews',            '/reviews',            True),
+            ('01_login',              '/login',              False, None),
+            ('02_dashboard',          '/dashboard',          True,  None),
+            ('03_shop',               '/shop',               True,  None),
+            ('04_bestellungen',       '/workspace',          True,  None),
+            ('06_notifications',      '/notifications',      True,  None),
+            ('07_reviews',            '/reviews',            True,  _action_expand_reviews),
         ],
     },
     'test-admin': {
         'label': 'Administrator',
         'pages': [
-            ('01_login',              '/login',              False),
-            ('02_dashboard',          '/dashboard',          True),
-            ('03_shop',               '/shop',               True),
-            ('04_bestellungen',       '/workspace',          True),
-            ('06_notifications',      '/notifications',      True),
-            ('07_reviews',            '/reviews',            True),
-            ('08_admin_dashboard',    '/admin',              True),
+            ('01_login',              '/login',              False, None),
+            ('02_dashboard',          '/dashboard',          True,  None),
+            ('03_shop',               '/shop',               True,  None),
+            ('04_bestellungen',       '/workspace',          True,  None),
+            ('06_notifications',      '/notifications',      True,  None),
+            ('07_reviews',            '/reviews',            True,  _action_expand_reviews),
+            ('08_admin_dashboard',    '/admin',              True,  None),
         ],
     },
     'test-multi': {
         'label': 'Alle Rollen',
         'pages': [
-            ('01_login',              '/login',              False),
-            ('02_dashboard',          '/dashboard',          True),
-            ('03_shop',               '/shop',               True),
-            ('04_bestellungen',       '/workspace',          True),
-            ('05_bestellungen_meine', '/workspace?tab=mine', True),
-            ('06_notifications',      '/notifications',      True),
-            ('07_reviews',            '/reviews',            True),
-            ('08_admin_dashboard',    '/admin',              True),
-            ('10_shop_windows',       '/shop/vm-windows/request', True),
-            ('11_shop_linux',         '/shop/vm-linux/request',   True),
+            ('01_login',              '/login',              False, None),
+            ('02_dashboard',          '/dashboard',          True,  None),
+            ('03_shop',               '/shop',               True,  None),
+            ('04_bestellungen',       '/workspace',          True,  None),
+            ('05_bestellungen_meine', '/workspace?tab=mine', True,  None),
+            ('06_notifications',      '/notifications',      True,  None),
+            ('07_reviews',            '/reviews',            True,  _action_expand_reviews),
+            ('08_admin_dashboard',    '/admin',              True,  None),
+            ('10_shop_windows',       '/shop/vm-windows/request?view=form', True, _action_fill_windows_form),
+            ('11_shop_linux',         '/shop/vm-linux/request?view=form',   True, _action_fill_linux_form),
         ],
     },
     'test-superadmin': {
         'label': 'Super Admin',
         'pages': [
-            ('01_login',              '/login',              False),
-            ('02_dashboard',          '/dashboard',          True),
-            ('03_shop',               '/shop',               True),
-            ('04_bestellungen',       '/workspace',          True),
-            ('06_notifications',      '/notifications',      True),
-            ('07_reviews',            '/reviews',            True),
-            ('08_admin_dashboard',    '/admin',              True),
-            ('09_admin_rules',        '/admin/rules',        True),
-            ('10_admin_audit',        '/admin/audit-log',    True),
+            ('01_login',              '/login',              False, None),
+            ('02_dashboard',          '/dashboard',          True,  None),
+            ('03_shop',               '/shop',               True,  None),
+            ('04_bestellungen',       '/workspace',          True,  None),
+            ('06_notifications',      '/notifications',      True,  None),
+            ('07_reviews',            '/reviews',            True,  _action_expand_reviews),
+            ('08_admin_dashboard',    '/admin',              True,  None),
+            ('09_admin_rules',        '/admin/rules',        True,  None),
+            ('10_admin_audit',        '/admin/audit-log',    True,  None),
         ],
     },
 }
@@ -130,37 +194,51 @@ def _shot(page, output_dir, name, full_page=True, delay=500, webp=True):
         return None
 
 
+def _check_backend(base_url):
+    """Prueft ob das Backend erreichbar ist."""
+    try:
+        import urllib.request
+        req = urllib.request.Request(f'{base_url}/api/v1/health')
+        resp = urllib.request.urlopen(req, timeout=3)
+        return resp.status == 200
+    except Exception:
+        return False
+
+
 def _login(page, base_url, username):
-    """Login ueber die API und Token im localStorage setzen."""
+    """Login per API-Call, Token direkt in localStorage setzen (kein UI-Formular)."""
     try:
         import urllib.request
         import json as _json
 
+        # 1) Token vom Backend holen
         req = urllib.request.Request(
-            f'{base_url}/api/v1/auth/login',
+            f'http://127.0.0.1:5000/api/v1/auth/login',
             data=_json.dumps({'username': username}).encode(),
             headers={'Content-Type': 'application/json'},
         )
         resp = urllib.request.urlopen(req, timeout=5)
         data = _json.loads(resp.read())
         token = data['token']
-        user = data['user']
+        user_obj = data['user']
 
-        page.goto(f'{base_url}/login', wait_until='networkidle', timeout=10000)
-        page.wait_for_timeout(500)
+        # 2) Seite laden damit localStorage auf dem richtigen Origin verfuegbar ist
+        page.goto(f'{base_url}/login', wait_until='commit', timeout=15000)
 
-        page.evaluate(f"""
-            const state = {{
-                state: {{
-                    token: '{token}',
-                    user: {_json.dumps(user)},
-                    isAuthenticated: true
-                }},
-                version: 0
-            }};
-            localStorage.setItem('auth-storage', JSON.stringify(state));
-        """)
-        page.wait_for_timeout(200)
+        # 3) Token + User in localStorage setzen (gleiche Keys wie authStore.ts)
+        page.evaluate("""([token, userJson]) => {
+            localStorage.setItem('auth-token', token);
+            localStorage.setItem('auth-user', userJson);
+        }""", [token, _json.dumps(user_obj)])
+
+        # 4) Zu Dashboard navigieren — restoreSession() liest localStorage beim App-Mount
+        page.goto(f'{base_url}/dashboard', wait_until='networkidle', timeout=15000)
+        page.wait_for_timeout(1500)
+
+        if '/login' in page.url:
+            print(f"      x Token gesetzt aber Redirect zu /login")
+            return False
+
         return True
     except Exception as e:
         print(f"      x Login als {username} fehlgeschlagen: {e}")
@@ -188,8 +266,17 @@ def take_screenshots(port=3000, viewports_list=None, version='1.0.0',
 
     total_pages = sum(len(u['pages']) for u in users_to_run.values())
 
+    # Backend-Check (Login braucht API)
+    backend_url = f'http://127.0.0.1:5000'
+    if not _check_backend(backend_url):
+        print(f"\n!!! Backend nicht erreichbar auf {backend_url} !!!")
+        print(f"    Login wird fehlschlagen. Bitte Backend starten (Flask :5000).")
+        print(f"    Abbruch.")
+        return {}
+
     print(f"\n=== MPP Screenshot-Tool v{version} ===")
-    print(f"   Server:    {base_url}")
+    print(f"   Frontend:  {base_url}")
+    print(f"   Backend:   {backend_url} (OK)")
     print(f"   Benutzer:  {len(users_to_run)} ({', '.join(users_to_run.keys())})")
     print(f"   Viewports: {', '.join(viewports_list)}")
     print(f"   Format:    {'WebP' if webp else 'PNG'}")
@@ -206,7 +293,7 @@ def take_screenshots(port=3000, viewports_list=None, version='1.0.0',
             pages = user_config['pages']
 
             if quick:
-                pages = [(n, path, auth) for n, path, auth in pages
+                pages = [(n, path, auth, act) for n, path, auth, act in pages
                          if path.split('?')[0] in QUICK_PATHS]
 
             print(f"  ── {username} ({label}) ──")
@@ -244,13 +331,22 @@ def take_screenshots(port=3000, viewports_list=None, version='1.0.0',
                 print(f"      + Login OK")
 
                 # Alle Seiten mit Auth
-                for name, path, needs_auth in pages:
+                for name, path, needs_auth, action in pages:
                     if not needs_auth:
                         continue
                     try:
                         pg.goto(f'{base_url}{path}', wait_until='networkidle',
                                 timeout=15000)
                         pg.wait_for_timeout(800)
+
+                        # Page-Action ausfuehren (Formulare fuellen, Reviews aufklappen, etc.)
+                        if action:
+                            try:
+                                action(pg)
+                                pg.wait_for_timeout(500)
+                            except Exception as ae:
+                                print(f"      ! {name}: Action-Warnung: {ae}")
+
                         r = _shot(pg, out, name, full_page=True, webp=webp)
                         if r:
                             results[os.path.basename(r)] = r
