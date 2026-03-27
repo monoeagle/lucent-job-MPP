@@ -1,10 +1,11 @@
 #!/bin/bash
 # Marketplace Portal — Dev Launcher
-# Unified menu for starting backend, frontend, or both.
+# Unified menu for starting backend, frontend, docs, or all.
 
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BACKEND_PID=""
 FRONTEND_PID=""
+DOCS_PID=""
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -18,8 +19,10 @@ cleanup() {
     echo -e "${YELLOW}Stopping services...${NC}"
     [ -n "$BACKEND_PID" ] && kill "$BACKEND_PID" 2>/dev/null && echo "  Backend stopped."
     [ -n "$FRONTEND_PID" ] && kill "$FRONTEND_PID" 2>/dev/null && echo "  Frontend stopped."
+    [ -n "$DOCS_PID" ] && kill "$DOCS_PID" 2>/dev/null && echo "  Docs stopped."
     BACKEND_PID=""
     FRONTEND_PID=""
+    DOCS_PID=""
 }
 
 trap cleanup EXIT
@@ -30,12 +33,14 @@ wait_for_enter() {
     read -r
 }
 
+# ── Prereq Checks ──────────────────────────────────────────
+
 check_postgres() {
     if pg_isready -q 2>/dev/null; then
-        echo -e "  PostgreSQL: ${GREEN}running${NC}"
+        echo -e "  PostgreSQL:  ${GREEN}running${NC}"
         return 0
     else
-        echo -e "  PostgreSQL: ${RED}not running${NC}"
+        echo -e "  PostgreSQL:  ${RED}not running${NC}"
         return 1
     fi
 }
@@ -44,38 +49,96 @@ check_node() {
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
     if nvm use 22 >/dev/null 2>&1; then
-        echo -e "  Node.js:    ${GREEN}$(node --version)${NC}"
+        echo -e "  Node.js:     ${GREEN}$(node --version)${NC}"
         return 0
     else
-        echo -e "  Node.js 22: ${RED}not available${NC} (run: nvm install 22)"
+        echo -e "  Node.js 22:  ${RED}not available${NC} (run: nvm install 22)"
         return 1
     fi
 }
 
 check_venv() {
     if [ -f "$PROJECT_DIR/venv/bin/activate" ]; then
-        echo -e "  Python venv:${GREEN} found${NC}"
+        echo -e "  Python venv: ${GREEN}found${NC}"
         return 0
     else
-        echo -e "  Python venv:${RED} not found${NC} (run: python3 -m venv venv && pip install -r requirements.txt)"
-        return 1
+        echo -e "  Python venv: ${RED}not found${NC}"
+        echo -e "  ${YELLOW}Erstelle venv...${NC}"
+        python3 -m venv "$PROJECT_DIR/venv" && \
+            source "$PROJECT_DIR/venv/bin/activate" && \
+            pip install -r "$PROJECT_DIR/requirements.txt" -q
+        if [ $? -eq 0 ]; then
+            echo -e "  Python venv: ${GREEN}erstellt${NC}"
+            return 0
+        else
+            echo -e "  Python venv: ${RED}Installation fehlgeschlagen${NC}"
+            return 1
+        fi
     fi
 }
 
-status_line() {
-    if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
-        echo -e "  Backend:    ${GREEN}running${NC} (PID $BACKEND_PID) → http://localhost:5000/api/v1/health"
+check_docs_venv() {
+    local DOCS_VENV="$PROJECT_DIR/mpp-docs/.venv-docs"
+    if [ -f "$DOCS_VENV/bin/activate" ]; then
+        echo -e "  Docs venv:   ${GREEN}found${NC}"
+        return 0
     else
-        BACKEND_PID=""
-        echo -e "  Backend:    ${RED}stopped${NC}"
-    fi
-    if [ -n "$FRONTEND_PID" ] && kill -0 "$FRONTEND_PID" 2>/dev/null; then
-        echo -e "  Frontend:   ${GREEN}running${NC} (PID $FRONTEND_PID) → http://localhost:3000"
-    else
-        FRONTEND_PID=""
-        echo -e "  Frontend:   ${RED}stopped${NC}"
+        echo -e "  Docs venv:   ${YELLOW}not found — erstelle...${NC}"
+        python3 -m venv "$DOCS_VENV" && \
+            source "$DOCS_VENV/bin/activate" && \
+            pip install zensical -q 2>&1
+        if [ $? -eq 0 ]; then
+            echo -e "  Docs venv:   ${GREEN}erstellt + zensical installiert${NC}"
+            deactivate 2>/dev/null
+            return 0
+        else
+            echo -e "  Docs venv:   ${RED}Installation fehlgeschlagen${NC}"
+            return 1
+        fi
     fi
 }
+
+check_frontend_deps() {
+    if [ -d "$PROJECT_DIR/frontend/node_modules" ]; then
+        echo -e "  node_modules:${GREEN} found${NC}"
+        return 0
+    else
+        echo -e "  node_modules:${YELLOW} not found — installiere...${NC}"
+        cd "$PROJECT_DIR/frontend" && npm install -q 2>&1
+        if [ $? -eq 0 ]; then
+            echo -e "  node_modules:${GREEN} installiert${NC}"
+            return 0
+        else
+            echo -e "  node_modules:${RED} Installation fehlgeschlagen${NC}"
+            return 1
+        fi
+    fi
+}
+
+# ── Status ──────────────────────────────────────────────────
+
+status_line() {
+    if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
+        echo -e "  Backend:     ${GREEN}running${NC} (PID $BACKEND_PID) → http://localhost:5000/api/v1/health"
+    else
+        BACKEND_PID=""
+        echo -e "  Backend:     ${RED}stopped${NC}"
+    fi
+    if [ -n "$FRONTEND_PID" ] && kill -0 "$FRONTEND_PID" 2>/dev/null; then
+        echo -e "  Frontend:    ${GREEN}running${NC} (PID $FRONTEND_PID) → http://localhost:3000"
+    else
+        FRONTEND_PID=""
+        echo -e "  Frontend:    ${RED}stopped${NC}"
+    fi
+    if [ -n "$DOCS_PID" ] && kill -0 "$DOCS_PID" 2>/dev/null; then
+        echo -e "  Docs:        ${GREEN}running${NC} (PID $DOCS_PID) → http://localhost:5078"
+    else
+        DOCS_PID=""
+        echo -e "  Docs:        ${RED}stopped${NC}"
+    fi
+}
+
+# ── Backend ─────────────────────────────────────────────────
 
 start_backend() {
     if [ -n "$BACKEND_PID" ] && kill -0 "$BACKEND_PID" 2>/dev/null; then
@@ -87,15 +150,10 @@ start_backend() {
     echo -e "${CYAN}Backend starten...${NC}"
     cd "$PROJECT_DIR"
 
-    if ! check_venv; then
-        wait_for_enter
-        return
-    fi
-
+    if ! check_venv; then wait_for_enter; return; fi
     if ! check_postgres; then
         echo -e "${RED}PostgreSQL muss laufen. Bitte starten: sudo systemctl start postgresql${NC}"
-        wait_for_enter
-        return
+        wait_for_enter; return
     fi
 
     source venv/bin/activate
@@ -107,8 +165,7 @@ start_backend() {
     echo "  Datenbank-Migrationen..."
     if ! alembic upgrade head 2>&1; then
         echo -e "${RED}Migration fehlgeschlagen!${NC}"
-        wait_for_enter
-        return
+        wait_for_enter; return
     fi
 
     echo "  Demo-Daten laden..."
@@ -143,6 +200,8 @@ stop_backend() {
     wait_for_enter
 }
 
+# ── Frontend ────────────────────────────────────────────────
+
 start_frontend() {
     if [ -n "$FRONTEND_PID" ] && kill -0 "$FRONTEND_PID" 2>/dev/null; then
         echo -e "${YELLOW}Frontend läuft bereits (PID $FRONTEND_PID).${NC}"
@@ -153,22 +212,10 @@ start_frontend() {
     echo -e "${CYAN}Frontend starten...${NC}"
     cd "$PROJECT_DIR"
 
-    if ! check_node; then
-        wait_for_enter
-        return
-    fi
+    if ! check_node; then wait_for_enter; return; fi
+    if ! check_frontend_deps; then wait_for_enter; return; fi
 
     cd frontend
-
-    if [ ! -d "node_modules" ]; then
-        echo "  Dependencies installieren..."
-        if ! npm install 2>&1; then
-            echo -e "${RED}npm install fehlgeschlagen!${NC}"
-            wait_for_enter
-            return
-        fi
-    fi
-
     echo "  Vite starten auf Port 3000..."
     npx vite --port 3000 > "$PROJECT_DIR/logs/frontend.log" 2>&1 &
     FRONTEND_PID=$!
@@ -199,69 +246,135 @@ stop_frontend() {
     wait_for_enter
 }
 
-start_both() {
-    echo -e "${CYAN}Backend + Frontend starten...${NC}"
+# ── Docs ────────────────────────────────────────────────────
+
+start_docs() {
+    if [ -n "$DOCS_PID" ] && kill -0 "$DOCS_PID" 2>/dev/null; then
+        echo -e "${YELLOW}Docs läuft bereits (PID $DOCS_PID).${NC}"
+        wait_for_enter
+        return
+    fi
+
+    echo -e "${CYAN}Dokumentation starten...${NC}"
+    cd "$PROJECT_DIR"
+
+    if ! check_docs_venv; then wait_for_enter; return; fi
+
+    cd mpp-docs
+    source .venv-docs/bin/activate
+
+    echo "  Zensical starten auf Port 5078..."
+    python -m zensical serve --dev-addr 0.0.0.0:5078 > "$PROJECT_DIR/logs/docs.log" 2>&1 &
+    DOCS_PID=$!
+    sleep 2
+
+    if kill -0 "$DOCS_PID" 2>/dev/null; then
+        echo -e "${GREEN}Docs gestartet (PID $DOCS_PID)${NC}"
+        echo -e "  URL:    ${BOLD}http://localhost:5078${NC}"
+        echo -e "  Log:    tail -f logs/docs.log"
+    else
+        echo -e "${RED}Docs konnten nicht gestartet werden!${NC}"
+        echo "  Log-Ausgabe:"
+        cat "$PROJECT_DIR/logs/docs.log" 2>/dev/null
+        DOCS_PID=""
+    fi
+    deactivate 2>/dev/null
+    wait_for_enter
+}
+
+stop_docs() {
+    if [ -n "$DOCS_PID" ] && kill -0 "$DOCS_PID" 2>/dev/null; then
+        kill "$DOCS_PID" 2>/dev/null
+        echo -e "${YELLOW}Docs gestoppt.${NC}"
+        DOCS_PID=""
+    else
+        echo -e "${YELLOW}Docs läuft nicht.${NC}"
+    fi
+    wait_for_enter
+}
+
+# ── Alles starten ───────────────────────────────────────────
+
+start_all() {
+    echo -e "${CYAN}Backend + Frontend + Docs starten...${NC}"
+    echo ""
 
     # Backend
     if [ -z "$BACKEND_PID" ] || ! kill -0 "$BACKEND_PID" 2>/dev/null; then
         cd "$PROJECT_DIR"
         if check_venv && check_postgres; then
             source venv/bin/activate
-            export AUTH_MODE=stub
-            export CMDB_MODE=stub
+            export AUTH_MODE=stub CMDB_MODE=stub FLASK_APP=app
             export DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_dev
-            export FLASK_APP=app
             alembic upgrade head > /dev/null 2>&1
             python scripts/seed.py 2>/dev/null
             flask run --port 5000 > "$PROJECT_DIR/logs/backend.log" 2>&1 &
-            BACKEND_PID=$!
-            sleep 1
+            BACKEND_PID=$!; sleep 1
             if kill -0 "$BACKEND_PID" 2>/dev/null; then
                 echo -e "  Backend:  ${GREEN}gestartet${NC} (PID $BACKEND_PID)"
             else
-                echo -e "  Backend:  ${RED}fehlgeschlagen${NC}"
+                echo -e "  Backend:  ${RED}fehlgeschlagen${NC} — siehe logs/backend.log"
                 BACKEND_PID=""
             fi
         fi
-    else
-        echo -e "  Backend:  ${GREEN}läuft bereits${NC}"
-    fi
+    else echo -e "  Backend:  ${GREEN}läuft bereits${NC}"; fi
 
     # Frontend
     if [ -z "$FRONTEND_PID" ] || ! kill -0 "$FRONTEND_PID" 2>/dev/null; then
         cd "$PROJECT_DIR"
-        export NVM_DIR="$HOME/.nvm"
-        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-        nvm use 22 >/dev/null 2>&1
-        cd frontend
-        [ ! -d "node_modules" ] && npm install > /dev/null 2>&1
-        npx vite --port 3000 > "$PROJECT_DIR/logs/frontend.log" 2>&1 &
-        FRONTEND_PID=$!
-        sleep 2
-        if kill -0 "$FRONTEND_PID" 2>/dev/null; then
-            echo -e "  Frontend: ${GREEN}gestartet${NC} (PID $FRONTEND_PID)"
-        else
-            echo -e "  Frontend: ${RED}fehlgeschlagen${NC}"
-            FRONTEND_PID=""
+        if check_node; then
+            check_frontend_deps > /dev/null 2>&1
+            cd frontend
+            npx vite --port 3000 > "$PROJECT_DIR/logs/frontend.log" 2>&1 &
+            FRONTEND_PID=$!; sleep 2
+            if kill -0 "$FRONTEND_PID" 2>/dev/null; then
+                echo -e "  Frontend: ${GREEN}gestartet${NC} (PID $FRONTEND_PID)"
+            else
+                echo -e "  Frontend: ${RED}fehlgeschlagen${NC} — siehe logs/frontend.log"
+                FRONTEND_PID=""
+            fi
         fi
-    else
-        echo -e "  Frontend: ${GREEN}läuft bereits${NC}"
-    fi
+    else echo -e "  Frontend: ${GREEN}läuft bereits${NC}"; fi
+
+    # Docs
+    if [ -z "$DOCS_PID" ] || ! kill -0 "$DOCS_PID" 2>/dev/null; then
+        cd "$PROJECT_DIR"
+        if check_docs_venv > /dev/null 2>&1; then
+            cd mpp-docs && source .venv-docs/bin/activate
+            python -m zensical serve --dev-addr 0.0.0.0:5078 > "$PROJECT_DIR/logs/docs.log" 2>&1 &
+            DOCS_PID=$!; sleep 2
+            deactivate 2>/dev/null
+            if kill -0 "$DOCS_PID" 2>/dev/null; then
+                echo -e "  Docs:     ${GREEN}gestartet${NC} (PID $DOCS_PID)"
+            else
+                echo -e "  Docs:     ${RED}fehlgeschlagen${NC} — siehe logs/docs.log"
+                DOCS_PID=""
+            fi
+        fi
+    else echo -e "  Docs:     ${GREEN}läuft bereits${NC}"; fi
 
     echo ""
-    echo -e "${BOLD}Portal: http://localhost:3000${NC}"
-    echo -e "Login:  test-requester (kein Passwort)"
+    echo -e "${BOLD}Portal:    http://localhost:3000${NC}  (Login: test-requester)"
+    echo -e "${BOLD}API:       http://localhost:5000/api/v1/health${NC}"
+    echo -e "${BOLD}Docs:      http://localhost:5078${NC}"
     wait_for_enter
 }
+
+# ── Logs ────────────────────────────────────────────────────
 
 show_logs() {
     echo -e "${CYAN}=== Backend Log (letzte 20 Zeilen) ===${NC}"
-    tail -20 "$PROJECT_DIR/logs/backend.log" 2>/dev/null || echo "  (kein Log vorhanden)"
+    tail -20 "$PROJECT_DIR/logs/backend.log" 2>/dev/null || echo "  (kein Log)"
     echo ""
     echo -e "${CYAN}=== Frontend Log (letzte 20 Zeilen) ===${NC}"
-    tail -20 "$PROJECT_DIR/logs/frontend.log" 2>/dev/null || echo "  (kein Log vorhanden)"
+    tail -20 "$PROJECT_DIR/logs/frontend.log" 2>/dev/null || echo "  (kein Log)"
+    echo ""
+    echo -e "${CYAN}=== Docs Log (letzte 20 Zeilen) ===${NC}"
+    tail -20 "$PROJECT_DIR/logs/docs.log" 2>/dev/null || echo "  (kein Log)"
     wait_for_enter
 }
+
+# ── Tests ───────────────────────────────────────────────────
 
 run_tests() {
     echo -e "${CYAN}Tests ausführen...${NC}"
@@ -303,27 +416,33 @@ run_tests() {
     wait_for_enter
 }
 
-# Create logs directory
+# ── Main ────────────────────────────────────────────────────
+
 mkdir -p "$PROJECT_DIR/logs"
 
-# Main menu loop
 while true; do
     clear
-    echo -e "${BOLD}╔══════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}║   Marketplace Portal — Dev Launcher      ║${NC}"
-    echo -e "${BOLD}╚══════════════════════════════════════════╝${NC}"
+    echo -e "${BOLD}╔══════════════════════════════════════════════╗${NC}"
+    echo -e "${BOLD}║   Marketplace Portal — Dev Launcher           ║${NC}"
+    echo -e "${BOLD}╚══════════════════════════════════════════════╝${NC}"
     echo ""
     echo -e "${CYAN}Status:${NC}"
     status_line
     echo ""
-    echo -e "${CYAN}Aktionen:${NC}"
-    echo "  [1] Backend starten"
-    echo "  [2] Frontend starten"
-    echo "  [3] Beides starten"
-    echo "  [4] Backend stoppen"
-    echo "  [5] Frontend stoppen"
-    echo "  [6] Logs anzeigen"
-    echo "  [7] Tests ausführen"
+    echo -e "${CYAN}Starten:${NC}"
+    echo "  [1] Backend       (Flask :5000)"
+    echo "  [2] Frontend      (Vite :3000)"
+    echo "  [3] Dokumentation (Zensical :5078)"
+    echo "  [4] Alles starten"
+    echo ""
+    echo -e "${CYAN}Stoppen:${NC}"
+    echo "  [5] Backend stoppen"
+    echo "  [6] Frontend stoppen"
+    echo "  [7] Docs stoppen"
+    echo ""
+    echo -e "${CYAN}Tools:${NC}"
+    echo "  [8] Logs anzeigen"
+    echo "  [9] Tests ausführen"
     echo ""
     echo "  [q] Beenden"
     echo ""
@@ -332,11 +451,13 @@ while true; do
     case $choice in
         1) start_backend ;;
         2) start_frontend ;;
-        3) start_both ;;
-        4) stop_backend ;;
-        5) stop_frontend ;;
-        6) show_logs ;;
-        7) run_tests ;;
+        3) start_docs ;;
+        4) start_all ;;
+        5) stop_backend ;;
+        6) stop_frontend ;;
+        7) stop_docs ;;
+        8) show_logs ;;
+        9) run_tests ;;
         q|Q) echo -e "${YELLOW}Bye!${NC}"; exit 0 ;;
         *) echo -e "${RED}Ungültige Eingabe.${NC}"; sleep 1 ;;
     esac
