@@ -27,6 +27,7 @@ export default function OrderDetail() {
   const createGroup = useCreateGroup(orderId ?? '')
   const deleteGroup = useDeleteGroup(orderId ?? '')
 
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [itemParams, setItemParams] = useState<Record<string, unknown>>({})
@@ -128,11 +129,43 @@ export default function OrderDetail() {
         <p className="text-sm text-gray-600 mb-4">{order.business_reason}</p>
       ) : null}
 
+      {/* Feedback banner */}
+      {feedback && (
+        <div className={`mb-4 p-3 rounded-md text-sm ${
+          feedback.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
+        }`}>
+          {feedback.message}
+        </div>
+      )}
+
       <OrderActions
         orderId={order.id}
         status={order.status}
-        onValidate={() => validateOrder.mutate()}
-        onSubmit={() => submitOrder.mutate()}
+        onValidate={() => {
+          setFeedback(null)
+          validateOrder.mutate(undefined, {
+            onSuccess: (data) => {
+              if (data.all_valid) {
+                setFeedback({ type: 'success', message: 'Validierung erfolgreich — Bestellung kann eingereicht werden.' })
+              } else {
+                const count = data.item_results?.filter((r: { validation_state: string }) => r.validation_state === 'invalid').length ?? 0
+                setFeedback({ type: 'error', message: `Validierung fehlgeschlagen — ${count} Position(en) mit Fehlern.` })
+              }
+            },
+            onError: () => setFeedback({ type: 'error', message: 'Validierung fehlgeschlagen.' }),
+          })
+        }}
+        onSubmit={() => {
+          if (!order.business_reason) {
+            setFeedback({ type: 'error', message: 'Bitte Geschaeftsgrund angeben bevor Sie einreichen.' })
+            return
+          }
+          setFeedback(null)
+          submitOrder.mutate(undefined, {
+            onSuccess: () => setFeedback({ type: 'success', message: 'Bestellung eingereicht — Genehmigungsanfrage wurde erstellt.' }),
+            onError: () => setFeedback({ type: 'error', message: 'Einreichen fehlgeschlagen. Ist die Bestellung validiert?' }),
+          })
+        }}
         onDelete={handleDelete}
         isValidating={validateOrder.isPending}
         isSubmitting={submitOrder.isPending}
