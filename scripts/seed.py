@@ -436,44 +436,210 @@ def seed():
         templates.append(t)
         print(f"Created template: {t.slug} v{t.version} ({len(tmpl_data['parameters'])} params, ID: {t.id})")
 
-    # Create a demo order
-    order = order_repo.create_order(
-        requester_id="test-requester",
-        title="Demo Web-Cluster",
-        business_reason="Initiales Setup fuer Q2 Web-Projekt",
-    )
-    print(f"\nCreated order: {order.order_number} (ID: {order.id})")
+    # ── Demo orders ────────────────────────────────────────────
 
-    # Add items to order
-    item1 = order_repo.add_item(
-        order_id=order.id,
-        template_slug="vm-linux",
-        template_version="1.0.0",
-        display_name="Linux Virtual Machine",
-        parameters={
-            "system_type": "web", "mandant": "a1", "security_area": "sec1",
-            "org_area": "ou1", "location": "standort1", "dns_server": "10.1.0.53",
-            "ad_tier": "tier1", "network_layer": "frontend", "network_vlan": "vlan100",
-            "ad_assignment": "prod", "vmware_cluster": "dual-site",
-            "os_template": "ubuntu2404",
-            "tshirt_size": "m", "cpu_cores": 4, "ram_gb": 8, "os_disk_gb": 80,
-            "description_text": "Webserver fuer Q2 Projekt",
-            "orderer_email": "admin@example.com",
-            "responsible_email": "ops@example.com",
-            "contact_group_email": "team@example.com",
-            "maintenance_window": "sun-02-06", "patch_wave": "wave3",
-            "backup_enabled": True, "site_replication": False,
+    LINUX_PARAMS_BASE = {
+        "system_type": "web", "mandant": "a1", "security_area": "sec1",
+        "org_area": "ou1", "location": "standort1", "dns_server": "10.1.0.53",
+        "ad_tier": "tier1", "network_layer": "frontend", "network_vlan": "vlan100",
+        "ad_assignment": "prod", "vmware_cluster": "dual-site",
+        "os_template": "ubuntu2404",
+        "tshirt_size": "m", "cpu_cores": 4, "ram_gb": 8, "os_disk_gb": 80,
+        "description_text": "Webserver fuer Projekt",
+        "orderer_email": "admin@example.com",
+        "responsible_email": "ops@example.com",
+        "contact_group_email": "team@example.com",
+        "maintenance_window": "sun-02-06", "patch_wave": "wave3",
+        "backup_enabled": True, "site_replication": False,
+    }
+
+    WINDOWS_PARAMS_BASE = {
+        "system_type": "app", "mandant": "a1", "security_area": "sec1",
+        "org_area": "ou1", "location": "standort1", "dns_server": "10.1.0.53",
+        "ad_tier": "tier1", "network_layer": "backend", "network_vlan": "vlan100",
+        "ad_assignment": "prod", "vmware_cluster": "single-site",
+        "os_template": "win2022",
+        "tshirt_size": "l", "cpu_cores": 8, "ram_gb": 16, "os_disk_gb": 120,
+        "extra_disk_1": 200,
+        "description_text": "Applikationsserver SAP",
+        "orderer_email": "sap-team@example.com",
+        "responsible_email": "sap-ops@example.com",
+        "contact_group_email": "sap-group@example.com",
+        "maintenance_window": "sun-02-06", "patch_wave": "wave3",
+        "backup_enabled": True, "site_replication": True,
+    }
+
+    demo_orders = [
+        # ── Draft orders ──
+        {
+            "requester": "test-requester",
+            "title": "Web-Cluster Q3 Projekt",
+            "reason": "Neues Kundenprojekt Q3",
+            "status": "draft",
+            "items": [
+                ("vm-linux", "1.0.0", "Linux Virtual Machine", {
+                    **LINUX_PARAMS_BASE,
+                    "description_text": "Frontend Webserver Cluster",
+                    "tshirt_size": "s", "cpu_cores": 2, "ram_gb": 4, "os_disk_gb": 60,
+                }),
+            ],
         },
-    )
-    print(f"  Added item: {item1.display_name} (Position {item1.position})")
+        {
+            "requester": "test-requester",
+            "title": "Windows App-Server Buchhaltung",
+            "reason": None,
+            "status": "draft",
+            "items": [
+                ("vm-windows", "1.0.0", "Windows Virtual Machine", {
+                    **WINDOWS_PARAMS_BASE,
+                    "description_text": "Buchhaltungssoftware Server",
+                    "os_template": "win2019",
+                }),
+            ],
+        },
+
+        # ── Submitted ──
+        {
+            "requester": "test-requester",
+            "title": "Produktions-Webserver",
+            "reason": "Erweiterung Webfarm fuer Black Friday",
+            "status": "submitted",
+            "items": [
+                ("vm-linux", "1.0.0", "Linux Virtual Machine", {
+                    **LINUX_PARAMS_BASE,
+                    "description_text": "Nginx Reverse Proxy",
+                    "tshirt_size": "l", "cpu_cores": 8, "ram_gb": 16, "os_disk_gb": 120,
+                }),
+                ("vm-linux", "1.0.0", "Linux Virtual Machine", {
+                    **LINUX_PARAMS_BASE,
+                    "system_type": "db", "network_layer": "backend",
+                    "ad_tier": "tier1", "ad_assignment": "prod",
+                    "description_text": "PostgreSQL Datenbank",
+                    "os_template": "rhel9",
+                    "tshirt_size": "xl", "cpu_cores": 16, "ram_gb": 32, "os_disk_gb": 200,
+                    "extra_disk_1": 500,
+                }),
+            ],
+        },
+
+        # ── Validated (ready to submit) ──
+        {
+            "requester": "test-requester",
+            "title": "Dev-Umgebung Team Alpha",
+            "reason": "Entwicklungsumgebung fuer neues Microservices-Projekt",
+            "status": "validated",
+            "items": [
+                ("vm-linux", "1.0.0", "Linux Virtual Machine", {
+                    **LINUX_PARAMS_BASE,
+                    "ad_assignment": "debug", "patch_wave": "wave1",
+                    "maintenance_window": "wed-02-06",
+                    "description_text": "Docker Host Dev",
+                    "os_template": "ubuntu2404",
+                    "tshirt_size": "m", "cpu_cores": 4, "ram_gb": 8, "os_disk_gb": 80,
+                    "extra_disk_1": 100,
+                }),
+            ],
+        },
+
+        # ── Done (provisioned) ──
+        {
+            "requester": "test-requester",
+            "title": "SAP Application Server",
+            "reason": "SAP S/4HANA Produktionsumgebung",
+            "status": "done",
+            "items": [
+                ("vm-windows", "1.0.0", "Windows Virtual Machine", WINDOWS_PARAMS_BASE),
+            ],
+        },
+        {
+            "requester": "test-requester",
+            "title": "Monitoring Stack",
+            "reason": "Zentrales Monitoring fuer alle Standorte",
+            "status": "done",
+            "items": [
+                ("vm-linux", "1.0.0", "Linux Virtual Machine", {
+                    **LINUX_PARAMS_BASE,
+                    "system_type": "app", "network_layer": "backend",
+                    "description_text": "Prometheus + Grafana",
+                    "os_template": "alma10",
+                    "mandant": "b1", "security_area": "sec2",
+                    "network_vlan": "vlan200",
+                    "ad_assignment": "app", "patch_wave": "wave2",
+                    "maintenance_window": "sat-02-06",
+                    "tshirt_size": "m", "cpu_cores": 4, "ram_gb": 8, "os_disk_gb": 80,
+                    "extra_disk_1": 200, "extra_disk_2": 100,
+                }),
+            ],
+        },
+
+        # ── Orders by other users ──
+        {
+            "requester": "test-admin",
+            "title": "Domain Controller Standort2",
+            "reason": "Zweiter DC fuer HA",
+            "status": "done",
+            "items": [
+                ("vm-windows", "1.0.0", "Windows Virtual Machine", {
+                    **WINDOWS_PARAMS_BASE,
+                    "system_type": "dc", "ad_tier": "tier0",
+                    "network_layer": "management", "network_vlan": "vlan400",
+                    "location": "standort2", "dns_server": "10.2.0.53",
+                    "description_text": "Active Directory Domain Controller",
+                    "os_template": "win2022",
+                    "tshirt_size": "m", "cpu_cores": 4, "ram_gb": 8, "os_disk_gb": 80,
+                    "ad_assignment": "prod",
+                }),
+            ],
+        },
+        {
+            "requester": "test-approver",
+            "title": "Fileserver Abteilung Finanzen",
+            "reason": "Abloesung alter NAS-Appliance",
+            "status": "submitted",
+            "items": [
+                ("vm-windows", "1.0.0", "Windows Virtual Machine", {
+                    **WINDOWS_PARAMS_BASE,
+                    "system_type": "fp", "network_layer": "backend",
+                    "description_text": "Windows Fileserver mit DFS",
+                    "os_template": "win2022",
+                    "tshirt_size": "l", "cpu_cores": 8, "ram_gb": 16, "os_disk_gb": 120,
+                    "extra_disk_1": 1000, "extra_disk_2": 1000,
+                    "ad_assignment": "prod",
+                }),
+            ],
+        },
+    ]
+
+    print(f"\nCreating {len(demo_orders)} demo orders...")
+    for od in demo_orders:
+        order = order_repo.create_order(
+            requester_id=od["requester"],
+            title=od["title"],
+            business_reason=od.get("reason"),
+        )
+
+        for slug, version, display, params in od["items"]:
+            order_repo.add_item(order.id, slug, version, display, params)
+
+        # Advance status
+        target = od["status"]
+        if target in ("validated", "submitted", "done"):
+            order_repo.update_order_status(order.id, "validated")
+        if target in ("submitted", "done"):
+            order_repo.update_order_status(order.id, "submitted")
+        if target == "done":
+            order_repo.update_order_status(order.id, "done")
+
+        item_count = len(od["items"])
+        print(f"  {order.order_number}: {od['title']} [{target}] ({item_count} item{'s' if item_count > 1 else ''})")
 
     session.close()
-    print(f"\nSeed complete! {len(templates)} templates + 1 order with 1 item.")
-    print("\nYou can now:")
-    print("  1. Start backend:  AUTH_MODE=stub CMDB_MODE=stub flask run --port 5000")
-    print("  2. Start frontend: cd frontend && npm run dev")
-    print("  3. Open http://localhost:3000")
-    print('  4. Login as \'test-requester\' (no password needed)')
+    print(f"\nSeed complete! {len(templates)} templates + {len(demo_orders)} orders.")
+    print("\nLogin:")
+    print("  test-requester  — 5 eigene Bestellungen")
+    print("  test-approver   — 1 eigene Bestellung")
+    print("  test-admin      — 1 eigene Bestellung, sieht alle")
+    print("  test-multi      — alle Rollen")
 
 
 if __name__ == "__main__":
