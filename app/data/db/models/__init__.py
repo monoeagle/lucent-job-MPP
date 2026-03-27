@@ -11,3 +11,4 @@ from app.data.db.models.approval import ApprovalRuleModel, ApprovalRequestModel
 from app.data.db.models.audit_log import AuditLogModel
 from app.data.db.models.notification import NotificationModel
 from app.data.db.models.credential_link import CredentialLinkModel
+from app.data.db.models.subscription import SubscriptionModel, GroupSubscriptionModel
