@@ -15,6 +15,8 @@ import ServiceRequest from './pages/ServiceRequest'
 import Approvals from './pages/Approvals'
 import Resources from './pages/Resources'
 import Notifications from './pages/Notifications'
+import Subscriptions from './pages/Subscriptions'
+import SubscriptionDetail from './pages/SubscriptionDetail'
 import AdminDashboard from './pages/admin/Dashboard'
 import Rules from './pages/admin/Rules'
 import AuditLog from './pages/admin/AuditLog'
@@ -54,6 +56,8 @@ function AppRoutes() {
         <Route path="/my-services" element={<Resources />} />
         <Route path="/resources" element={<Navigate to="/my-services" replace />} />
         <Route path="/notifications" element={<Notifications />} />
+        <Route path="/subscriptions" element={<Subscriptions />} />
+        <Route path="/subscriptions/:id" element={<SubscriptionDetail />} />
         <Route
           path="/reviews"
           element={

@@ -19,7 +19,7 @@ const mainItems: NavItem[] = [
   { to: '/my-services', label: 'My Services', icon: '📋', roles: null },
   { to: '/notifications', label: 'Notifications', icon: '🔔', roles: null },
   { to: '/reviews', label: 'Review Requests', icon: '✅', roles: ['approver', 'admin'] },
-  { to: '#', label: 'Subscriptions', icon: '📦', roles: null, disabled: true },
+  { to: '/subscriptions', label: 'Subscriptions', icon: '📦', roles: null },
 ]
 
 const adminItems: NavItem[] = [

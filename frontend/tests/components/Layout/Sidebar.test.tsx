@@ -48,10 +48,11 @@ describe('Sidebar', () => {
       expect(screen.getByText('Notifications')).toBeInTheDocument()
     })
 
-    it('shows Subscriptions as disabled', () => {
+    it('renders Subscriptions link', () => {
       renderSidebar()
       const sub = screen.getByText('Subscriptions')
-      expect(sub.closest('div')).toHaveClass('opacity-50')
+      expect(sub).toBeInTheDocument()
+      expect(sub.closest('a')).toHaveAttribute('href', '/subscriptions')
     })
 
     it('hides Review Requests for regular user', () => {
