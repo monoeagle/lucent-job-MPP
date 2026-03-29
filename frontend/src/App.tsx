@@ -57,7 +57,7 @@ function AppRoutes() {
         <Route
           path="/reviews"
           element={
-            <ProtectedRoute requiredRoles={['approver', 'admin']}>
+            <ProtectedRoute requiredRoles={['approver', 'admin', 'superadmin']}>
               <Approvals />
             </ProtectedRoute>
           }
