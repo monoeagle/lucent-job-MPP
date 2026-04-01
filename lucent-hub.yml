@@ -6,6 +6,7 @@ description: "Marketplace Portal — Self-Service IT-Provisioning (Flask + TDD, 
 version: "1.0.0"
 
 port: 5000
+docs_port: 5083
 health_endpoint: /health
 theme_color: "#2196F3"
 category: "portale"
