@@ -6,7 +6,7 @@
 # Wird vom Hub als Kindprozess gestartet oder manuell ausgefuehrt.
 #
 # Verwendung:
-#   ./run_mpp_docs.sh                   → Live-Server (Port 5078)
+#   ./run_mpp_docs.sh                   → Live-Server (Port aus YAML)
 #   ./run_mpp_docs.sh --port=8042       → Live-Server auf Port 8042
 #   ./run_mpp_docs.sh --build           → Statisches HTML nach site/
 #   ./run_mpp_docs.sh --check           → Nur Struktur pruefen
@@ -18,7 +18,15 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv-docs"
 PYTHON="python3"
-PORT=5078
+# ── Port-Resolution ──────────────────────────────────────────────────────────
+# Prioritaet: 1) --port=  2) $DOCS_PORT env  3) lucent-hub.yml  4) Fallback 8000
+APP_DIR="$(dirname "$SCRIPT_DIR")"
+PORT=8000
+if [ -f "$APP_DIR/lucent-hub.yml" ]; then
+  _YML_PORT=$(grep '^docs_port:' "$APP_DIR/lucent-hub.yml" 2>/dev/null | awk '{print $2}')
+  [ -n "$_YML_PORT" ] && PORT="$_YML_PORT"
+fi
+[ -n "$DOCS_PORT" ] && PORT="$DOCS_PORT"
 
 # ── Flags parsen ──────────────────────────────────────────────────────────────
 for arg in "$@"; do

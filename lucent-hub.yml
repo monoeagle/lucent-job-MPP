@@ -1,0 +1,20 @@
+# MPP Marketplace Portal (Flask/TDD) — Lucent Hub App Registration
+
+name: mpp-TDD
+display_name: "MPP TDD (Flask)"
+description: "Marketplace Portal — Self-Service IT-Provisioning (Flask + TDD, 862 Tests)"
+version: "1.0.0"
+
+port: 5000
+health_endpoint: /health
+theme_color: "#2196F3"
+category: "portale"
+
+setup:
+  command: bash scripts/mpp.sh setup
+  label: "Setup (venv + DB + migrate)"
+
+tags:
+  - portal
+  - flask
+  - tdd
