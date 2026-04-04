@@ -5,9 +5,10 @@ display_name: "MPP TDD (Flask)"
 description: "Marketplace Portal — Self-Service IT-Provisioning (Flask + TDD, 862 Tests)"
 version: "1.0.0"
 
-port: 5000
+port: 3000
+backend_port: 5000
 docs_port: 5083
-health_endpoint: /health
+healthcheck: /api/v1/health
 theme_color: "#2196F3"
 category: "portale"
 
