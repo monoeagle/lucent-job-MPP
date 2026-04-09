@@ -11,3 +11,8 @@ _TRANSFER_NON_DOCKER*/
 agents_md.zip
 **/.venv-docs/
 **/site/
+.tools/
+build/appimage/
+build/*.AppImage
+release/
+.wheels/
