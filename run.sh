@@ -40,6 +40,79 @@ _ensure_appimagetool() {
   ok "appimagetool installiert unter .tools/"
 }
 
+_bundle_python_standalone() {
+  local appdir="$1"
+  local venv_dir="$2"
+
+  local py_ver
+  py_ver=$("$venv_dir/bin/python3" -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+  local real_py
+  real_py="$(readlink -f "$venv_dir/bin/python3")"
+  local py_base
+  py_base=$("$venv_dir/bin/python3" -c 'import sys; print(sys.base_prefix)')
+
+  info "Python ${py_ver} standalone buendeln..."
+
+  mkdir -p "$appdir/python/bin"
+  mkdir -p "$appdir/python/lib/python${py_ver}"
+
+  cp "$real_py" "$appdir/python/bin/python3"
+  chmod +x "$appdir/python/bin/python3"
+  ln -sf python3 "$appdir/python/bin/python"
+
+  info "Python stdlib kopieren..."
+  cp -r "${py_base}/lib/python${py_ver}/"* "$appdir/python/lib/python${py_ver}/" 2>/dev/null || true
+
+  info "Site-packages kopieren..."
+  if [ -d "$venv_dir/lib/python${py_ver}/site-packages" ]; then
+    cp -r "$venv_dir/lib/python${py_ver}/site-packages" "$appdir/python/lib/python${py_ver}/"
+  fi
+
+  for pattern in \
+    "/usr/lib/x86_64-linux-gnu/libpython${py_ver}"*.so* \
+    "/usr/lib/libpython${py_ver}"*.so* \
+    "${py_base}/lib/libpython${py_ver}"*.so*; do
+    for lib in $pattern; do
+      [ -f "$lib" ] && cp -L "$lib" "$appdir/python/lib/" 2>/dev/null
+    done
+  done
+
+  info "System-Bibliotheken buendeln..."
+  for libname in libssl libcrypto libffi libz libsqlite3 libncurses libtinfo libreadline libbz2 liblzma libexpat libmpdec; do
+    for f in /usr/lib/x86_64-linux-gnu/${libname}*.so*; do
+      [ -f "$f" ] && cp -L "$f" "$appdir/python/lib/" 2>/dev/null
+    done
+  done
+
+
+  # ALL shared library dependencies (automatic ldd scan)
+  info "Shared-Library-Abhaengigkeiten scannen (ldd)..."
+  local _deplist
+  _deplist=$(find "$appdir/python" -name "*.so*" -type f -exec ldd {} 2>/dev/null \; | grep "=> /" | awk '{print $3}' | sort -u)
+  local _copied=0
+  for dep in $_deplist; do
+    [ -f "$dep" ] || continue
+    local _bn
+    _bn=$(basename "$dep")
+    # System-kritische Libs NICHT buendeln
+    case "$_bn" in
+      libc.so*|libm.so*|libdl.so*|librt.so*|libpthread.so*) continue ;;
+      ld-linux*|libgcc_s.so*|libstdc++.so*) continue ;;
+      libnss_*|libresolv.so*|libnsl.so*|libutil.so*) continue ;;
+      linux-vdso.so*) continue ;;
+    esac
+    if [ ! -f "$appdir/python/lib/$_bn" ]; then
+      cp -L "$dep" "$appdir/python/lib/" 2>/dev/null && _copied=$((_copied + 1))
+    fi
+  done
+  # Bereits faelschlich kopierte System-Libs entfernen
+  for _syslib in libc.so* libm.so* libdl.so* librt.so* libpthread.so* ld-linux* libgcc_s.so* libstdc++.so* libnss_* libresolv.so* libnsl.so* libutil.so*; do
+    rm -f "$appdir/python/lib/"$_syslib 2>/dev/null
+  done
+  info "$_copied zusaetzliche Shared Libraries gebundelt"
+  ok "Python ${py_ver} standalone gebundelt"
+}
+
 cmd_serve() {
   BACKEND_PID=""
   FRONTEND_PID=""
@@ -107,9 +180,10 @@ cmd_appimage() {
   cp -r "$PROJECT_DIR/migrations" "$appdir/app/migrations"
   [ -f "$PROJECT_DIR/alembic.ini" ] && cp "$PROJECT_DIR/alembic.ini" "$appdir/app/"
   [ -f "$PROJECT_DIR/requirements.txt" ] && cp "$PROJECT_DIR/requirements.txt" "$appdir/app/"
+  # Seed-Script mitbuendeln
+  [ -f "$PROJECT_DIR/scripts/seed.py" ] && cp "$PROJECT_DIR/scripts/seed.py" "$appdir/app/"
 
-  info "Python venv kopieren (kann dauern)..."
-  cp -r "$VENV_DIR" "$appdir/venv"
+  _bundle_python_standalone "$appdir" "$VENV_DIR"
 
   cat > "$appdir/usr/share/icons/hicolor/256x256/apps/lucent-mpp-tdd.svg" << 'SVGEOF'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
@@ -135,6 +209,59 @@ Terminal=false
 DEOF
   cp "$appdir/lucent-mpp-tdd.desktop" "$appdir/usr/share/applications/"
 
+  # SPA-Server mit API-Proxy als Python-Script ins AppDir schreiben
+  cat > "$appdir/spa_server.py" << 'PYEOF'
+"""SPA server with API proxy for MPP-TDD AppImage."""
+import sys, os, json
+from http.server import HTTPServer, SimpleHTTPRequestHandler
+from urllib.request import urlopen, Request
+from urllib.error import URLError
+
+PORT = int(sys.argv[1])
+BACKEND = sys.argv[2]
+BUILD_DIR = sys.argv[3]
+
+class SPAProxyHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *a, **kw):
+        super().__init__(*a, directory=BUILD_DIR, **kw)
+
+    def do_request(self, method):
+        # Proxy /api/* to Flask backend
+        if self.path.startswith("/api/"):
+            try:
+                length = int(self.headers.get("Content-Length", 0))
+                body = self.rfile.read(length) if length else None
+                headers = {k: v for k, v in self.headers.items()
+                           if k.lower() not in ("host", "transfer-encoding")}
+                req = Request(f"{BACKEND}{self.path}", data=body, headers=headers, method=method)
+                with urlopen(req, timeout=30) as resp:
+                    self.send_response(resp.status)
+                    for k, v in resp.getheaders():
+                        if k.lower() not in ("transfer-encoding",):
+                            self.send_header(k, v)
+                    self.end_headers()
+                    self.wfile.write(resp.read())
+            except URLError as e:
+                self.send_error(502, f"Backend error: {e}")
+            return
+        # SPA fallback: serve index.html for non-file paths
+        path = self.translate_path(self.path)
+        if not os.path.exists(path) and "." not in os.path.basename(self.path):
+            self.path = "/index.html"
+        super().do_GET()
+
+    def do_GET(self): self.do_request("GET")
+    def do_POST(self): self.do_request("POST")
+    def do_PUT(self): self.do_request("PUT")
+    def do_DELETE(self): self.do_request("DELETE")
+    def do_PATCH(self): self.do_request("PATCH")
+    def log_message(self, fmt, *args):
+        if len(args) >= 2 and args[1] not in ("200", "304"):
+            super().log_message(fmt, *args)
+
+HTTPServer(("127.0.0.1", PORT), SPAProxyHandler).serve_forever()
+PYEOF
+
   cat > "$appdir/AppRun" << 'RUNEOF'
 #!/usr/bin/env bash
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
@@ -144,17 +271,60 @@ BACKEND_PORT=5000
 for arg in "$@"; do
   case "$arg" in --port=*) PORT="${arg#--port=}";; esac
 done
-source "${HERE}/venv/bin/activate"
+export PYTHONHOME="${HERE}/python"
+export PATH="${HERE}/python/bin:${PATH}"
+export LD_LIBRARY_PATH="${HERE}/python/lib:${LD_LIBRARY_PATH:-}"
+PY_VER=$(ls -1 "${HERE}/python/lib/" | grep "^python3\." | head -1 | sed "s/python//")
+export PYTHONPATH="${HERE}/python/lib/python${PY_VER}/site-packages"
 export AUTH_MODE=stub
 export CMDB_MODE=stub
 export FLASK_APP=app
+export DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_dev
+
 cd "${HERE}/app"
-flask run --port "$BACKEND_PORT" &
+
+# Beim ersten Start: DB-Migrationen + Seed-Daten
+STAMP="${HOME}/.lucent-mpp-tdd-seeded"
+if [ ! -f "$STAMP" ]; then
+  echo "[MPP-TDD] Erststart: Datenbank initialisieren..."
+
+  # DB erstellen falls nicht vorhanden (ignoriert Fehler wenn sie existiert)
+  PGPASSWORD=mpp createdb -h localhost -U mpp mpp_dev 2>/dev/null || true
+
+  # Alembic-Migrationen ausfuehren
+  echo "[MPP-TDD] Migrationen ausfuehren..."
+  "${HERE}/python/bin/python3" -m alembic upgrade head 2>&1 | tail -5
+
+  # Seed-Daten einspielen
+  if [ -f "${HERE}/app/seed.py" ]; then
+    echo "[MPP-TDD] Seed-Daten einspielen..."
+    "${HERE}/python/bin/python3" "${HERE}/app/seed.py" 2>&1 | tail -5
+  fi
+
+  touch "$STAMP"
+  echo "[MPP-TDD] Datenbank bereit."
+fi
+
+# Flask Backend starten
+"${HERE}/python/bin/python3" -m flask run --port "$BACKEND_PORT" &
 BACKEND_PID=$!
+
 cleanup() { kill "$BACKEND_PID" 2>/dev/null; exit 0; }
 trap cleanup SIGTERM SIGINT
-cd "${HERE}/app/frontend_dist"
-exec python3 -m http.server "$PORT" --bind 127.0.0.1
+
+# Warten bis Backend bereit
+sleep 2
+
+# Browser oeffnen (nur ohne --port)
+if [[ "$*" != *"--port="* ]]; then
+  (sleep 1 && xdg-open "http://127.0.0.1:${PORT}" 2>/dev/null) &
+fi
+
+echo "[MPP-TDD] Frontend: http://127.0.0.1:${PORT}"
+echo "[MPP-TDD] Backend:  http://127.0.0.1:${BACKEND_PORT}"
+
+# SPA-Server mit API-Proxy starten
+exec "${HERE}/python/bin/python3" "${HERE}/spa_server.py" "$PORT" "http://127.0.0.1:${BACKEND_PORT}" "${HERE}/app/frontend_dist"
 RUNEOF
   chmod +x "$appdir/AppRun"
 
