@@ -267,10 +267,16 @@ PYEOF
 #!/usr/bin/env bash
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
 HERE="$(dirname "$SELF")"
-PORT=3000
-BACKEND_PORT=5000
+PORT=""            # Frontend-Port (leer = OS-vergebener Ephemeral-Port)
+PORT_FIXED=0
+OPEN_BROWSER=1
+PREFER=0
 for arg in "$@"; do
-  case "$arg" in --port=*) PORT="${arg#--port=}";; esac
+  case "$arg" in
+    --port=*)        PORT="${arg#--port=}"; PORT_FIXED=1; OPEN_BROWSER=0 ;;
+    --port-prefer=*) PREFER="${arg#--port-prefer=}" ;;
+    --no-browser)    OPEN_BROWSER=0 ;;
+  esac
 done
 export PYTHONHOME="${HERE}/python"
 export PATH="${HERE}/python/bin:${PATH}"
@@ -281,6 +287,38 @@ export AUTH_MODE=stub
 export CMDB_MODE=stub
 export FLASK_APP=app
 export DATABASE_URL=postgresql://mpp:mpp@localhost:5432/mpp_dev
+PYBIN="${HERE}/python/bin/python3"
+
+# Beide Ports vom OS vergeben lassen (ephemeral) → beliebig viele Instanzen parallel,
+# nie "Address already in use". Das Backend ist intern (nur ueber den SPA-Proxy
+# erreichbar) und daher IMMER random. Der Frontend-Port ist random, ausser der Hub
+# setzt ihn fix via --port= (er muss ihn zum Tab-Oeffnen kennen). --port-prefer=NNNN
+# bevorzugt optional einen Wunsch-Frontend-Port (Fallback random).
+read -r FE_PORT BE_PORT < <("$PYBIN" - "$PORT_FIXED" "$PORT" "$PREFER" <<'PY'
+import socket, sys
+fixed = sys.argv[1] == "1"
+fixed_port = int(sys.argv[2]) if sys.argv[2].isdigit() else 0
+prefer = int(sys.argv[3]) if sys.argv[3].isdigit() else 0
+def grab(p):
+    s = socket.socket()
+    try:
+        s.bind(("127.0.0.1", p)); return s
+    except OSError:
+        s.close(); return None
+held = []
+if fixed:
+    fe = fixed_port
+else:
+    s = grab(prefer) if prefer else None
+    if s is None: s = grab(0)   # 0 → OS waehlt freien Ephemeral-Port
+    fe = s.getsockname()[1]; held.append(s)
+s = grab(0); be = s.getsockname()[1]; held.append(s)
+for s in held: s.close()
+print(fe, be)
+PY
+)
+PORT="$FE_PORT"
+BACKEND_PORT="$BE_PORT"
 
 cd "${HERE}/app"
 
@@ -294,38 +332,60 @@ if [ ! -f "$STAMP" ]; then
 
   # Alembic-Migrationen ausfuehren
   echo "[MPP-TDD] Migrationen ausfuehren..."
-  "${HERE}/python/bin/python3" -m alembic upgrade head 2>&1 | tail -5
+  "$PYBIN" -m alembic upgrade head 2>&1 | tail -5
 
   # Seed-Daten einspielen
   if [ -f "${HERE}/app/seed.py" ]; then
     echo "[MPP-TDD] Seed-Daten einspielen..."
-    "${HERE}/python/bin/python3" "${HERE}/app/seed.py" 2>&1 | tail -5
+    "$PYBIN" "${HERE}/app/seed.py" 2>&1 | tail -5
   fi
 
   touch "$STAMP"
   echo "[MPP-TDD] Datenbank bereit."
 fi
 
-# Flask Backend starten
-"${HERE}/python/bin/python3" -m flask run --port "$BACKEND_PORT" &
+# Flask Backend starten (interner Ephemeral-Port)
+"$PYBIN" -m flask run --port "$BACKEND_PORT" &
 BACKEND_PID=$!
 
-cleanup() { kill "$BACKEND_PID" 2>/dev/null; exit 0; }
+# SPA-Server mit API-Proxy starten (leitet /api an das Backend weiter)
+"$PYBIN" "${HERE}/spa_server.py" "$PORT" "http://127.0.0.1:${BACKEND_PORT}" "${HERE}/app/frontend_dist" &
+SERVER_PID=$!
+
+TMPPROFILE=""
+cleanup() {
+  kill "$SERVER_PID" "$BACKEND_PID" 2>/dev/null
+  [ -n "$TMPPROFILE" ] && rm -rf "$TMPPROFILE"
+  exit 0
+}
 trap cleanup SIGTERM SIGINT
 
 # Warten bis Backend bereit
 sleep 2
 
-# Browser oeffnen (nur ohne --port)
-if [[ "$*" != *"--port="* ]]; then
-  (sleep 1 && xdg-open "http://127.0.0.1:${PORT}" 2>/dev/null) &
-fi
-
-echo "[MPP-TDD] Frontend: http://127.0.0.1:${PORT}"
+URL="http://127.0.0.1:${PORT}"
+echo "[MPP-TDD] Frontend: $URL"
 echo "[MPP-TDD] Backend:  http://127.0.0.1:${BACKEND_PORT}"
 
-# SPA-Server mit API-Proxy starten
-exec "${HERE}/python/bin/python3" "${HERE}/spa_server.py" "$PORT" "http://127.0.0.1:${BACKEND_PORT}" "${HERE}/app/frontend_dist"
+if [ "$OPEN_BROWSER" -eq 1 ]; then
+  sleep 0.5
+  CHROME=""
+  for c in chromium chromium-browser google-chrome google-chrome-stable chrome brave-browser; do
+    if command -v "$c" &>/dev/null; then CHROME="$c"; break; fi
+  done
+  if [ -n "$CHROME" ]; then
+    # Eigenes Temp-Profil → frische, ISOLIERTE Instanz (unabhaengig von Firefox und
+    # jedem schon laufenden Chrome/Chromium); --app = randloses App-Fenster.
+    TMPPROFILE="$(mktemp -d /tmp/mpp-app-chrome.XXXXXX)"
+    "$CHROME" --user-data-dir="$TMPPROFILE" --no-first-run --no-default-browser-check \
+              --new-window --app="$URL" >/dev/null 2>&1 &
+  else
+    echo "[MPP-TDD] Kein Chromium/Chrome gefunden — bitte manuell oeffnen: $URL"
+    xdg-open "$URL" >/dev/null 2>&1 || true
+  fi
+fi
+
+wait "$SERVER_PID"
 RUNEOF
   chmod +x "$appdir/AppRun"
 
