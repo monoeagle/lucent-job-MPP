@@ -14,7 +14,8 @@
       "Bash(bash -n:*)",
       "Bash(chmod:*)",
       "Read(/home/meagle/Dokumente/CLAUDE/**)",
-      "Read(/tmp/**)"
+      "Read(/tmp/**)",
+      "Read(//home/meagle/Dokumente/_Projects/.pattern/**)"
     ]
   }
 }

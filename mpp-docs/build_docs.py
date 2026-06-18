@@ -1,130 +1,226 @@
 #!/usr/bin/env python3
 """
-build_docs.py – MPP Dokumentation generieren
+build_docs.py — MPP Doku-Pipeline.
 
-Verwendet Zensical (MkDocs Material Wrapper).
+Ein Einstiegspunkt fuer den kompletten Doku-Build:
+    1. Inline-Mermaid-Bloecke aus .md nach mermaid-sources/ extrahieren
+    2. Alle .mmd nach docs/images/mermaid/*.svg rendern (via mmdc)
+    3. generate_project_activity.py → frischer Heatmap-Datensatz
+    4. zensical build → static site nach site/
 
-Verwendung:
-  python3 build_docs.py              # HTML bauen
-  python3 build_docs.py --serve      # Live-Server
-  python3 build_docs.py --serve --port 5078
-  python3 build_docs.py --check      # Nur prüfen
-  python3 build_docs.py --ci         # CI-Modus (strict)
+Nutzung:
+    python3 build_docs.py                  # voller Build
+    python3 build_docs.py --serve          # build + lokaler HTTP-Server
+    python3 build_docs.py --serve --port 5083
+    python3 build_docs.py --check          # nur Doku-Struktur pruefen
+    python3 build_docs.py --no-mermaid     # Mermaid-Schritte ueberspringen
+    python3 build_docs.py --no-activity    # Activity-JSON-Refresh skippen
+    python3 build_docs.py --ci             # strikt (Exit-Code bei Warnungen)
 """
-
+from __future__ import annotations
+import argparse
+import http.server
+import shutil
+import socketserver
 import subprocess
 import sys
-import argparse
-import shutil
 from pathlib import Path
 
 BASE_DIR    = Path(__file__).resolve().parent
 DOCS_DIR    = BASE_DIR / "docs"
 SITE_DIR    = BASE_DIR / "site"
+TOOLS_DIR   = BASE_DIR / "tools"
+MMD_SOURCES = BASE_DIR / "mermaid-sources"
 CONFIG_FILE = BASE_DIR / "zensical.toml"
 
+GREEN  = "\033[0;32m"
+CYAN   = "\033[0;36m"
+YELLOW = "\033[1;33m"
+RED    = "\033[0;31m"
+RESET  = "\033[0m"
 
-# ──────────────────────────────────────────────────────────────────────────────
 
-def run(cmd, cwd=BASE_DIR):
+def step(msg: str) -> None:
+    print(f"\n{CYAN}▸ {msg}{RESET}")
+
+
+def ok(msg: str) -> None:
+    print(f"{GREEN}  ✓ {msg}{RESET}")
+
+
+def warn(msg: str) -> None:
+    print(f"{YELLOW}  ⚠ {msg}{RESET}")
+
+
+def fail(msg: str) -> None:
+    print(f"{RED}  ✗ {msg}{RESET}")
+
+
+def run(cmd: list[str], cwd: Path | None = None, check: bool = True) -> int:
+    """Subprocess mit sichtbarem Command. Liefert returncode."""
     print(f"  $ {' '.join(str(c) for c in cmd)}")
+    result = subprocess.run(cmd, cwd=cwd or BASE_DIR)
+    if check and result.returncode != 0:
+        fail(f"Exit-Code {result.returncode}")
+        sys.exit(result.returncode)
+    return result.returncode
+
+
+# ─── Vorbedingungen ──────────────────────────────────────────────────────────
+
+
+def check_zensical() -> None:
+    """Zensical via sys.executable -m, damit das aktive venv genutzt wird."""
     try:
-        subprocess.run(cmd, cwd=cwd, check=True)
-    except subprocess.CalledProcessError as e:
-        print(f"\nFehler (exit {e.returncode})")
-        sys.exit(e.returncode)
-
-
-def check_zensical(auto_install=False):
-    try:
-        subprocess.run(["zensical", "--version"], capture_output=True, check=True)
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        print("Zensical nicht gefunden.")
-        if auto_install:
-            print("Installiere Zensical ...")
-            run([sys.executable, "-m", "pip", "install", "zensical"])
-        else:
-            print("Installieren mit:  pip install zensical")
-            sys.exit(1)
-
-
-def check_structure(strict=False):
-    print("\nPruefe Dokumentations-Struktur ...")
-    errors = 0
-
-    if not DOCS_DIR.is_dir():
-        print("  docs/ Verzeichnis fehlt!")
-        errors += 1
-
-    if not CONFIG_FILE.exists():
-        print("  zensical.toml fehlt!")
-        errors += 1
-
-    md_files = list(DOCS_DIR.rglob("*.md")) if DOCS_DIR.exists() else []
-    print(f"  {len(md_files)} Markdown-Dateien gefunden")
-
-    if not any(f.name == "index.md" for f in md_files):
-        print("  Kein index.md gefunden")
-        if strict:
-            errors += 1
-
-    if errors > 0:
-        print(f"\n{errors} Fehler gefunden")
-        if strict:
-            sys.exit(1)
-    else:
-        print("  Struktur OK")
-
-
-def build():
-    print("\nBaue Dokumentation mit Zensical ...")
-    if SITE_DIR.exists():
-        shutil.rmtree(SITE_DIR)
-    run(["zensical", "build", "--clean"])
-    index = SITE_DIR / "index.html"
-    if index.exists():
-        print(f"\nFertig! Ausgabe: {SITE_DIR}")
-        print(f"   Oeffnen: file://{index}")
-    else:
-        print("Build fehlgeschlagen")
+        subprocess.run(
+            [sys.executable, "-m", "zensical", "--version"],
+            capture_output=True, check=True,
+        )
+    except subprocess.CalledProcessError:
+        fail("Zensical nicht im aktiven Python-Env gefunden.")
+        print(f"  Installieren mit: {sys.executable} -m pip install zensical")
         sys.exit(1)
 
 
-def serve(port: int = 5078):
-    print(f"\nStarte Live-Server auf Port {port} ...")
-    print(f"   Oeffnen: http://127.0.0.1:{port}")
-    print("   Beenden: Ctrl+C\n")
+def check_structure(strict: bool = False) -> int:
+    step("Doku-Struktur pruefen")
+    errors = 0
+
+    for required in [CONFIG_FILE, DOCS_DIR, DOCS_DIR / "index.md",
+                     DOCS_DIR / "stylesheets" / "extra.css"]:
+        if not required.exists():
+            fail(f"fehlt: {required.relative_to(BASE_DIR)}")
+            errors += 1
+
+    md_files = list(DOCS_DIR.rglob("*.md")) if DOCS_DIR.exists() else []
+    ok(f"{len(md_files)} Markdown-Dateien")
+
+    if MMD_SOURCES.is_dir():
+        mmds = list(MMD_SOURCES.glob("*.mmd"))
+        ok(f"{len(mmds)} Mermaid-Sources")
+    else:
+        warn("mermaid-sources/ fehlt — Mermaid-Pipeline wird leer laufen")
+
+    if errors:
+        fail(f"{errors} Probleme")
+        if strict:
+            sys.exit(1)
+        return errors
+    ok("Struktur OK")
+    return 0
+
+
+# ─── Pipeline-Schritte ───────────────────────────────────────────────────────
+
+
+def step_extract_mermaid() -> None:
+    script = TOOLS_DIR / "extract_mermaid_blocks.py"
+    if not script.is_file():
+        warn("extract_mermaid_blocks.py fehlt — uebersprungen")
+        return
+    step("Mermaid-Bloecke extrahieren (idempotent)")
+    run([sys.executable, str(script)])
+    ok("Inline-Mermaid-Bloecke synchronisiert")
+
+
+def step_render_mermaid() -> None:
+    script = TOOLS_DIR / "render_mermaid.sh"
+    if not script.is_file():
+        warn("render_mermaid.sh fehlt — uebersprungen")
+        return
+    if not MMD_SOURCES.is_dir() or not list(MMD_SOURCES.glob("*.mmd")):
+        warn("Keine .mmd-Quellen — Rendering uebersprungen")
+        return
+    step("Mermaid-Sources zu SVG rendern")
+    run(["bash", str(script)])
+    ok("SVGs in docs/images/mermaid/")
+
+
+def step_generate_activity() -> None:
+    script = TOOLS_DIR / "generate_project_activity.py"
+    if not script.is_file():
+        warn("generate_project_activity.py fehlt — uebersprungen")
+        return
+    step("Aktivitaets-JSON aus git log generieren")
+    rc = run([sys.executable, str(script)], check=False)
+    if rc == 0:
+        ok("project-activity.json aktualisiert")
+    else:
+        warn(f"generate_project_activity.py exit {rc} (nicht-fatal)")
+
+
+def step_zensical_build() -> None:
+    step("Zensical-Build (site/)")
+    if SITE_DIR.exists():
+        shutil.rmtree(SITE_DIR)
+    run([sys.executable, "-m", "zensical", "build"])
+    if not (SITE_DIR / "index.html").is_file():
+        fail("site/index.html nicht erzeugt")
+        sys.exit(1)
+    ok(f"site/ unter {SITE_DIR}")
+
+
+# ─── Serve ───────────────────────────────────────────────────────────────────
+
+
+def serve(port: int) -> None:
+    if not SITE_DIR.is_dir():
+        fail("site/ fehlt — vorher Build laufen lassen")
+        sys.exit(1)
+
+    step(f"HTTP-Server auf Port {port}")
+    print(f"  {GREEN}http://127.0.0.1:{port}{RESET}  (Ctrl+C zum Beenden)")
+
+    handler = lambda *a, **k: http.server.SimpleHTTPRequestHandler(
+        *a, directory=str(SITE_DIR), **k
+    )
     try:
-        subprocess.run(
-            ["zensical", "serve", "--dev-addr", f"127.0.0.1:{port}"],
-            cwd=BASE_DIR
-        )
+        with socketserver.TCPServer(("127.0.0.1", port), handler) as httpd:
+            httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\nServer beendet.")
+        print()
+        ok("Server beendet")
 
 
-# ──────────────────────────────────────────────────────────────────────────────
+# ─── Entry-Point ─────────────────────────────────────────────────────────────
 
-def main():
-    parser = argparse.ArgumentParser(description="MPP Docs Builder")
-    parser.add_argument("--serve",   action="store_true", help="Live-Server starten")
-    parser.add_argument("--port",    type=int, default=5078, help="Port fuer Live-Server")
-    parser.add_argument("--check",   action="store_true", help="Nur Struktur pruefen")
-    parser.add_argument("--ci",      action="store_true", help="CI-Modus (strict)")
-    parser.add_argument("--install", action="store_true", help="Zensical automatisch installieren")
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="MPP Docs — voller Build inkl. Mermaid + Activity-JSON",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=__doc__,
+    )
+    parser.add_argument("--serve",       action="store_true", help="Nach Build HTTP-Server starten")
+    parser.add_argument("--port",        type=int, default=5083, help="Port fuer --serve (Default: 5083)")
+    parser.add_argument("--check",       action="store_true", help="Nur Struktur pruefen, kein Build")
+    parser.add_argument("--ci",          action="store_true", help="Strict-Mode (Exit-Code bei Warnungen)")
+    parser.add_argument("--no-mermaid",  action="store_true", help="Mermaid-Pipeline (extract + render) ueberspringen")
+    parser.add_argument("--no-activity", action="store_true", help="Activity-JSON-Refresh ueberspringen")
     args = parser.parse_args()
 
-    check_zensical(auto_install=args.install)
-    strict = args.ci
+    check_zensical()
+    check_structure(strict=args.ci)
 
     if args.check:
-        check_structure(strict=strict)
-    elif args.serve:
-        check_structure(strict=strict)
-        serve(port=args.port)
-    else:
-        check_structure(strict=strict)
-        build()
+        return
+
+    if not args.no_mermaid:
+        step_extract_mermaid()
+        step_render_mermaid()
+
+    if not args.no_activity:
+        step_generate_activity()
+
+    step_zensical_build()
+
+    if args.serve:
+        serve(args.port)
+        return
+
+    print()
+    ok(f"Build fertig — site/ unter {SITE_DIR}")
+    print(f"  Browser-Test: {CYAN}python3 build_docs.py --serve{RESET}")
 
 
 if __name__ == "__main__":

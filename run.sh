@@ -11,6 +11,7 @@ VENV_DIR="$PROJECT_DIR/venv"
 # ── AppImage-Variablen ────────────────────────────────────────────────────────
 APPIMAGE_DIR="$PROJECT_DIR/build/appimage"
 RELEASE_DIR="$PROJECT_DIR/release"
+GLOBAL_DIR="$(dirname "$PROJECT_DIR")/AppImages"   # zentraler Sammelordner neben allen Lucent-Apps
 DOCS_DIR="$PROJECT_DIR/mpp-docs"
 DOCS_PORT=5083
 APP_VERSION="1.0.0"
@@ -339,11 +340,22 @@ RUNEOF
 }
 
 cmd_docs_appimage() {
-  header "MPP TDD — Docs AppImage Build"
+  header "MPP TDD — Docs Release (Site → AppImage → Global → TDD-Gate)"
+
+  # ── Stufe 1: Site rendern (Mermaid→SVG, Activity-JSON, zensical build) ──────
+  # Bevorzugt das venv-Python direkt (umgeht den pip-Reinstall des run-Scripts auf
+  # externally-managed Systemen); Fallback auf run_mpp_docs.sh, das das venv anlegt.
+  info "Stufe 1 — Site rendern ..."
+  if [ -x "$DOCS_DIR/.venv-docs/bin/python3" ] && "$DOCS_DIR/.venv-docs/bin/python3" -c "import zensical" 2>/dev/null; then
+    ( cd "$DOCS_DIR" && rm -rf site && .venv-docs/bin/python3 build_docs.py )
+  else
+    ( cd "$DOCS_DIR" && bash run_mpp_docs.sh --build )
+  fi
 
   if [ ! -d "$DOCS_DIR/site" ]; then
-    fail "Dokumentation nicht gebaut — bitte zuerst Docs bauen"
+    fail "Site-Build fehlgeschlagen — site/ fehlt"
   fi
+  ok "Site gebaut: ${BOLD}$DOCS_DIR/site${NC}"
 
   _ensure_appimagetool
 
@@ -384,23 +396,78 @@ DEOF
 #!/usr/bin/env bash
 SELF="$(readlink -f "${BASH_SOURCE[0]}")"
 HERE="$(dirname "$SELF")"
-PORT="${DOCS_PORT:-5083}"
+DEFAULT_PORT="${DOCS_PORT:-5083}"
+PORT="$DEFAULT_PORT"
+PORT_FIXED=0
+OPEN_BROWSER=1
 for arg in "$@"; do
-  case "$arg" in --port=*) PORT="${arg#--port=}";; esac
+  case "$arg" in
+    --port=*)     PORT="${arg#--port=}"; PORT_FIXED=1; OPEN_BROWSER=0 ;;
+    --no-browser) OPEN_BROWSER=0 ;;
+  esac
 done
 if ! command -v python3 &>/dev/null; then
   echo "[ERROR] python3 nicht gefunden."
   exit 1
 fi
-cleanup() { kill "$SERVER_PID" 2>/dev/null; exit 0; }
+
+# Standalone: IMMER einen zufaellig freien Port nehmen (OS-vergeben, ephemeral) —
+# es koennen beliebig viele Instanzen parallel laufen, nie "Address already in use".
+# Der Browser wird unten mit genau diesem Port geoeffnet, Fixwert ist unnoetig.
+# Hub-Modus (--port=) bleibt exakt, weil der Hub den Port zum Tab-Oeffnen kennen muss.
+# Mit --port-prefer=NNNN laesst sich optional ein Wunschport bevorzugen (Fallback random).
+PREFER=0
+for arg in "$@"; do case "$arg" in --port-prefer=*) PREFER="${arg#--port-prefer=}";; esac; done
+if [ "$PORT_FIXED" -eq 0 ]; then
+  PORT="$(python3 - "$PREFER" <<'PY'
+import socket, sys
+prefer = int(sys.argv[1]) if sys.argv[1].isdigit() else 0
+def grab(p):
+    s = socket.socket()
+    try:
+        s.bind(("127.0.0.1", p)); return s.getsockname()[1], s
+    except OSError:
+        s.close(); return None, None
+port = None
+if prefer:
+    port, s = grab(prefer)
+if port is None:
+    port, s = grab(0)          # 0 → OS waehlt freien Ephemeral-Port
+s.close()
+print(port)
+PY
+)"
+fi
+
+TMPPROFILE=""
+cleanup() {
+  kill "$SERVER_PID" 2>/dev/null
+  [ -n "$TMPPROFILE" ] && rm -rf "$TMPPROFILE"
+  exit 0
+}
 trap cleanup SIGTERM SIGINT
 cd "${HERE}/site"
-python3 -m http.server "$PORT" --bind 127.0.0.1 &
+python3 -m http.server "$PORT" --bind 127.0.0.1 >/dev/null 2>&1 &
 SERVER_PID=$!
-echo "[Docs] http://127.0.0.1:${PORT}"
-if [[ "$*" != *"--port="* ]]; then
+URL="http://127.0.0.1:${PORT}"
+echo "[Docs] $URL"
+
+if [ "$OPEN_BROWSER" -eq 1 ]; then
   sleep 0.5
-  xdg-open "http://127.0.0.1:${PORT}" 2>/dev/null || true
+  CHROME=""
+  for c in chromium chromium-browser google-chrome google-chrome-stable chrome brave-browser; do
+    if command -v "$c" &>/dev/null; then CHROME="$c"; break; fi
+  done
+  if [ -n "$CHROME" ]; then
+    # Eigenes Temp-Profil → frische, ISOLIERTE Instanz (unabhaengig von Firefox
+    # und jedem schon laufenden Chrome/Chromium); --app = randloses Doku-Fenster.
+    TMPPROFILE="$(mktemp -d /tmp/mpp-docs-chrome.XXXXXX)"
+    "$CHROME" --user-data-dir="$TMPPROFILE" --no-first-run --no-default-browser-check \
+              --new-window --app="$URL" >/dev/null 2>&1 &
+  else
+    echo "[Docs] Kein Chromium/Chrome gefunden — bitte manuell oeffnen: $URL"
+    xdg-open "$URL" >/dev/null 2>&1 || true
+  fi
 fi
 wait "$SERVER_PID"
 RUNEOF
@@ -414,6 +481,27 @@ RUNEOF
   mkdir -p "$RELEASE_DIR"
   cp "$output" "$RELEASE_DIR/"
   ok "Kopiert nach ${BOLD}${RELEASE_DIR}/$(basename "$output")${NC}"
+
+  # ── In den globalen Sammelordner spiegeln (docs-release-sync.pattern §B.3) ──
+  # Atomar per rename, falls die alte AppImage gerade läuft (FUSE-Mount → ETXTBSY).
+  local base; base="$(basename "$output")"
+  mkdir -p "$GLOBAL_DIR"
+  cp "$output" "$GLOBAL_DIR/.${base}.new"
+  mv -f "$GLOBAL_DIR/.${base}.new" "$GLOBAL_DIR/${base}"
+  chmod +x "$GLOBAL_DIR/${base}"
+  ok "Global gespiegelt nach ${BOLD}${GLOBAL_DIR}/${base}${NC}"
+
+  # ── TDD-Gate: Doku ist erst fertig, wenn ALLE Regeln grün sind (§G) ─────────
+  if [ -x "$DOCS_DIR/verify_docs.sh" ]; then
+    header "TDD-Gate — Doku-Abnahme (docs-release-sync §G)"
+    if bash "$DOCS_DIR/verify_docs.sh"; then
+      ok "TDD-Gate grün — Doku fertig."
+    else
+      fail "TDD-Gate ROT — Doku NICHT fertig. Rote Regel(n) oben fixen und neu bauen."
+    fi
+  else
+    warn "verify_docs.sh fehlt/nicht ausführbar — TDD-Gate übersprungen!"
+  fi
 }
 
 # ══════════════════════════════════════════════════════════════════════════════

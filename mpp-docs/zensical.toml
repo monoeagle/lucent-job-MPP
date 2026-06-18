@@ -4,7 +4,7 @@
 
 [project]
 site_name        = "MPP — Marketplace Portal"
-site_description = "IT-Service Marketplace Portal · Flask + React · TDD"
+site_description = "IT-Service Marketplace Portal · Flask + React · TDD · v1.0.0"
 site_author      = "Lucent Trails"
 copyright        = "Copyright &copy; 2026 Lucent Trails"
 
@@ -12,10 +12,20 @@ docs_dir = "docs"
 site_dir = "site"
 
 extra_css = ["stylesheets/extra.css"]
+extra_javascript = [
+  { path = "javascripts/mermaid.min.js", defer = true },
+  "javascripts/mermaid-init.js",
+  "javascripts/palette-init.js",
+  "javascripts/lightbox.js",
+  "javascripts/activity-heatmap.js",   # Heatmap + Insights auf der Startseite
+  "javascripts/icon-rail.js",          # linkes Icon-Menü statt Material-Tabs
+  "javascripts/hub-stop.js",
+]
 
 nav = [
   { "Überblick" = "index.md" },
   { "Grundlagen" = [
+    { "Projektüberblick" = "grundlagen/ueberblick.md" },
     { "Installation"    = "grundlagen/installation.md" },
     { "Schnellstart"    = "grundlagen/schnellstart.md" },
     { "Architektur"     = "grundlagen/architektur.md" },
@@ -31,6 +41,7 @@ nav = [
     { "Conventions"     = "entwicklung/conventions.md" },
     { "Testing"         = "entwicklung/testing.md" },
     { "Credentials"     = "entwicklung/credentials.md" },
+    { "Arbeitspakete"   = "entwicklung/arbeitspakete.md" },
     { "Changelog"       = "entwicklung/changelog.md" },
   ]},
   { "Betrieb" = [
@@ -42,8 +53,7 @@ nav = [
 [project.theme]
 language = "de"
 features = [
-  "navigation.tabs",
-  "navigation.tabs.sticky",
+  # navigation.tabs/.tabs.sticky entfernt — die Icon-Rail (icon-rail.js) ersetzt die Tab-Leiste
   "navigation.sections",
   "navigation.top",
   "search.highlight",
