@@ -20,18 +20,21 @@ Nutzung:
 from __future__ import annotations
 import argparse
 import http.server
+import re
 import shutil
 import socketserver
 import subprocess
 import sys
 from pathlib import Path
 
-BASE_DIR    = Path(__file__).resolve().parent
-DOCS_DIR    = BASE_DIR / "docs"
-SITE_DIR    = BASE_DIR / "site"
-TOOLS_DIR   = BASE_DIR / "tools"
-MMD_SOURCES = BASE_DIR / "mermaid-sources"
-CONFIG_FILE = BASE_DIR / "zensical.toml"
+BASE_DIR     = Path(__file__).resolve().parent
+DOCS_DIR     = BASE_DIR / "docs"
+SITE_DIR     = BASE_DIR / "site"
+TOOLS_DIR    = BASE_DIR / "tools"
+MMD_SOURCES  = BASE_DIR / "mermaid-sources"
+CONFIG_FILE  = BASE_DIR / "zensical.toml"
+PROJECT_DOCS = BASE_DIR.parent / "docs"          # Projekt-Root docs/ (insights, handoffs)
+ERKENNTNISSE = DOCS_DIR / "erkenntnisse"         # Mirror-Ziel (generiert, git-ignored)
 
 GREEN  = "\033[0;32m"
 CYAN   = "\033[0;36m"
@@ -149,6 +152,60 @@ def step_generate_activity() -> None:
         warn(f"generate_project_activity.py exit {rc} (nicht-fatal)")
 
 
+def _md_title(path: Path, fallback: str) -> str:
+    """Erste '# '-Überschrift als Titel, sonst der Dateiname (ohne Endung)."""
+    try:
+        for line in path.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if stripped.startswith("# "):
+                return stripped[2:].strip()
+    except OSError:
+        pass
+    return fallback
+
+
+def step_mirror_insights() -> None:
+    """Insights/Handoffs aus dem Projekt-Root nach docs/erkenntnisse/ spiegeln.
+
+    Doc-Mirror: die Quelle bleibt `<root>/docs/{insights,handoffs}/`, hier entsteht nur
+    die publizierte Sicht + eine generierte index.md. Idempotent (Ziel wird neu aufgebaut).
+    """
+    step("Insights/Handoffs spiegeln (Doc-Mirror → docs/erkenntnisse/)")
+    if ERKENNTNISSE.exists():
+        shutil.rmtree(ERKENNTNISSE)
+    ERKENNTNISSE.mkdir(parents=True)
+
+    sections = [
+        ("Insights", "insights", PROJECT_DOCS / "insights"),
+        ("Session-Handoffs", "handoffs", PROJECT_DOCS / "handoffs"),
+    ]
+    lines = [
+        "# Erkenntnisse & Handoffs",
+        "",
+        "Automatisch aus `docs/insights/` und `docs/handoffs/` gespiegelt — die Quelle bleibt",
+        "der Projekt-Root, hier steht nur die publizierte Sicht.",
+        "",
+    ]
+    total = 0
+    for title, sub, src in sections:
+        files = sorted(src.glob("*.md"), reverse=True) if src.is_dir() else []
+        lines += [f"## {title}", ""]
+        if not files:
+            lines += ["_(keine Einträge)_", ""]
+            continue
+        (ERKENNTNISSE / sub).mkdir(parents=True, exist_ok=True)
+        for f in files:
+            shutil.copy2(f, ERKENNTNISSE / sub / f.name)
+            label = _md_title(f, f.stem)
+            m = re.match(r"(\d{4}-\d{2}-\d{2})", f.name)
+            suffix = f" — {m.group(1)}" if m else ""
+            lines.append(f"- [{label}]({sub}/{f.name}){suffix}")
+            total += 1
+        lines.append("")
+    (ERKENNTNISSE / "index.md").write_text("\n".join(lines), encoding="utf-8")
+    ok(f"{total} Erkenntnis-Dokument(e) gespiegelt")
+
+
 def step_zensical_build() -> None:
     step("Zensical-Build (site/)")
     if SITE_DIR.exists():
@@ -211,6 +268,8 @@ def main() -> None:
 
     if not args.no_activity:
         step_generate_activity()
+
+    step_mirror_insights()
 
     step_zensical_build()
 

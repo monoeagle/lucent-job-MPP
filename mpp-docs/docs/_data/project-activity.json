@@ -1,10 +1,29 @@
 {
-  "generatedAt": "2026-06-18T23:07:28",
+  "generatedAt": "2026-06-18T23:44:33",
   "range": {
     "from": "2025-06-19",
     "to": "2026-06-18"
   },
   "byDay": {
+    "2026-06-18": {
+      "commits": 2,
+      "kinds": {
+        "feat": 1,
+        "docs": 1
+      },
+      "list": [
+        {
+          "sha": "e70b6f76",
+          "subject": "feat(appimage): App-AppRun mit Random-Ports + isolierter Chromium-Instanz",
+          "kind": "feat"
+        },
+        {
+          "sha": "0ed38136",
+          "subject": "docs: App-Look + TDD-Gate + Ein-Befehl-Release",
+          "kind": "docs"
+        }
+      ]
+    },
     "2026-04-27": {
       "commits": 3,
       "kinds": {
@@ -1256,17 +1275,17 @@
     }
   },
   "stats": {
-    "totalCommits": 231,
-    "activeDays": 10,
+    "totalCommits": 233,
+    "activeDays": 11,
     "longestStreak": 3,
     "topKinds": [
       {
         "kind": "feat",
-        "count": 149
+        "count": 150
       },
       {
         "kind": "docs",
-        "count": 25
+        "count": 26
       },
       {
         "kind": "fix",

@@ -117,6 +117,23 @@ check "arbeitspakete.md vorhanden" test -f "$DOCS_DIR/docs/entwicklung/arbeitspa
 check "Flowchart + Gantt referenziert" bash -c \
   "grep -q arbeitspakete-1.svg '$DOCS_DIR/docs/entwicklung/arbeitspakete.md' && grep -q arbeitspakete-2.svg '$DOCS_DIR/docs/entwicklung/arbeitspakete.md'"
 
+# ── R-ERKENNTNISSE ───────────────────────────────────────────────────────────
+# Insights/Handoffs aus dem Projekt-Root docs/ werden beim Build nach docs/erkenntnisse/
+# gespiegelt und müssen in der publizierten Site + Nav landen (Doc-Mirror, kein Drift).
+echo "── R-ERKENNTNISSE (Insights/Handoffs gespiegelt)"
+check "erkenntnisse in Nav (zensical.toml)" grep -q "erkenntnisse/index.md" "$DOCS_DIR/zensical.toml"
+check "Erkenntnisse-Index gebaut" test -f "$SITE/erkenntnisse/index.html"
+ROOT_INSIGHTS=$(find "$PROJECT_DIR/docs/insights" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l)
+if [ "$ROOT_INSIGHTS" -gt 0 ]; then
+  # Zensical baut Pretty-URLs: insights/<slug>/index.html → über alle Ebenen zählen
+  SITE_INSIGHTS=$(find "$SITE/erkenntnisse/insights" -name 'index.html' 2>/dev/null | wc -l)
+  [ "$SITE_INSIGHTS" -ge "$ROOT_INSIGHTS" ] \
+    && pass "alle $ROOT_INSIGHTS Insight(s) gespiegelt ($SITE_INSIGHTS in site/)" \
+    || fail "Insights nicht vollständig gespiegelt ($SITE_INSIGHTS/$ROOT_INSIGHTS)"
+else
+  pass "keine Insights im Projekt-Root (nichts zu spiegeln)"
+fi
+
 # ── Ergebnis ─────────────────────────────────────────────────────────────────
 echo ""
 if [ "$FAILS" -eq 0 ]; then

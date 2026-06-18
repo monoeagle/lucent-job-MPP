@@ -48,6 +48,7 @@ nav = [
     { "Stubs & Mocks"     = "betrieb/stubs-mocks.md" },
     { "Troubleshooting"   = "betrieb/troubleshooting.md" },
   ]},
+  { "Erkenntnisse" = "erkenntnisse/index.md" },   # generiert: Mirror aus docs/insights + docs/handoffs
 ]
 
 [project.theme]

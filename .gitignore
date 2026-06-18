@@ -13,6 +13,7 @@ agents_md.zip
 **/site/
 **/.cache/
 .tools/
+mpp-docs/docs/erkenntnisse/
 build/appimage/
 build/*.AppImage
 release/

@@ -64,24 +64,39 @@ info "Python $PY_VERSION gefunden"
 # ── .venv-docs erstellen ────────────────────────────────────────────────────
 if [ ! -d "$VENV_DIR" ]; then
   info "Erstelle .venv-docs ..."
-  "$PYTHON" -m venv "$VENV_DIR"
+  if ! "$PYTHON" -m venv "$VENV_DIR" 2>/dev/null; then
+    warn "venv mit pip fehlgeschlagen (ensurepip evtl. nicht verfuegbar) — ohne pip anlegen ..."
+    "$PYTHON" -m venv --without-pip "$VENV_DIR" \
+      || error "venv-Erstellung fehlgeschlagen. Auf Debian/Ubuntu: 'apt install python3-venv'."
+  fi
   success ".venv-docs erstellt."
 fi
 
-source "$VENV_DIR/bin/activate"
-info ".venv-docs aktiviert"
+# Ab hier IMMER das venv-Python direkt ansprechen — nie das aktivierte/aeussere 'pip'
+# oder 'python3'. So landet 'pip install' garantiert IM venv und nie im System-Python,
+# wo PEP 668 ('externally-managed-environment') blockt.
+VENV_PY="$VENV_DIR/bin/python"
+[ -x "$VENV_PY" ] || error "venv-Python fehlt: $VENV_PY"
+
+# pip im venv sicherstellen (falls das venv ohne pip angelegt wurde)
+if ! "$VENV_PY" -m pip --version &>/dev/null; then
+  info "pip im venv bootstrappen (ensurepip) ..."
+  "$VENV_PY" -m ensurepip --upgrade &>/dev/null \
+    || error "pip konnte nicht ins venv gebootstrappt werden. Auf Debian/Ubuntu: 'apt install python3-venv'."
+fi
+info ".venv-docs bereit ($VENV_PY)"
 
 # ── Zensical installieren ───────────────────────────────────────────────────
-if ! pip show zensical &>/dev/null 2>&1; then
+if ! "$VENV_PY" -m pip show zensical &>/dev/null; then
   info "Installiere Zensical ..."
-  pip install --quiet --upgrade pip
-  pip install --quiet zensical
+  "$VENV_PY" -m pip install --quiet --upgrade pip
+  "$VENV_PY" -m pip install --quiet zensical
   success "Zensical installiert."
 else
   success "Zensical bereits vorhanden."
 fi
 
-ZEN_VER=$(zensical --version 2>/dev/null | head -1 || echo "unbekannt")
+ZEN_VER=$("$VENV_PY" -m zensical --version 2>/dev/null | head -1 || echo "unbekannt")
 info "Zensical: $ZEN_VER"
 echo ""
 
@@ -89,12 +104,12 @@ echo ""
 cd "$SCRIPT_DIR"
 
 if [[ "${CHECK:-}" == "true" ]]; then
-  python3 build_docs.py --check
+  "$VENV_PY" build_docs.py --check
 
 elif [[ "${BUILD:-}" == "true" ]]; then
   [ -d "$SCRIPT_DIR/site" ] && rm -rf "$SCRIPT_DIR/site"
   info "Baue statische Dokumentation ..."
-  python3 build_docs.py
+  "$VENV_PY" build_docs.py
   echo -e "   Oeffnen: ${CYAN}file://$SCRIPT_DIR/site/index.html${NC}"
 
 else
@@ -103,5 +118,5 @@ else
   echo ""
   echo -e "   ${GREEN}http://127.0.0.1:$PORT${NC}  (Ctrl+C zum Beenden)"
   echo ""
-  python3 build_docs.py --serve --port "$PORT"
+  "$VENV_PY" build_docs.py --serve --port "$PORT"
 fi
