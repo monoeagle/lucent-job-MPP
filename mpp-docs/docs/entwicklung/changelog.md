@@ -233,10 +233,24 @@ Alle relevanten Aenderungen in chronologischer Reihenfolge, gruppiert nach Phase
 
 ---
 
+## Session 2026-06-19: Produktionsreife + VM-Install-Guide
+
+- `0ed38136` docs: App-Look + TDD-Gate + Ein-Befehl-Release (Vorsession-Arbeit committet)
+- `e70b6f76` feat(appimage): App-AppRun mit Random-Ports + isolierter Chromium-Instanz
+- `5217bfc5` docs: Insights/Handoffs in Nav + run_mpp_docs.sh gehaertet + TDD-Regel R-ERKENNTNISSE
+- `117c5883` docs: VM-Installationsanleitung (Flask/React, Produktions-Ziel, 19 Abschnitte)
+- `9168f693` feat: Produktionsreife-Fixes (gunicorn, ProxyFix, Readiness `/ready`, alembic-DATABASE_URL)
+
+> **Test-Stand:** +7 Backend-Tests via TDD. Ein voller Lauf deckte **23 pre-existing Failures** auf
+> (Stub-User-Count / Auth-403 / DSGVO / Audit-Log) — per `git stash` als Nicht-Regression bewiesen;
+> Triage offen. Offener Prod-Blocker: LDAP-Auth (`auth_service.py` → `NotImplementedError`).
+
+---
+
 ## Statistik
 
-- **199 Commits** insgesamt (77 Phase 1 + 122 Phase 2)
-- **756 Backend-Tests**, **106 Frontend-Tests** = **862 Tests**
+- **204 Commits** insgesamt (77 Phase 1 + 122 Phase 2 + 5 Session 2026-06-19)
+- **763 Backend-Tests**, **106 Frontend-Tests** = **869 Tests** (davon 23 Backend aktuell rot, pre-existing — s. o.)
 - **96 API-Endpoints** in **17 Modulen**
 - **15 Datenbanktabellen**
 - **13 Backend-Services**
