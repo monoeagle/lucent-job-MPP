@@ -19,8 +19,16 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from app.data.db.session import Base
+from app.core.db_url import resolve_database_url
 import app.data.db.models  # noqa: F401 — register models for autogenerate
 target_metadata = Base.metadata
+
+# DATABASE_URL (Umgebung) hat Vorrang vor der hartkodierten sqlalchemy.url in
+# alembic.ini — so treffen Migrationen dieselbe DB wie die App (Prod/Test/Dev).
+config.set_main_option(
+    "sqlalchemy.url",
+    resolve_database_url(config.get_main_option("sqlalchemy.url")),
+)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

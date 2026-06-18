@@ -2,6 +2,7 @@ import logging
 import os
 
 from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from app.core.config import Config
 from app.core.errors import register_error_handlers
@@ -12,6 +13,10 @@ logger = logging.getLogger(__name__)
 
 def create_app(config_overrides: dict | None = None) -> Flask:
     app = Flask(__name__)
+
+    # Hinter dem nginx-Reverse-Proxy X-Forwarded-For/-Proto auswerten,
+    # damit Client-IP und Schema (https) korrekt erkannt werden.
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1)
 
     config = _build_config(config_overrides)
     app.config.from_mapping(
