@@ -6,7 +6,7 @@ frontend/tsconfig.tsbuildinfo
 *.pyc
 .pytest_cache/
 logs/
-screenshots/
+/screenshots/
 _TRANSFER_NON_DOCKER*/
 agents_md.zip
 **/.venv-docs/
@@ -16,5 +16,7 @@ agents_md.zip
 mpp-docs/docs/erkenntnisse/
 build/appimage/
 build/*.AppImage
+build/Lucent-MPP-TDD-*/
 release/
 .wheels/
+wheels/

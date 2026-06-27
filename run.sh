@@ -14,7 +14,7 @@ RELEASE_DIR="$PROJECT_DIR/release"
 GLOBAL_DIR="$(dirname "$PROJECT_DIR")/AppImages"   # zentraler Sammelordner neben allen Lucent-Apps
 DOCS_DIR="$PROJECT_DIR/mpp-docs"
 DOCS_PORT=5083
-APP_VERSION="1.0.0"
+APP_VERSION="1.1.0"
 APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
 APPIMAGETOOL="$PROJECT_DIR/.tools/appimagetool"
 
@@ -565,14 +565,50 @@ RUNEOF
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Offline-Release-Bundle (AlmaLinux 9) — gebündelte Wheels + prebuilt SPA + Installer
+# ══════════════════════════════════════════════════════════════════════════════
+cmd_release() {
+  header "MPP (Flask + React) — Offline-Release (AlmaLinux 9)"
+
+  # 1. React-SPA bauen (auf dem Dev-Rechner mit Node; die VM braucht kein Node).
+  if [ ! -d "$PROJECT_DIR/frontend/dist" ] || [ -n "${REBUILD_SPA:-}" ]; then
+    info "React-SPA bauen (frontend/dist)..."
+    ( cd "$PROJECT_DIR/frontend" && [ -d node_modules ] || npm install -q )
+    ( cd "$PROJECT_DIR/frontend" && npm run build )
+    ok "frontend/dist gebaut"
+  else
+    info "frontend/dist vorhanden — Rebuild via REBUILD_SPA=1 erzwingen"
+  fi
+
+  # 2. Offline-Wheelhouse für AlmaLinux 9 / Py3.12 (nur einmalig, wenn leer).
+  local wheels_dir="$PROJECT_DIR/wheels"
+  mkdir -p "$wheels_dir"
+  if [ -z "$(ls "$wheels_dir"/*.whl 2>/dev/null)" ]; then
+    info "Wheelhouse leer — Wheels für AlmaLinux 9 / Py3.12 laden..."
+    "$VENV_DIR/bin/python3" -m pip download \
+      -r "$PROJECT_DIR/requirements.txt" --dest "$wheels_dir" \
+      --only-binary=:all: --python-version 312 --implementation cp --abi cp312 \
+      --platform manylinux2014_x86_64 --platform manylinux_2_17_x86_64 --platform manylinux_2_28_x86_64
+    "$VENV_DIR/bin/python3" -m pip download pip setuptools wheel --dest "$wheels_dir" --only-binary=:all:
+    ok "Wheels geladen nach wheels/"
+  else
+    info "Wheelhouse vorhanden ($(ls "$wheels_dir"/*.whl 2>/dev/null | wc -l) Wheels) — Neuladen: wheels/ leeren"
+  fi
+
+  # 3. Bundle assemblieren + zippen.
+  "$VENV_DIR/bin/python3" "$PROJECT_DIR/tools/build_release.py"
+}
+
+# ══════════════════════════════════════════════════════════════════════════════
 # CLI Dispatch
 # ══════════════════════════════════════════════════════════════════════════════
 case "${1:-serve}" in
   serve)           cmd_serve ;;
   appimage-build)  cmd_appimage ;;
   docs-appimage)   cmd_docs_appimage ;;
+  release)         cmd_release ;;
   *)
-    echo "Usage: $0 [serve|appimage-build|docs-appimage]"
+    echo "Usage: $0 [serve|appimage-build|docs-appimage|release]"
     exit 1
     ;;
 esac

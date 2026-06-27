@@ -290,9 +290,15 @@
     if (!pane) return;
     const entry = payload.byDay && payload.byDay[dateKey];
     if (!entry) return;
+    // Toggle: erneuter Klick auf denselben Tag schließt die Detailliste wieder.
+    if (pane.dataset.activeKey === 'day:' + dateKey && pane.innerHTML.trim() !== '') {
+      closeDetail(pane);
+      return;
+    }
     const dt = new Date(dateKey + 'T00:00:00');
     const headline = dt.toLocaleDateString('de', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
     pane.innerHTML = renderCommitList(entry.list || [], headline);
+    pane.dataset.activeKey = 'day:' + dateKey;
     bindDetailClose(pane);
     pane.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
@@ -300,6 +306,11 @@
   function showPhaseDetail(payload, phase) {
     const pane = ensureDetailPane();
     if (!pane) return;
+    // Toggle: erneuter Klick auf dieselbe Phase schließt die Detailliste wieder.
+    if (pane.dataset.activeKey === 'phase:' + phase.label && pane.innerHTML.trim() !== '') {
+      closeDetail(pane);
+      return;
+    }
     const start = new Date(phase.start + 'T00:00:00');
     const end   = new Date(phase.end   + 'T23:59:59');
     const collected = [];
@@ -312,13 +323,19 @@
     // Innerhalb der Phase nach Datum absteigend.
     collected.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
     pane.innerHTML = renderCommitList(collected, phase.label + ' — ' + phase.start + ' bis ' + phase.end);
+    pane.dataset.activeKey = 'phase:' + phase.label;
     bindDetailClose(pane);
     pane.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  function closeDetail(pane) {
+    pane.innerHTML = '';
+    delete pane.dataset.activeKey;
+  }
+
   function bindDetailClose(pane) {
     const btn = pane.querySelector('.adb-act-detail__close');
-    if (btn) btn.addEventListener('click', () => { pane.innerHTML = ''; });
+    if (btn) btn.addEventListener('click', () => closeDetail(pane));
   }
 
   // ── Phase-Buttons unter dem Gantt: pro Phase ein Klick-Button, der die ──

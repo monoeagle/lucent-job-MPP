@@ -18,7 +18,7 @@
   // ── Versionen ──────────────────────────────────────────────────────────
   // Hardcoded — bei Release in lucent-hub.yml UND hier nachziehen. Früh
   // deklariert, weil INFO_HTML (Modul-Level-const) darauf zugreift.
-  const APP_VERSION   = '1.0.0';                 // = lucent-hub.yml version
+  const APP_VERSION   = '1.1.0';                 // = lucent-hub.yml version
   const HEADER_PREFIX = `MPP v${APP_VERSION}`;
 
   // ── Icon-Map: Titel-Schluesselwort → Emoji ─────────────────────────────
@@ -490,10 +490,65 @@
     search.parentNode.insertBefore(btn, search);
   }
 
+  // ── Architektur-Badge im Header → Architekturbild im Modal ────────────
+  function archSvgUrl() {
+    const s = document.querySelector('script[src*="javascripts/icon-rail.js"]');
+    const base = s ? s.src.replace(/javascripts\/icon-rail\.js.*$/, '') : '/';
+    return base + 'images/mermaid/index-1.svg';  // Architekturüberblick (index.md, 1. Block)
+  }
+  function closeArch() {
+    const ov = document.getElementById('adb-arch-overlay');
+    if (!ov) return;
+    ov.classList.remove('open');
+    ov.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  function openArch() {
+    let ov = document.getElementById('adb-arch-overlay');
+    if (!ov) {
+      ov = document.createElement('div');
+      ov.id = 'adb-arch-overlay';
+      ov.className = 'adb-lightbox-overlay';
+      ov.setAttribute('role', 'dialog');
+      ov.setAttribute('aria-modal', 'true');
+      ov.innerHTML =
+        '<button class="adb-lightbox-close" aria-label="Schliessen">&times;</button>' +
+        '<div class="adb-lightbox-content"><img class="adb-lightbox-img" src="' +
+        archSvgUrl() + '" alt="Architekturüberblick: React-SPA · API (Blueprints) · Services · Domain · Data · PostgreSQL"></div>' +
+        '<div class="adb-lightbox-caption">Architektur — React-SPA · API · Services · Domain · Data · PostgreSQL</div>';
+      document.body.appendChild(ov);
+      ov.addEventListener('click', function (e) {
+        if (e.target === ov || e.target.classList.contains('adb-lightbox-close')) {
+          closeArch();
+        }
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && ov.classList.contains('open')) closeArch();
+      });
+    }
+    ov.classList.add('open');
+    ov.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function addArchBadge() {
+    const search = document.querySelector('.md-search');
+    if (!search || !search.parentNode) return;
+    if (document.querySelector('.adb-arch-badge')) return;  // idempotent
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'adb-status-badge adb-arch-badge';
+    btn.title = 'Architekturbild (Systemüberblick) öffnen';
+    btn.innerHTML =
+      '<span class="adb-status-badge__dot" aria-hidden="true"></span>Architektur';
+    btn.addEventListener('click', openArch);
+    search.parentNode.insertBefore(btn, search);
+  }
+
   // ── Init ───────────────────────────────────────────────────────────────
   function init() {
     updateHeaderTitle();
     addStatusBadge();
+    addArchBadge();     // Architekturüberblick (index-1.svg) im Header-Button
     addRoadmapBadge();  // Gantt-Roadmap (entwicklung-arbeitspakete-2.svg) im Header-Button
 
     const sections = parseSections();

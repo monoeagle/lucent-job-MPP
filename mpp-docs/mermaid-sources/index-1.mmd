@@ -1,0 +1,48 @@
+graph TB
+    subgraph UI["UI (Browser)"]
+        direction LR
+        PG["React-Seiten\n(pages/ · React 19)"]
+        HK["Hooks\n(hooks/)"]
+        AC["API-Client\n(api/ · typisiert)"]
+    end
+    subgraph API["API-Layer (Flask-Blueprints)"]
+        direction LR
+        EP["REST-Endpoints\n(app/api/v1)"]
+        MW["Middleware\n(Auth · DSGVO)"]
+    end
+    subgraph SVC["Service-Layer (Business-Logik)"]
+        direction LR
+        CS["CatalogService"]
+        OS["OrderService"]
+        APS["ApprovalService"]
+        PS["ProvisioningService"]
+        WS2["Notification ·\nSubscription ·\nAudit · Dashboard"]
+    end
+    subgraph DOM["Domain (Entities)"]
+        direction LR
+        EN["Datenklassen\n(app/domain)"]
+    end
+    subgraph DATA["Daten- & Infrastruktur-Layer"]
+        direction LR
+        RP["Repositories +\nSQLAlchemy-Modelle\n(app/data)"]
+        ST["Stubs\n(CMDB-YAML · GitLab-Mock)"]
+    end
+    DB[("PostgreSQL")]
+
+    PG --> HK
+    HK --> AC
+    AC -. HTTP/JSON .-> EP
+    EP --> MW
+    EP --> CS
+    EP --> OS
+    EP --> APS
+    CS --> EN
+    OS --> EN
+    APS --> EN
+    OS --> PS
+    CS --> RP
+    OS --> RP
+    APS --> RP
+    PS --> ST
+    CS --> ST
+    RP --> DB

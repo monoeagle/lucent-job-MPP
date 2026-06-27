@@ -1978,3 +1978,35 @@ body:has(.adb-home-layout) .md-content {
 .adb-home-footer .adb-act-cell { font-size: clamp(6px, 0.95vw, 10px); }
 /* Legende braucht keine Zahlen. */
 .adb-act-legend .adb-act-cell { font-size: 0; text-shadow: none; }
+
+/* ── Screenshot-Vergleich (zwei Bilder nebeneinander) ───────────────────── */
+.adb-shot-compare {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin: 1rem 0;
+}
+.adb-shot-compare figure {
+  flex: 1 1 0;
+  min-width: 260px;
+  margin: 0;
+}
+.adb-shot-compare img {
+  width: 100%;
+  /* Das Bestellformular ist sehr lang — Inline nur den oberen Teil zeigen
+     (Kontext + die sich füllende Zusammenfassung). Klick öffnet das ganze Bild
+     in der Lightbox. */
+  height: 560px;
+  object-fit: cover;
+  object-position: top;
+  cursor: zoom-in;
+  border: 1px solid var(--md-default-fg-color--lightest, #ddd);
+  border-radius: 6px;
+}
+.adb-shot-compare figcaption {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  margin-top: 0.35rem;
+  text-align: center;
+}

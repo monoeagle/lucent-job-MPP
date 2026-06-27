@@ -18,4 +18,4 @@
 
 </div>
 
-<div data-adb-activity-detail style="display:none"></div>
+<div data-adb-activity-detail></div>
