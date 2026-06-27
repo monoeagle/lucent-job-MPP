@@ -1,2 +1,0 @@
-- [Marketplace Portal - Projektkontext](project_marketplace_portal.md) — IT-Services Marketplace, Rollen/Umsysteme, Feature-Gruppen, SSE-Anforderung, Nummerierungsstand
-- [User - Rolle und Kontext](user_role.md) — technischer Stakeholder/PO für internes IT-Marketplace-Portal
