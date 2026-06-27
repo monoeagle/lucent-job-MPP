@@ -1,0 +1,1356 @@
+{
+  "generatedAt": "2026-06-27T15:55:32",
+  "range": {
+    "from": "2025-06-28",
+    "to": "2026-06-27"
+  },
+  "byDay": {
+    "2026-06-27": {
+      "commits": 1,
+      "kinds": {
+        "feat": 1
+      },
+      "list": [
+        {
+          "sha": "7c14bcff",
+          "subject": "feat: Delivery-/Doku-Parität zum Django-Schwesterprojekt (v1.1.0)",
+          "kind": "feat"
+        }
+      ]
+    },
+    "2026-06-19": {
+      "commits": 3,
+      "kinds": {
+        "docs": 2,
+        "feat": 1
+      },
+      "list": [
+        {
+          "sha": "77ad281f",
+          "subject": "docs: Session-Handoff 2026-06-19 (Insight + Handoff + KPI + Doku-Nachzug)",
+          "kind": "docs"
+        },
+        {
+          "sha": "9168f693",
+          "subject": "feat: Produktionsreife-Fixes (gunicorn, ProxyFix, Readiness, alembic-URL)",
+          "kind": "feat"
+        },
+        {
+          "sha": "117c5883",
+          "subject": "docs: VM-Installationsanleitung (Flask/React, Produktions-Ziel)",
+          "kind": "docs"
+        }
+      ]
+    },
+    "2026-06-18": {
+      "commits": 3,
+      "kinds": {
+        "docs": 2,
+        "feat": 1
+      },
+      "list": [
+        {
+          "sha": "5217bfc5",
+          "subject": "docs: Insights/Handoffs in Nav + run_mpp_docs.sh gehärtet + TDD-Regel",
+          "kind": "docs"
+        },
+        {
+          "sha": "e70b6f76",
+          "subject": "feat(appimage): App-AppRun mit Random-Ports + isolierter Chromium-Instanz",
+          "kind": "feat"
+        },
+        {
+          "sha": "0ed38136",
+          "subject": "docs: App-Look + TDD-Gate + Ein-Befehl-Release",
+          "kind": "docs"
+        }
+      ]
+    },
+    "2026-04-27": {
+      "commits": 3,
+      "kinds": {
+        "other": 3
+      },
+      "list": [
+        {
+          "sha": "0656c41d",
+          "subject": "Merge branch 'main' of https://github.com/monoeagle/MPP",
+          "kind": "other"
+        },
+        {
+          "sha": "f734d802",
+          "subject": "Delete .gitignore",
+          "kind": "other"
+        },
+        {
+          "sha": "bfef7531",
+          "subject": "Initial commit",
+          "kind": "other"
+        }
+      ]
+    },
+    "2026-04-10": {
+      "commits": 1,
+      "kinds": {
+        "fix": 1
+      },
+      "list": [
+        {
+          "sha": "b8b59d9f",
+          "subject": "fix: AppImage standalone Python + App-spezifische Fixes",
+          "kind": "fix"
+        }
+      ]
+    },
+    "2026-04-09": {
+      "commits": 2,
+      "kinds": {
+        "chore": 1,
+        "feat": 1
+      },
+      "list": [
+        {
+          "sha": "3d055aae",
+          "subject": "chore: .gitignore um AppImage-Build-Artefakte erweitert",
+          "kind": "chore"
+        },
+        {
+          "sha": "b84cb86e",
+          "subject": "feat: AppImage-Erzeugung (App + Docs) in run.sh integriert",
+          "kind": "feat"
+        }
+      ]
+    },
+    "2026-04-05": {
+      "commits": 1,
+      "kinds": {
+        "chore": 1
+      },
+      "list": [
+        {
+          "sha": "e78ff290",
+          "subject": "chore: remove .venv-docs and site/ from git tracking",
+          "kind": "chore"
+        }
+      ]
+    },
+    "2026-04-04": {
+      "commits": 2,
+      "kinds": {
+        "other": 1,
+        "refactor": 1
+      },
+      "list": [
+        {
+          "sha": "cc5170fe",
+          "subject": "neu",
+          "kind": "other"
+        },
+        {
+          "sha": "9338b640",
+          "subject": "refactor: slim CLAUDE.md, extract rules for progressive disclosure",
+          "kind": "refactor"
+        }
+      ]
+    },
+    "2026-04-01": {
+      "commits": 2,
+      "kinds": {
+        "chore": 1,
+        "feat": 1
+      },
+      "list": [
+        {
+          "sha": "8d95b2d9",
+          "subject": "chore: add .venv-docs to gitignore, docs_port updated by Hub",
+          "kind": "chore"
+        },
+        {
+          "sha": "abf0934b",
+          "subject": "feat: unified port-resolution pattern in docs script",
+          "kind": "feat"
+        }
+      ]
+    },
+    "2026-03-30": {
+      "commits": 1,
+      "kinds": {
+        "other": 1
+      },
+      "list": [
+        {
+          "sha": "da45fb91",
+          "subject": "tag ende",
+          "kind": "other"
+        }
+      ]
+    },
+    "2026-03-28": {
+      "commits": 12,
+      "kinds": {
+        "feat": 5,
+        "fix": 6,
+        "test": 1
+      },
+      "list": [
+        {
+          "sha": "52d04093",
+          "subject": "feat: add mpp-source.tar.gz to transfer packages, self-contained install",
+          "kind": "feat"
+        },
+        {
+          "sha": "ef07824e",
+          "subject": "feat: create _TRANSFER_NON_DOCKER_ALMA10 offline package",
+          "kind": "feat"
+        },
+        {
+          "sha": "abbb5453",
+          "subject": "feat: create _TRANSFER_NON_DOCKER offline installation package",
+          "kind": "feat"
+        },
+        {
+          "sha": "a25df3ff",
+          "subject": "fix: move \"Zum Shop\" button to Workspace header",
+          "kind": "fix"
+        },
+        {
+          "sha": "3bac22c5",
+          "subject": "fix: context admin endpoints allow superadmin role",
+          "kind": "fix"
+        },
+        {
+          "sha": "92e43d4a",
+          "subject": "test: add seed.py integration tests (8 tests)",
+          "kind": "test"
+        },
+        {
+          "sha": "79976ae8",
+          "subject": "fix: add explicit template_slug=None for global context restrictions",
+          "kind": "fix"
+        },
+        {
+          "sha": "82928810",
+          "subject": "fix: availability rule_type too long for varchar(10)",
+          "kind": "fix"
+        },
+        {
+          "sha": "41e3ec36",
+          "subject": "feat: rules page with best-practice seed data, fix API URLs",
+          "kind": "feat"
+        },
+        {
+          "sha": "ca1aa33a",
+          "subject": "fix: config page with local form state, save button, working checkboxes",
+          "kind": "fix"
+        },
+        {
+          "sha": "d4956828",
+          "subject": "fix: remove duplicate pending-approval card, make config page editable",
+          "kind": "fix"
+        },
+        {
+          "sha": "72d5e6c3",
+          "subject": "feat: admin config page + audit log header cleanup",
+          "kind": "feat"
+        }
+      ]
+    },
+    "2026-03-27": {
+      "commits": 183,
+      "kinds": {
+        "fix": 16,
+        "feat": 123,
+        "other": 4,
+        "docs": 25,
+        "test": 7,
+        "refactor": 3,
+        "chore": 5
+      },
+      "list": [
+        {
+          "sha": "80c2891e",
+          "subject": "fix: uniform stat card sizes on admin dashboard",
+          "kind": "fix"
+        },
+        {
+          "sha": "f0cb5de3",
+          "subject": "fix: rename admin dashboard status \"Aktiv\" to \"Abgeschlossen\"",
+          "kind": "fix"
+        },
+        {
+          "sha": "4b971e23",
+          "subject": "feat: admin dashboard shows all order statuses with german labels",
+          "kind": "feat"
+        },
+        {
+          "sha": "b250a193",
+          "subject": "fix: superadmin gets 403 on admin dashboard — add superadmin to role_required",
+          "kind": "fix"
+        },
+        {
+          "sha": "9b24e116",
+          "subject": "Screenshot Tool",
+          "kind": "other"
+        },
+        {
+          "sha": "1781d92c",
+          "subject": "feat: screenshot-tool login fix, expandable order items, back navigation, superadmin sidebar fix",
+          "kind": "feat"
+        },
+        {
+          "sha": "12683197",
+          "subject": "fix: superadmin sees Reviews, Admin Dashboard active-state, disabled options shown",
+          "kind": "fix"
+        },
+        {
+          "sha": "fee257df",
+          "subject": "docs: update changelog with all Phase 2 features (session 2)",
+          "kind": "docs"
+        },
+        {
+          "sha": "83e30007",
+          "subject": "docs: comprehensive update of mpp-docs — 862 tests, subscriptions, DSGVO, superadmin, offline installer",
+          "kind": "docs"
+        },
+        {
+          "sha": "c0a5cd83",
+          "subject": "docs: add comprehensive README.md",
+          "kind": "docs"
+        },
+        {
+          "sha": "04621296",
+          "subject": "docs: update CLAUDE.md to reflect current project state (862 tests, subscriptions, DSGVO, superadmin)",
+          "kind": "docs"
+        },
+        {
+          "sha": "1c31c28e",
+          "subject": "feat: screenshot tool captures all 5 users with role-specific pages",
+          "kind": "feat"
+        },
+        {
+          "sha": "3186f8c6",
+          "subject": "feat: add Screenshot-Tool (Playwright, WebP) adapted from BlogGenerator",
+          "kind": "feat"
+        },
+        {
+          "sha": "0b460798",
+          "subject": "feat: show demo credentials in launcher, version v1.0.0 on login page",
+          "kind": "feat"
+        },
+        {
+          "sha": "7436aad6",
+          "subject": "feat(frontend): add charts to Admin Dashboard — Orders by Status + over Time",
+          "kind": "feat"
+        },
+        {
+          "sha": "a9845009",
+          "subject": "feat: introduce superadmin role — Rules, Audit Log, DSGVO restricted",
+          "kind": "feat"
+        },
+        {
+          "sha": "0d23733f",
+          "subject": "feat(frontend): visual feedback for validate/submit flow in OrderDetail",
+          "kind": "feat"
+        },
+        {
+          "sha": "2e0cb6b3",
+          "subject": "feat: T-Shirt Size custom default + reverse-set, auto-group for quantity>1, business_reason field",
+          "kind": "feat"
+        },
+        {
+          "sha": "86d2e118",
+          "subject": "fix: approvals API supports all statuses, approved/rejected now visible in tabs",
+          "kind": "fix"
+        },
+        {
+          "sha": "df0f4daa",
+          "subject": "test: add subscription lifecycle + post-submit orchestration integration tests",
+          "kind": "test"
+        },
+        {
+          "sha": "b46fef42",
+          "subject": "test(frontend): add Workspace, OrderList, Catalog page tests",
+          "kind": "test"
+        },
+        {
+          "sha": "aaaef1b9",
+          "subject": "test: add DSGVO anonymization middleware + admin endpoint tests",
+          "kind": "test"
+        },
+        {
+          "sha": "e0bc48a0",
+          "subject": "feat: DSGVO anonymization middleware + admin toggle",
+          "kind": "feat"
+        },
+        {
+          "sha": "654338cd",
+          "subject": "fix: update tests for approvals response format and test-multi 3 roles",
+          "kind": "fix"
+        },
+        {
+          "sha": "6c002997",
+          "subject": "feat: show order details in review requests, add Besteller column to order list",
+          "kind": "feat"
+        },
+        {
+          "sha": "ce52595a",
+          "subject": "fix(frontend): dashboard cards link to /notifications and /reviews directly",
+          "kind": "fix"
+        },
+        {
+          "sha": "a9836030",
+          "subject": "fix: approvals API returns {items, total}, sidebar shows pending approvals badge",
+          "kind": "fix"
+        },
+        {
+          "sha": "9de49a1d",
+          "subject": "feat: add approval rule + pending approval requests to seed data",
+          "kind": "feat"
+        },
+        {
+          "sha": "73e34f1e",
+          "subject": "fix: replace alembic with create_all in all launcher entry points",
+          "kind": "fix"
+        },
+        {
+          "sha": "8f22d0bf",
+          "subject": "fix: test-multi gets admin role, add demo notifications, fix DB reset",
+          "kind": "fix"
+        },
+        {
+          "sha": "9bb90eb5",
+          "subject": "feat: add 8 demo orders across users and statuses",
+          "kind": "feat"
+        },
+        {
+          "sha": "c346c7a9",
+          "subject": "feat(frontend): move wizard/form toggle button to header bar",
+          "kind": "feat"
+        },
+        {
+          "sha": "3f597410",
+          "subject": "fix(frontend): replace 'Neue Bestellung' with 'Zum Shop' link in order list",
+          "kind": "fix"
+        },
+        {
+          "sha": "1c3b4caf",
+          "subject": "feat(frontend): Workspace → Bestellungen (Alle/Meine tabs), Notifications + Reviews back to sidebar",
+          "kind": "feat"
+        },
+        {
+          "sha": "c4749555",
+          "subject": "feat(frontend): merge My Services + My Requests into single Orders tab with status filter",
+          "kind": "feat"
+        },
+        {
+          "sha": "fe86496a",
+          "subject": "feat(frontend): admin can edit orders in any status (not just draft)",
+          "kind": "feat"
+        },
+        {
+          "sha": "ddb6be08",
+          "subject": "feat(frontend): consolidate into Workspace page with 4 tabs",
+          "kind": "feat"
+        },
+        {
+          "sha": "6fe00735",
+          "subject": "feat(frontend): move page titles to Header bar — removes duplication, adds GlobalSearch to Dashboard header",
+          "kind": "feat"
+        },
+        {
+          "sha": "57c3fd0b",
+          "subject": "fix(frontend): sidebar stays fixed — only content area scrolls",
+          "kind": "fix"
+        },
+        {
+          "sha": "c0008db3",
+          "subject": "feat(frontend): split layout in FormView — form left, sticky summary+submit right",
+          "kind": "feat"
+        },
+        {
+          "sha": "ea405947",
+          "subject": "feat: separate Windows + Linux VM templates, fix submit button, remove PostgreSQL template",
+          "kind": "feat"
+        },
+        {
+          "sha": "c197c03e",
+          "subject": "feat: comprehensive dependency matrix — 15 cross-field dependencies",
+          "kind": "feat"
+        },
+        {
+          "sha": "e34cadeb",
+          "subject": "feat: T-Shirt size auto-fill + metadata-based option filtering (dependency matrix)",
+          "kind": "feat"
+        },
+        {
+          "sha": "11cb3f3d",
+          "subject": "fix(frontend): remove automatic Context step when wizard_config controls the flow",
+          "kind": "fix"
+        },
+        {
+          "sha": "428ba8f6",
+          "subject": "feat: add DB Reset + Reseed option [r] to dev launcher",
+          "kind": "feat"
+        },
+        {
+          "sha": "d85d5b71",
+          "subject": "feat(frontend): submit gate — button disabled until all required fields valid",
+          "kind": "feat"
+        },
+        {
+          "sha": "31b72a6c",
+          "subject": "feat(frontend): red border + background on required empty/invalid fields",
+          "kind": "feat"
+        },
+        {
+          "sha": "7a5af444",
+          "subject": "feat: add comprehensive Windows VM template with all 9 config groups from todos.md",
+          "kind": "feat"
+        },
+        {
+          "sha": "ec1fbe6b",
+          "subject": "refactor: extract DashboardService, SearchService, ResourceService from API handlers",
+          "kind": "refactor"
+        },
+        {
+          "sha": "73407974",
+          "subject": "refactor: move post-submit orchestration (approval, dispatch, notification, subscription) to OrderService",
+          "kind": "refactor"
+        },
+        {
+          "sha": "cee02746",
+          "subject": "refactor: split orders.py (679 lines) into 4 focused modules",
+          "kind": "refactor"
+        },
+        {
+          "sha": "249d9973",
+          "subject": "fix: add pagination cap (max 200) to all paginated endpoints",
+          "kind": "fix"
+        },
+        {
+          "sha": "7c2a8a7f",
+          "subject": "fix: use consistent AppError classes in catalog and context API endpoints",
+          "kind": "fix"
+        },
+        {
+          "sha": "610d1455",
+          "subject": "docs: add design spec for audit HIGH-findings fixes",
+          "kind": "docs"
+        },
+        {
+          "sha": "d8b8af05",
+          "subject": "feat: add offline installer scripts — install, uninstall, Docker installer, bundle builder",
+          "kind": "feat"
+        },
+        {
+          "sha": "ad5fed09",
+          "subject": "feat: add docker-compose.yml and extend .env.example for Docker deployment",
+          "kind": "feat"
+        },
+        {
+          "sha": "d9126327",
+          "subject": "feat: add Dockerfiles for backend and frontend, nginx reverse proxy config",
+          "kind": "feat"
+        },
+        {
+          "sha": "cb2b56c4",
+          "subject": "docs: add implementation plan for offline installer",
+          "kind": "docs"
+        },
+        {
+          "sha": "7fea5e2f",
+          "subject": "security: fix critical audit findings — webhook auth, credential auth, exception logging",
+          "kind": "other"
+        },
+        {
+          "sha": "97a41bfb",
+          "subject": "docs: add design spec for Docker-based offline installer",
+          "kind": "docs"
+        },
+        {
+          "sha": "d9bb8b32",
+          "subject": "docs: add consolidated 3-way audit report",
+          "kind": "docs"
+        },
+        {
+          "sha": "8fa13c3a",
+          "subject": "docs: add security-engineer, auditor, devops-engineer agents and workflow documentation",
+          "kind": "docs"
+        },
+        {
+          "sha": "a64e96f8",
+          "subject": "feat(frontend): update routes and sidebar for MyServices, MyRequests",
+          "kind": "feat"
+        },
+        {
+          "sha": "8463716a",
+          "subject": "feat(frontend): add MyRequests page combining Orders and Approvals",
+          "kind": "feat"
+        },
+        {
+          "sha": "7632f208",
+          "subject": "feat(frontend): improve Review Requests with details, filters, and bulk actions",
+          "kind": "feat"
+        },
+        {
+          "sha": "a3d64af0",
+          "subject": "feat(frontend): add MyServices page combining Resources and Subscriptions",
+          "kind": "feat"
+        },
+        {
+          "sha": "e70e9a19",
+          "subject": "docs: add plan for My Services, My Requests, Review Requests",
+          "kind": "docs"
+        },
+        {
+          "sha": "22f5617f",
+          "subject": "docs: add design spec for My Services, My Requests, Review Requests improvements",
+          "kind": "docs"
+        },
+        {
+          "sha": "0fe8ff1e",
+          "subject": "feat(frontend): activate Subscriptions in sidebar and add routes",
+          "kind": "feat"
+        },
+        {
+          "sha": "f524c8fe",
+          "subject": "feat(frontend): add SubscriptionDetail page with parameters, timeline, change/cancel actions",
+          "kind": "feat"
+        },
+        {
+          "sha": "bce1fb70",
+          "subject": "feat(frontend): add Subscriptions page with card, group section, and status filter",
+          "kind": "feat"
+        },
+        {
+          "sha": "52c8ee66",
+          "subject": "feat(frontend): add subscription types, API client, and hooks",
+          "kind": "feat"
+        },
+        {
+          "sha": "a3950050",
+          "subject": "feat: create subscriptions automatically on order submit",
+          "kind": "feat"
+        },
+        {
+          "sha": "434c3305",
+          "subject": "feat: add subscription REST API endpoints",
+          "kind": "feat"
+        },
+        {
+          "sha": "b8be0703",
+          "subject": "feat: add SubscriptionService with change/cancel/create lifecycle",
+          "kind": "feat"
+        },
+        {
+          "sha": "cc53192d",
+          "subject": "feat: add SubscriptionRepository with CRUD, status, changes, groups",
+          "kind": "feat"
+        },
+        {
+          "sha": "0af4a78e",
+          "subject": "feat: add SubscriptionModel and GroupSubscriptionModel",
+          "kind": "feat"
+        },
+        {
+          "sha": "c3498026",
+          "subject": "docs: add implementation plan for subscriptions system",
+          "kind": "docs"
+        },
+        {
+          "sha": "3235d157",
+          "subject": "docs: add design spec for subscriptions system",
+          "kind": "docs"
+        },
+        {
+          "sha": "f3996a35",
+          "subject": "feat(frontend): rewrite Notifications page with read/unread, add sidebar badge with polling",
+          "kind": "feat"
+        },
+        {
+          "sha": "54f16dad",
+          "subject": "feat(frontend): add notifications API client and hooks with polling",
+          "kind": "feat"
+        },
+        {
+          "sha": "8ea9637c",
+          "subject": "feat: trigger order_submitted notification on order submit",
+          "kind": "feat"
+        },
+        {
+          "sha": "de502e1b",
+          "subject": "feat: add create_event_notification with templates and email sender integration",
+          "kind": "feat"
+        },
+        {
+          "sha": "7d4664b0",
+          "subject": "feat: add read/unread notification endpoints with read_at field",
+          "kind": "feat"
+        },
+        {
+          "sha": "084f4ba5",
+          "subject": "feat: add EmailSender interface and StubEmailSender",
+          "kind": "feat"
+        },
+        {
+          "sha": "5d0cd8c2",
+          "subject": "docs: add implementation plan for notifications system",
+          "kind": "docs"
+        },
+        {
+          "sha": "584e46a8",
+          "subject": "docs: add design spec for notifications system",
+          "kind": "docs"
+        },
+        {
+          "sha": "c4ecc097",
+          "subject": "chore: dashboard redesign complete — stats, search, charts, role-based widgets",
+          "kind": "chore"
+        },
+        {
+          "sha": "51e8b48d",
+          "subject": "feat(frontend): rewrite Dashboard with stat cards, charts, search, role-based widgets",
+          "kind": "feat"
+        },
+        {
+          "sha": "6016aeb4",
+          "subject": "feat(frontend): add RecentOrders, PopularServices, PendingApprovals widgets",
+          "kind": "feat"
+        },
+        {
+          "sha": "37381044",
+          "subject": "feat(frontend): add OrderStatusChart (donut) and OrderTimelineChart (line) with recharts",
+          "kind": "feat"
+        },
+        {
+          "sha": "c816ec58",
+          "subject": "feat(frontend): add StatCard and GlobalSearch components",
+          "kind": "feat"
+        },
+        {
+          "sha": "ef204967",
+          "subject": "feat(frontend): add recharts, dashboard API client and hooks",
+          "kind": "feat"
+        },
+        {
+          "sha": "4c85f269",
+          "subject": "feat: add dashboard stats API endpoint",
+          "kind": "feat"
+        },
+        {
+          "sha": "5cd57b1b",
+          "subject": "feat: add global search API endpoint",
+          "kind": "feat"
+        },
+        {
+          "sha": "52d3142c",
+          "subject": "docs: add implementation plan for dashboard redesign",
+          "kind": "docs"
+        },
+        {
+          "sha": "06ca0d38",
+          "subject": "docs: add design spec for dashboard redesign",
+          "kind": "docs"
+        },
+        {
+          "sha": "d3cc2b86",
+          "subject": "chore: phase 9 complete — shop wizard with wizard/form toggle, template-first flow, copy shortcut",
+          "kind": "chore"
+        },
+        {
+          "sha": "9cd30702",
+          "subject": "feat(frontend): add copy-shortcut — Aehnlichen Service hinzufuegen on OrderItemCard",
+          "kind": "feat"
+        },
+        {
+          "sha": "36bb6b83",
+          "subject": "feat(frontend): add /shop/:slug/request route and Bestellen button on TemplateCard",
+          "kind": "feat"
+        },
+        {
+          "sha": "a475916a",
+          "subject": "feat(frontend): add ServiceRequest page with wizard/form toggle and FormView",
+          "kind": "feat"
+        },
+        {
+          "sha": "ceda2a3e",
+          "subject": "feat(frontend): add FormView with scrollable sections and wizard_config ordering",
+          "kind": "feat"
+        },
+        {
+          "sha": "436d3bb8",
+          "subject": "feat(frontend): add WizardView with step navigation and wizard_config support",
+          "kind": "feat"
+        },
+        {
+          "sha": "5e56cdd3",
+          "subject": "feat(frontend): add RequestSummary component with quantity and cost",
+          "kind": "feat"
+        },
+        {
+          "sha": "27da81d5",
+          "subject": "feat(frontend): add StepIndicator component for wizard progress",
+          "kind": "feat"
+        },
+        {
+          "sha": "cce27391",
+          "subject": "docs: add implementation plan for shop wizard / service request flow",
+          "kind": "docs"
+        },
+        {
+          "sha": "761d6af4",
+          "subject": "docs: add design spec for shop wizard / service request flow",
+          "kind": "docs"
+        },
+        {
+          "sha": "4654725a",
+          "subject": "feat(frontend): add group sections, quantity selector, and per-instance UI",
+          "kind": "feat"
+        },
+        {
+          "sha": "a475f839",
+          "subject": "feat(frontend): extend order types and API for groups + quantity",
+          "kind": "feat"
+        },
+        {
+          "sha": "d870799c",
+          "subject": "test: add E2E test for groups + quantity + per-instance parameters",
+          "kind": "test"
+        },
+        {
+          "sha": "fec79e33",
+          "subject": "feat: add per-instance parameter support to catalog and order validation",
+          "kind": "feat"
+        },
+        {
+          "sha": "eb08e6e1",
+          "subject": "settings",
+          "kind": "other"
+        },
+        {
+          "sha": "3d185438",
+          "subject": "chore: sidebar navigation redesign complete — collapsible sidebar, new routes, role-based menu",
+          "kind": "chore"
+        },
+        {
+          "sha": "e6ac16fd",
+          "subject": "test(frontend): update test routes for sidebar navigation redesign",
+          "kind": "test"
+        },
+        {
+          "sha": "2470df83",
+          "subject": "feat(frontend): update routes — /shop, /my-services, /reviews, /dashboard default, redirects from old paths",
+          "kind": "feat"
+        },
+        {
+          "sha": "9e0490b7",
+          "subject": "feat(frontend): update AppLayout for collapsible sidebar, simplify Header",
+          "kind": "feat"
+        },
+        {
+          "sha": "feed9b83",
+          "subject": "feat(frontend): rewrite Sidebar with collapsible layout, new menu structure, role-based sections",
+          "kind": "feat"
+        },
+        {
+          "sha": "902a3bd4",
+          "subject": "feat(frontend): add Notifications placeholder page",
+          "kind": "feat"
+        },
+        {
+          "sha": "4a7fd24c",
+          "subject": "docs: add implementation plan for sidebar navigation redesign",
+          "kind": "docs"
+        },
+        {
+          "sha": "4eab399b",
+          "subject": "docs: add spec for sidebar + navigation redesign",
+          "kind": "docs"
+        },
+        {
+          "sha": "f6282644",
+          "subject": "feat: add quantity and instance_parameters support to order items API",
+          "kind": "feat"
+        },
+        {
+          "sha": "e5130a80",
+          "subject": "feat: add group CRUD API endpoints for orders",
+          "kind": "feat"
+        },
+        {
+          "sha": "f204d64d",
+          "subject": "session1",
+          "kind": "other"
+        },
+        {
+          "sha": "e8a71ca5",
+          "subject": "feat: add per_instance field to ParameterDefinition (false/true/auto)",
+          "kind": "feat"
+        },
+        {
+          "sha": "76dbfdbb",
+          "subject": "feat: add OrderItemGroup model and extend OrderItem with group_id, quantity, instance_parameters",
+          "kind": "feat"
+        },
+        {
+          "sha": "ab29d3ae",
+          "subject": "docs: add feature spec for OrderItem groups, quantity scaling, and per-instance parameters",
+          "kind": "docs"
+        },
+        {
+          "sha": "8abafc15",
+          "subject": "feat: update dev launcher with docs service, auto-install prereqs, improved menu",
+          "kind": "feat"
+        },
+        {
+          "sha": "ac4da38d",
+          "subject": "docs: add Zensical documentation site (mpp-docs) with full project documentation",
+          "kind": "docs"
+        },
+        {
+          "sha": "4aff65fb",
+          "subject": "chore: move 00-08 docs to archiv/",
+          "kind": "chore"
+        },
+        {
+          "sha": "f45bd38e",
+          "subject": "docs: add complete project documentation (00-08, CLAUDE, CHANGELOG, ANLEITUNG, TECH_NOTES)",
+          "kind": "docs"
+        },
+        {
+          "sha": "e58ae0a2",
+          "subject": "feat: unified dev launcher menu (scripts/mpp.sh) — replaces separate run scripts",
+          "kind": "feat"
+        },
+        {
+          "sha": "39cb93c5",
+          "subject": "feat: add run_frontend.sh dev helper script",
+          "kind": "feat"
+        },
+        {
+          "sha": "3066b763",
+          "subject": "test: add end-to-end integration tests for complete demo flow",
+          "kind": "test"
+        },
+        {
+          "sha": "f366bfe8",
+          "subject": "feat: add seed script with demo templates and run_dev.sh helper",
+          "kind": "feat"
+        },
+        {
+          "sha": "f001e788",
+          "subject": "test(frontend): add tests for Approvals, Resources, and Admin Dashboard",
+          "kind": "test"
+        },
+        {
+          "sha": "888975ba",
+          "subject": "feat(frontend): add Admin pages (Dashboard, Rules, Audit Log)",
+          "kind": "feat"
+        },
+        {
+          "sha": "185845ed",
+          "subject": "feat(frontend): add Approvals and Resources pages",
+          "kind": "feat"
+        },
+        {
+          "sha": "6ae8ec66",
+          "subject": "feat(frontend): add context selector with CMDB integration",
+          "kind": "feat"
+        },
+        {
+          "sha": "09f9902b",
+          "subject": "feat(frontend): add Order Hub pages with item management, validation, and export",
+          "kind": "feat"
+        },
+        {
+          "sha": "26f4fd04",
+          "subject": "feat(frontend): add dynamic ParameterForm with field components",
+          "kind": "feat"
+        },
+        {
+          "sha": "2e0e374a",
+          "subject": "feat(frontend): add order hooks with mutations and status polling",
+          "kind": "feat"
+        },
+        {
+          "sha": "3db0ef25",
+          "subject": "feat(frontend): add orders API module",
+          "kind": "feat"
+        },
+        {
+          "sha": "09758c04",
+          "subject": "feat(frontend): add order TypeScript types",
+          "kind": "feat"
+        },
+        {
+          "sha": "19bfb468",
+          "subject": "feat(frontend): add Service Catalog page with template cards, filters, and detail drawer",
+          "kind": "feat"
+        },
+        {
+          "sha": "e85f7b53",
+          "subject": "feat(frontend): add reusable Drawer slide-in component",
+          "kind": "feat"
+        },
+        {
+          "sha": "84b13b2e",
+          "subject": "feat(frontend): add catalog tanstack-query hooks",
+          "kind": "feat"
+        },
+        {
+          "sha": "b72b34d6",
+          "subject": "feat(frontend): add catalog API module with tests",
+          "kind": "feat"
+        },
+        {
+          "sha": "87e008ee",
+          "subject": "feat(frontend): add catalog TypeScript types",
+          "kind": "feat"
+        },
+        {
+          "sha": "463718d7",
+          "subject": "chore: fix .gitignore — remove venv/ and dist/ from tracking",
+          "kind": "chore"
+        },
+        {
+          "sha": "596931d4",
+          "subject": "fix(frontend): remove unused imports for clean type check",
+          "kind": "fix"
+        },
+        {
+          "sha": "0b89be17",
+          "subject": "feat(frontend): add router with protected routes and sidebar layout",
+          "kind": "feat"
+        },
+        {
+          "sha": "c55c90fd",
+          "subject": "feat(frontend): add AppLayout with Sidebar, Header, ProtectedRoute, and StatusBadge",
+          "kind": "feat"
+        },
+        {
+          "sha": "eb49583e",
+          "subject": "feat(frontend): add Login page with auth store integration",
+          "kind": "feat"
+        },
+        {
+          "sha": "d939e847",
+          "subject": "feat(frontend): add auth store with localStorage persistence",
+          "kind": "feat"
+        },
+        {
+          "sha": "b2ac0f32",
+          "subject": "feat(frontend): add API client with auth headers and error handling",
+          "kind": "feat"
+        },
+        {
+          "sha": "2b0801dd",
+          "subject": "feat(frontend): add common types (User, ErrorResponse, ApiError)",
+          "kind": "feat"
+        },
+        {
+          "sha": "9fb2e30c",
+          "subject": "feat(frontend): scaffold Vite + React + TypeScript + TailwindCSS project",
+          "kind": "feat"
+        },
+        {
+          "sha": "5d9543aa",
+          "subject": "docs: add frontend design spec (React + TypeScript)",
+          "kind": "docs"
+        },
+        {
+          "sha": "10d21710",
+          "subject": "feat: add resource overview and admin dashboard API endpoints",
+          "kind": "feat"
+        },
+        {
+          "sha": "c4116e16",
+          "subject": "feat: add secure credential delivery with one-time token links",
+          "kind": "feat"
+        },
+        {
+          "sha": "b7d9a877",
+          "subject": "feat: add notification service with fire-and-forget email stubs",
+          "kind": "feat"
+        },
+        {
+          "sha": "613ef074",
+          "subject": "feat: add audit log model, service, and admin API endpoint",
+          "kind": "feat"
+        },
+        {
+          "sha": "90b8dcdc",
+          "subject": "feat: add approval API endpoints and wire into order submit flow",
+          "kind": "feat"
+        },
+        {
+          "sha": "30a444f4",
+          "subject": "feat: add ApprovalRepository and ApprovalService with rule evaluation and decisions",
+          "kind": "feat"
+        },
+        {
+          "sha": "d161afb3",
+          "subject": "feat: add ApprovalRule and ApprovalRequest database models",
+          "kind": "feat"
+        },
+        {
+          "sha": "30639a29",
+          "subject": "feat: add provisioning API endpoints and wire dispatch into order submit",
+          "kind": "feat"
+        },
+        {
+          "sha": "e1ef4c7b",
+          "subject": "feat: add ProvisioningService with dispatch, status sync, and webhook handling",
+          "kind": "feat"
+        },
+        {
+          "sha": "db2d57cd",
+          "subject": "feat: add GitLab API client for pipeline triggering and status polling",
+          "kind": "feat"
+        },
+        {
+          "sha": "20351476",
+          "subject": "feat: add ProvisioningStatus domain, dispatch_log model, and provisioning columns on OrderItem",
+          "kind": "feat"
+        },
+        {
+          "sha": "81312f4d",
+          "subject": "feat: add GitLab mock as separate Flask app with pipeline simulation",
+          "kind": "feat"
+        },
+        {
+          "sha": "2f8eb469",
+          "subject": "feat: integrate OrderContext with order creation and CMDB validation",
+          "kind": "feat"
+        },
+        {
+          "sha": "2647b275",
+          "subject": "feat: add admin APIs for availability rules, context restrictions, and tenant assignments",
+          "kind": "feat"
+        },
+        {
+          "sha": "6034387f",
+          "subject": "feat: add AvailabilityRule, ContextRestriction, and TenantAssignment DB models",
+          "kind": "feat"
+        },
+        {
+          "sha": "df7d30c3",
+          "subject": "feat: add context resolution API endpoint with CMDB validation",
+          "kind": "feat"
+        },
+        {
+          "sha": "ac001f24",
+          "subject": "feat: add OrderContext domain model and ContextService with CMDB resolution",
+          "kind": "feat"
+        },
+        {
+          "sha": "8df3a856",
+          "subject": "feat: add CMDB stub API endpoints (locations, networks, tenants, security zones)",
+          "kind": "feat"
+        },
+        {
+          "sha": "197fa0ee",
+          "subject": "feat: add CMDB stub client with YAML data loading and filtering",
+          "kind": "feat"
+        },
+        {
+          "sha": "a5812e79",
+          "subject": "feat: add CMDB static test data files (locations, networks, tenants, security zones)",
+          "kind": "feat"
+        },
+        {
+          "sha": "074e08e2",
+          "subject": "feat: add OpenTofu JSON export endpoints with variable mapping",
+          "kind": "feat"
+        },
+        {
+          "sha": "3680125c",
+          "subject": "feat: add Order submit endpoint with status machine and polling",
+          "kind": "feat"
+        },
+        {
+          "sha": "8c8c6cb1",
+          "subject": "feat: add Order validation endpoint with catalog-based parameter checking",
+          "kind": "feat"
+        },
+        {
+          "sha": "db3f728a",
+          "subject": "feat: add Order item management endpoints (add, update, remove, reorder)",
+          "kind": "feat"
+        },
+        {
+          "sha": "4aaae9c0",
+          "subject": "feat: add Order CRUD API endpoints (create, get, list, update, delete)",
+          "kind": "feat"
+        }
+      ]
+    },
+    "2026-03-26": {
+      "commits": 24,
+      "kinds": {
+        "feat": 19,
+        "chore": 3,
+        "refactor": 1,
+        "other": 1
+      },
+      "list": [
+        {
+          "sha": "635a3a84",
+          "subject": "feat: add OrderService with validation, submission, and Tofu export",
+          "kind": "feat"
+        },
+        {
+          "sha": "aefb9086",
+          "subject": "feat: add OrderRepository with CRUD, items management, and status transitions",
+          "kind": "feat"
+        },
+        {
+          "sha": "961d0a59",
+          "subject": "feat: add Order and OrderItem database models with cascade delete",
+          "kind": "feat"
+        },
+        {
+          "sha": "69fe25c9",
+          "subject": "feat: add OrderStatus and ItemValidationState domain models",
+          "kind": "feat"
+        },
+        {
+          "sha": "00f2ceb2",
+          "subject": "feat: add version diff endpoint for comparing template versions",
+          "kind": "feat"
+        },
+        {
+          "sha": "af2522dc",
+          "subject": "feat: add parameter validation and dynamic option resolution endpoints",
+          "kind": "feat"
+        },
+        {
+          "sha": "43fe6db3",
+          "subject": "feat: add admin catalog endpoints (register template, update status)",
+          "kind": "feat"
+        },
+        {
+          "sha": "d06f5d61",
+          "subject": "feat: add Catalog API read endpoints with DB session management",
+          "kind": "feat"
+        },
+        {
+          "sha": "e698da4e",
+          "subject": "feat: add CatalogService with parameter validation and dependency resolution",
+          "kind": "feat"
+        },
+        {
+          "sha": "6c64c6cf",
+          "subject": "feat: add TemplateRepository with CRUD, filtering, search, and pagination",
+          "kind": "feat"
+        },
+        {
+          "sha": "a0e53c10",
+          "subject": "feat: add ServiceTemplate database model with JSONB parameters and unique constraint",
+          "kind": "feat"
+        },
+        {
+          "sha": "02a72df1",
+          "subject": "feat: add TemplateValidator for registration validation (VAL-47..71)",
+          "kind": "feat"
+        },
+        {
+          "sha": "fa143b3d",
+          "subject": "feat: add Service Catalog domain models (ServiceTemplate, ParameterDefinition, DependencyRule)",
+          "kind": "feat"
+        },
+        {
+          "sha": "c53535f2",
+          "subject": "feat: add SQLAlchemy engine, session management, and Alembic setup",
+          "kind": "feat"
+        },
+        {
+          "sha": "cf64b238",
+          "subject": "chore: remove __pycache__ files from tracking",
+          "kind": "chore"
+        },
+        {
+          "sha": "3b295ac7",
+          "subject": "chore: add .gitignore and remove cached __pycache__ files",
+          "kind": "chore"
+        },
+        {
+          "sha": "d0922bf0",
+          "subject": "refactor: extract shared test fixtures to conftest.py",
+          "kind": "refactor"
+        },
+        {
+          "sha": "3bcb3a53",
+          "subject": "feat: add JWT auth middleware with login_required and role_required decorators",
+          "kind": "feat"
+        },
+        {
+          "sha": "bd9d9f30",
+          "subject": "feat: add Flask app factory, error handling, request-ID middleware, and API endpoints (health, login, stub-users)",
+          "kind": "feat"
+        },
+        {
+          "sha": "9f2e8c9c",
+          "subject": "feat: add AuthService with stub login and JWT token generation",
+          "kind": "feat"
+        },
+        {
+          "sha": "0cd0179d",
+          "subject": "feat: add User domain model and Role constants",
+          "kind": "feat"
+        },
+        {
+          "sha": "8f1cda12",
+          "subject": "feat: add configuration module with auth-mode validation",
+          "kind": "feat"
+        },
+        {
+          "sha": "079c1ce3",
+          "subject": "chore: add project dependencies and pytest config",
+          "kind": "chore"
+        },
+        {
+          "sha": "1fb48daf",
+          "subject": "initial: project specs, design docs, and agent definitions",
+          "kind": "other"
+        }
+      ]
+    }
+  },
+  "stats": {
+    "totalCommits": 238,
+    "activeDays": 13,
+    "longestStreak": 3,
+    "topKinds": [
+      {
+        "kind": "feat",
+        "count": 152
+      },
+      {
+        "kind": "docs",
+        "count": 29
+      },
+      {
+        "kind": "fix",
+        "count": 23
+      },
+      {
+        "kind": "chore",
+        "count": 11
+      },
+      {
+        "kind": "other",
+        "count": 10
+      },
+      {
+        "kind": "test",
+        "count": 8
+      },
+      {
+        "kind": "refactor",
+        "count": 5
+      }
+    ],
+    "testCount": 934
+  },
+  "phases": []
+}

@@ -1,0 +1,2752 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="IT-Service Marketplace Portal · Flask + React · TDD · v1.1.0">
+      
+      
+        <meta name="author" content="Lucent Trails">
+      
+      
+      
+        <link rel="prev" href="../datenmodell/">
+      
+      
+        <link rel="next" href="../services/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.31">
+    
+    
+      
+        <title>API-Referenz - MPP — Marketplace Portal</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.53a7feaf.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-referenz" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../.." title="MPP — Marketplace Portal" class="md-header__button md-logo" aria-label="MPP — Marketplace Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MPP — Marketplace Portal
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API-Referenz
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dunkelmodus aktivieren"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkelmodus aktivieren" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Hellmodus aktivieren"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hellmodus aktivieren" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Suche">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Suche">
+  <button type="button" class="md-search__button">
+    Suche
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MPP — Marketplace Portal" class="md-nav__button md-logo" aria-label="MPP — Marketplace Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    MPP — Marketplace Portal
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Überblick
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grundlagen
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grundlagen
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/ueberblick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projektüberblick
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/schnellstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schnellstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/architektur/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referenz
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../oberflaeche/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Oberflächen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datenmodell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datenmodell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API-Referenz
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API-Referenz
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#auth-level-legende" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auth-Level-Legende
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#catalog-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catalog Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context-cmdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context / CMDB
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context &#x2f; CMDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cmdb-direct-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CMDB Direct Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approvals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approvals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Approvals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#approval-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approval Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provisioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provisioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Provisioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#provisioning-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provisioning Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-dashboard-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin (Dashboard &amp; Audit)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Groups
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-items-erweitert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Items (erweitert)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Actions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsgvo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DSGVO
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../services/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../frontend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entwicklung
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entwicklung
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../entwicklung/projektstruktur/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projektstruktur
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../entwicklung/conventions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../entwicklung/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../entwicklung/credentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Credentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../entwicklung/arbeitspakete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitspakete
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../entwicklung/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Betrieb
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Betrieb
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../betrieb/stubs-mocks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stubs & Mocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../betrieb/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../erkenntnisse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erkenntnisse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#auth-level-legende" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auth-Level-Legende
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#auth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auth
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catalog
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Catalog">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#catalog-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Catalog Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#orders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orders
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context-cmdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context / CMDB
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context &#x2f; CMDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cmdb-direct-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CMDB Direct Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#approvals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approvals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Approvals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#approval-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Approval Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#provisioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provisioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Provisioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#provisioning-admin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Provisioning Admin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#admin-dashboard-audit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Admin (Dashboard &amp; Audit)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notifications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Groups
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-items-erweitert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Items (erweitert)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#order-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Order Actions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dsgvo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DSGVO
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="api-referenz">API-Referenz<a class="headerlink" href="#api-referenz" title="Permanent link">&para;</a></h1>
+<p>Basis-Prefix: <code>/api/v1</code> — 96 Endpoints insgesamt, verteilt auf 17 Module.</p>
+<hr />
+<h2 id="auth-level-legende">Auth-Level-Legende<a class="headerlink" href="#auth-level-legende" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>—</td>
+<td>Kein Token erforderlich</td>
+</tr>
+<tr>
+<td>login</td>
+<td>Gueltiger JWT-Token (beliebige Rolle)</td>
+</tr>
+<tr>
+<td>approver</td>
+<td>Rolle <code>approver</code> oder <code>admin</code></td>
+</tr>
+<tr>
+<td>admin</td>
+<td>Rolle <code>admin</code></td>
+</tr>
+<tr>
+<td>superadmin</td>
+<td>Rolle <code>superadmin</code> (DSGVO, erweiterte Admin-Rechte)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="health">Health<a class="headerlink" href="#health" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>GET</td>
+<td><code>/health</code></td>
+<td>—</td>
+<td>Health-Check (inkl. Auth-Mode)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>GET</td>
+<td><code>/admin/health</code></td>
+<td>admin</td>
+<td>Admin-Health-Check</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="auth">Auth<a class="headerlink" href="#auth" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>POST</td>
+<td><code>/auth/login</code></td>
+<td>—</td>
+<td>Login (Username + Passwort)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>GET</td>
+<td><code>/auth/me</code></td>
+<td>login</td>
+<td>Aktueller Benutzer</td>
+</tr>
+<tr>
+<td>5</td>
+<td>GET</td>
+<td><code>/dev/auth/stub-users</code></td>
+<td>—</td>
+<td>Stub-Benutzer auflisten (nur Stub-Mode)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="catalog">Catalog<a class="headerlink" href="#catalog" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6</td>
+<td>GET</td>
+<td><code>/catalog/templates</code></td>
+<td>login</td>
+<td>Templates auflisten (Filter, Suche, Paginierung)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>GET</td>
+<td><code>/catalog/templates/&lt;slug&gt;</code></td>
+<td>login</td>
+<td>Template nach Slug abrufen</td>
+</tr>
+<tr>
+<td>8</td>
+<td>GET</td>
+<td><code>/catalog/templates/&lt;slug&gt;/versions</code></td>
+<td>login</td>
+<td>Alle Versionen eines Templates</td>
+</tr>
+<tr>
+<td>9</td>
+<td>GET</td>
+<td><code>/catalog/categories</code></td>
+<td>login</td>
+<td>Kategorien auflisten</td>
+</tr>
+<tr>
+<td>10</td>
+<td>POST</td>
+<td><code>/catalog/templates/&lt;slug&gt;/validate</code></td>
+<td>login</td>
+<td>Parameter gegen Template validieren</td>
+</tr>
+<tr>
+<td>11</td>
+<td>GET</td>
+<td><code>/catalog/templates/&lt;slug&gt;/diff</code></td>
+<td>approver</td>
+<td>Version-Diff vergleichen</td>
+</tr>
+<tr>
+<td>12</td>
+<td>POST</td>
+<td><code>/catalog/templates/&lt;slug&gt;/resolve-options</code></td>
+<td>login</td>
+<td>Abhaengige Optionen aufloesen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="catalog-admin">Catalog Admin<a class="headerlink" href="#catalog-admin" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>13</td>
+<td>POST</td>
+<td><code>/admin/catalog/templates</code></td>
+<td>admin</td>
+<td>Neues Template registrieren</td>
+</tr>
+<tr>
+<td>14</td>
+<td>PATCH</td>
+<td><code>/admin/catalog/templates/&lt;id&gt;/status</code></td>
+<td>admin</td>
+<td>Template-Status aendern</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="orders">Orders<a class="headerlink" href="#orders" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15</td>
+<td>POST</td>
+<td><code>/orders</code></td>
+<td>login</td>
+<td>Neue Bestellung erstellen</td>
+</tr>
+<tr>
+<td>16</td>
+<td>GET</td>
+<td><code>/orders</code></td>
+<td>login</td>
+<td>Bestellungen auflisten</td>
+</tr>
+<tr>
+<td>17</td>
+<td>GET</td>
+<td><code>/orders/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Bestellung abrufen</td>
+</tr>
+<tr>
+<td>18</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Bestellung aktualisieren (nur Draft)</td>
+</tr>
+<tr>
+<td>19</td>
+<td>DELETE</td>
+<td><code>/orders/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Bestellung loeschen (nur Draft)</td>
+</tr>
+<tr>
+<td>20</td>
+<td>GET</td>
+<td><code>/orders/&lt;id&gt;/status</code></td>
+<td>login</td>
+<td>Bestell-Status mit Item-Status</td>
+</tr>
+<tr>
+<td>21</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/items</code></td>
+<td>login</td>
+<td>Item zur Bestellung hinzufuegen</td>
+</tr>
+<tr>
+<td>22</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;/items/&lt;item_id&gt;</code></td>
+<td>login</td>
+<td>Item-Parameter aktualisieren</td>
+</tr>
+<tr>
+<td>23</td>
+<td>DELETE</td>
+<td><code>/orders/&lt;id&gt;/items/&lt;item_id&gt;</code></td>
+<td>login</td>
+<td>Item entfernen</td>
+</tr>
+<tr>
+<td>24</td>
+<td>PUT</td>
+<td><code>/orders/&lt;id&gt;/items/positions</code></td>
+<td>login</td>
+<td>Item-Reihenfolge aendern</td>
+</tr>
+<tr>
+<td>25</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/validate</code></td>
+<td>login</td>
+<td>Bestellung validieren</td>
+</tr>
+<tr>
+<td>26</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/submit</code></td>
+<td>login</td>
+<td>Bestellung einreichen</td>
+</tr>
+<tr>
+<td>27</td>
+<td>GET</td>
+<td><code>/orders/&lt;id&gt;/export/tofu</code></td>
+<td>login</td>
+<td>OpenTofu-Export (alle Items)</td>
+</tr>
+<tr>
+<td>28</td>
+<td>GET</td>
+<td><code>/orders/&lt;id&gt;/items/&lt;item_id&gt;/export/tofu</code></td>
+<td>login</td>
+<td>OpenTofu-Export (einzelnes Item)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="context-cmdb">Context / CMDB<a class="headerlink" href="#context-cmdb" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>29</td>
+<td>POST</td>
+<td><code>/context/resolve</code></td>
+<td>login</td>
+<td>Kontext aufloesen und validieren</td>
+</tr>
+<tr>
+<td>30</td>
+<td>GET</td>
+<td><code>/context/locations</code></td>
+<td>login</td>
+<td>Standorte auflisten</td>
+</tr>
+<tr>
+<td>31</td>
+<td>GET</td>
+<td><code>/context/tenants</code></td>
+<td>login</td>
+<td>Erlaubte Tenants des Benutzers</td>
+</tr>
+<tr>
+<td>32</td>
+<td>GET</td>
+<td><code>/context/security-zones</code></td>
+<td>login</td>
+<td>Sicherheitszonen auflisten</td>
+</tr>
+<tr>
+<td>33</td>
+<td>GET</td>
+<td><code>/context/networks</code></td>
+<td>login</td>
+<td>Netzwerke auflisten (Filter)</td>
+</tr>
+<tr>
+<td>34</td>
+<td>POST</td>
+<td><code>/context/check-availability</code></td>
+<td>login</td>
+<td>Verfuegbarkeit pruefen</td>
+</tr>
+<tr>
+<td>35</td>
+<td>POST</td>
+<td><code>/context/resolve-parameters</code></td>
+<td>login</td>
+<td>Kontext-abhaengige Parameter aufloesen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cmdb-direct-access">CMDB Direct Access<a class="headerlink" href="#cmdb-direct-access" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>36</td>
+<td>GET</td>
+<td><code>/cmdb/locations</code></td>
+<td>login</td>
+<td>Alle Standorte</td>
+</tr>
+<tr>
+<td>37</td>
+<td>GET</td>
+<td><code>/cmdb/locations/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Einzelner Standort</td>
+</tr>
+<tr>
+<td>38</td>
+<td>GET</td>
+<td><code>/cmdb/networks</code></td>
+<td>login</td>
+<td>Alle Netzwerke (Filter)</td>
+</tr>
+<tr>
+<td>39</td>
+<td>GET</td>
+<td><code>/cmdb/networks/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Einzelnes Netzwerk</td>
+</tr>
+<tr>
+<td>40</td>
+<td>GET</td>
+<td><code>/cmdb/tenants</code></td>
+<td>login</td>
+<td>Alle Tenants</td>
+</tr>
+<tr>
+<td>41</td>
+<td>GET</td>
+<td><code>/cmdb/tenants/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Einzelner Tenant</td>
+</tr>
+<tr>
+<td>42</td>
+<td>GET</td>
+<td><code>/cmdb/security-zones</code></td>
+<td>login</td>
+<td>Alle Sicherheitszonen</td>
+</tr>
+<tr>
+<td>43</td>
+<td>GET</td>
+<td><code>/cmdb/security-zones/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Einzelne Sicherheitszone</td>
+</tr>
+<tr>
+<td>44</td>
+<td>GET</td>
+<td><code>/cmdb/health</code></td>
+<td>login</td>
+<td>CMDB-Health-Check</td>
+</tr>
+</tbody>
+</table>
+<h3 id="context-admin">Context Admin<a class="headerlink" href="#context-admin" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>45</td>
+<td>POST</td>
+<td><code>/admin/context/availability-rules</code></td>
+<td>admin</td>
+<td>Verfuegbarkeitsregel erstellen</td>
+</tr>
+<tr>
+<td>46</td>
+<td>GET</td>
+<td><code>/admin/context/availability-rules</code></td>
+<td>admin</td>
+<td>Verfuegbarkeitsregeln auflisten</td>
+</tr>
+<tr>
+<td>47</td>
+<td>PATCH</td>
+<td><code>/admin/context/availability-rules/&lt;id&gt;</code></td>
+<td>admin</td>
+<td>Verfuegbarkeitsregel aktualisieren</td>
+</tr>
+<tr>
+<td>48</td>
+<td>DELETE</td>
+<td><code>/admin/context/availability-rules/&lt;id&gt;</code></td>
+<td>admin</td>
+<td>Verfuegbarkeitsregel loeschen</td>
+</tr>
+<tr>
+<td>49</td>
+<td>POST</td>
+<td><code>/admin/context/restrictions</code></td>
+<td>admin</td>
+<td>Kontext-Restriction erstellen</td>
+</tr>
+<tr>
+<td>50</td>
+<td>GET</td>
+<td><code>/admin/context/restrictions</code></td>
+<td>admin</td>
+<td>Kontext-Restrictions auflisten</td>
+</tr>
+<tr>
+<td>51</td>
+<td>DELETE</td>
+<td><code>/admin/context/restrictions/&lt;id&gt;</code></td>
+<td>admin</td>
+<td>Kontext-Restriction loeschen</td>
+</tr>
+<tr>
+<td>52</td>
+<td>POST</td>
+<td><code>/admin/context/tenant-assignments</code></td>
+<td>admin</td>
+<td>Tenant-Zuweisung erstellen</td>
+</tr>
+<tr>
+<td>53</td>
+<td>GET</td>
+<td><code>/admin/context/tenant-assignments</code></td>
+<td>admin</td>
+<td>Tenant-Zuweisungen auflisten</td>
+</tr>
+<tr>
+<td>54</td>
+<td>DELETE</td>
+<td><code>/admin/context/tenant-assignments/&lt;id&gt;</code></td>
+<td>admin</td>
+<td>Tenant-Zuweisung loeschen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="approvals">Approvals<a class="headerlink" href="#approvals" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>55</td>
+<td>GET</td>
+<td><code>/approvals</code></td>
+<td>login</td>
+<td>Offene Genehmigungen auflisten</td>
+</tr>
+<tr>
+<td>56</td>
+<td>GET</td>
+<td><code>/approvals/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Einzelne Genehmigungsanfrage</td>
+</tr>
+<tr>
+<td>57</td>
+<td>POST</td>
+<td><code>/approvals/&lt;id&gt;/approve</code></td>
+<td>approver</td>
+<td>Genehmigen</td>
+</tr>
+<tr>
+<td>58</td>
+<td>POST</td>
+<td><code>/approvals/&lt;id&gt;/reject</code></td>
+<td>approver</td>
+<td>Ablehnen (Grund erforderlich)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="approval-admin">Approval Admin<a class="headerlink" href="#approval-admin" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>59</td>
+<td>POST</td>
+<td><code>/admin/approval-rules</code></td>
+<td>admin</td>
+<td>Approval-Regel erstellen</td>
+</tr>
+<tr>
+<td>60</td>
+<td>GET</td>
+<td><code>/admin/approval-rules</code></td>
+<td>admin</td>
+<td>Approval-Regeln auflisten</td>
+</tr>
+<tr>
+<td>61</td>
+<td>PATCH</td>
+<td><code>/admin/approval-rules/&lt;id&gt;</code></td>
+<td>admin</td>
+<td>Approval-Regel aktualisieren</td>
+</tr>
+<tr>
+<td>62</td>
+<td>DELETE</td>
+<td><code>/admin/approval-rules/&lt;id&gt;</code></td>
+<td>admin</td>
+<td>Approval-Regel loeschen</td>
+</tr>
+<tr>
+<td>63</td>
+<td>GET</td>
+<td><code>/admin/approval-settings</code></td>
+<td>admin</td>
+<td>Approval-Einstellungen abrufen</td>
+</tr>
+<tr>
+<td>64</td>
+<td>PUT</td>
+<td><code>/admin/approval-settings</code></td>
+<td>admin</td>
+<td>Approval-Einstellungen aendern</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="provisioning">Provisioning<a class="headerlink" href="#provisioning" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>65</td>
+<td>POST</td>
+<td><code>/webhooks/gitlab</code></td>
+<td>—</td>
+<td>GitLab-Webhook (Pipeline-Status)</td>
+</tr>
+<tr>
+<td>66</td>
+<td>GET</td>
+<td><code>/credentials/&lt;token&gt;</code></td>
+<td>—</td>
+<td>Einmal-Link Zugangsdaten abrufen</td>
+</tr>
+</tbody>
+</table>
+<h3 id="provisioning-admin">Provisioning Admin<a class="headerlink" href="#provisioning-admin" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>67</td>
+<td>GET</td>
+<td><code>/admin/dispatcher/config</code></td>
+<td>admin</td>
+<td>Dispatcher-Konfiguration</td>
+</tr>
+<tr>
+<td>68</td>
+<td>GET</td>
+<td><code>/admin/orders/&lt;id&gt;/dispatch-log</code></td>
+<td>admin</td>
+<td>Dispatch-Log einer Bestellung</td>
+</tr>
+<tr>
+<td>69</td>
+<td>POST</td>
+<td><code>/admin/orders/&lt;id&gt;/items/&lt;item_id&gt;/dispatch</code></td>
+<td>admin</td>
+<td>Einzelnes Item dispatchen</td>
+</tr>
+<tr>
+<td>70</td>
+<td>POST</td>
+<td><code>/admin/orders/&lt;id&gt;/items/&lt;item_id&gt;/credentials</code></td>
+<td>admin</td>
+<td>Credential-Link erstellen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>71</td>
+<td>GET</td>
+<td><code>/resources</code></td>
+<td>login</td>
+<td>Provisionierte Ressourcen auflisten</td>
+</tr>
+<tr>
+<td>72</td>
+<td>GET</td>
+<td><code>/resources/&lt;item_id&gt;</code></td>
+<td>login</td>
+<td>Einzelne Ressource abrufen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="admin-dashboard-audit">Admin (Dashboard &amp; Audit)<a class="headerlink" href="#admin-dashboard-audit" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>73</td>
+<td>GET</td>
+<td><code>/admin/dashboard</code></td>
+<td>admin</td>
+<td>Admin-Dashboard (Statistiken, Health)</td>
+</tr>
+<tr>
+<td>74</td>
+<td>GET</td>
+<td><code>/admin/audit-log</code></td>
+<td>admin</td>
+<td>Audit-Log abfragen (Filter, Paginierung)</td>
+</tr>
+<tr>
+<td>75</td>
+<td>GET</td>
+<td><code>/admin/audit-log/export</code></td>
+<td>admin</td>
+<td>Audit-Log exportieren</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="notifications">Notifications<a class="headerlink" href="#notifications" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>76</td>
+<td>GET</td>
+<td><code>/admin/notifications</code></td>
+<td>admin</td>
+<td>Alle Benachrichtigungen (Admin)</td>
+</tr>
+<tr>
+<td>77</td>
+<td>GET</td>
+<td><code>/notifications</code></td>
+<td>login</td>
+<td>Eigene Benachrichtigungen</td>
+</tr>
+<tr>
+<td>78</td>
+<td>PATCH</td>
+<td><code>/notifications/&lt;id&gt;/read</code></td>
+<td>login</td>
+<td>Benachrichtigung als gelesen markieren</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="order-groups">Order Groups<a class="headerlink" href="#order-groups" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>79</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/groups</code></td>
+<td>login</td>
+<td>Gruppe erstellen</td>
+</tr>
+<tr>
+<td>80</td>
+<td>GET</td>
+<td><code>/orders/&lt;id&gt;/groups</code></td>
+<td>login</td>
+<td>Gruppen auflisten</td>
+</tr>
+<tr>
+<td>81</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;/groups/&lt;group_id&gt;</code></td>
+<td>login</td>
+<td>Gruppe aktualisieren</td>
+</tr>
+<tr>
+<td>82</td>
+<td>DELETE</td>
+<td><code>/orders/&lt;id&gt;/groups/&lt;group_id&gt;</code></td>
+<td>login</td>
+<td>Gruppe loeschen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="order-items-erweitert">Order Items (erweitert)<a class="headerlink" href="#order-items-erweitert" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>83</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;/items/&lt;item_id&gt;/quantity</code></td>
+<td>login</td>
+<td>Menge aktualisieren</td>
+</tr>
+<tr>
+<td>84</td>
+<td>PATCH</td>
+<td><code>/orders/&lt;id&gt;/items/&lt;item_id&gt;/instance-parameters</code></td>
+<td>login</td>
+<td>Per-Instance-Parameter setzen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="order-actions">Order Actions<a class="headerlink" href="#order-actions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>85</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/cancel</code></td>
+<td>login</td>
+<td>Bestellung stornieren</td>
+</tr>
+<tr>
+<td>86</td>
+<td>POST</td>
+<td><code>/orders/&lt;id&gt;/change</code></td>
+<td>login</td>
+<td>Aenderung an bestehender Bestellung</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="subscriptions">Subscriptions<a class="headerlink" href="#subscriptions" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>87</td>
+<td>GET</td>
+<td><code>/subscriptions</code></td>
+<td>login</td>
+<td>Eigene Subscriptions auflisten</td>
+</tr>
+<tr>
+<td>88</td>
+<td>GET</td>
+<td><code>/subscriptions/&lt;id&gt;</code></td>
+<td>login</td>
+<td>Einzelne Subscription abrufen</td>
+</tr>
+<tr>
+<td>89</td>
+<td>POST</td>
+<td><code>/subscriptions/&lt;id&gt;/change</code></td>
+<td>login</td>
+<td>Aenderung beantragen</td>
+</tr>
+<tr>
+<td>90</td>
+<td>POST</td>
+<td><code>/subscriptions/&lt;id&gt;/cancel</code></td>
+<td>login</td>
+<td>Kuendigung beantragen</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="dashboard">Dashboard<a class="headerlink" href="#dashboard" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>91</td>
+<td>GET</td>
+<td><code>/dashboard/stats</code></td>
+<td>login</td>
+<td>Dashboard-Statistiken</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="search">Search<a class="headerlink" href="#search" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>92</td>
+<td>GET</td>
+<td><code>/search</code></td>
+<td>login</td>
+<td>Globale Suche ueber alle Entitaeten</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="dsgvo">DSGVO<a class="headerlink" href="#dsgvo" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Method</th>
+<th>Path</th>
+<th>Auth</th>
+<th>Beschreibung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>93</td>
+<td>POST</td>
+<td><code>/admin/dsgvo/anonymize/&lt;user_id&gt;</code></td>
+<td>superadmin</td>
+<td>Benutzer anonymisieren</td>
+</tr>
+<tr>
+<td>94</td>
+<td>GET</td>
+<td><code>/admin/dsgvo/status</code></td>
+<td>superadmin</td>
+<td>DSGVO-Status abfragen</td>
+</tr>
+<tr>
+<td>95</td>
+<td>PUT</td>
+<td><code>/admin/dsgvo/settings</code></td>
+<td>superadmin</td>
+<td>DSGVO-Einstellungen aendern</td>
+</tr>
+<tr>
+<td>96</td>
+<td>GET</td>
+<td><code>/admin/dsgvo/report/&lt;user_id&gt;</code></td>
+<td>superadmin</td>
+<td>DSGVO-Auskunft generieren</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Lucent Trails
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["navigation.sections","navigation.top","search.highlight","content.code.copy"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"In Zwischenablage kopiert","clipboard.copy":"In Zwischenablage kopieren","search.result.more.one":"1 weiteres Suchergebnis auf dieser Seite","search.result.more.other":"# weitere Suchergebnisse auf dieser Seite","search.result.none":"Keine Suchergebnisse","search.result.one":"1 Suchergebnis","search.result.other":"# Suchergebnisse","search.result.placeholder":"Suchbegriff eingeben","search.result.term.missing":"Es fehlt","select.version":"Version auswählen"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.91a19a9e.min.js"></script>
+      
+        <script src="../../javascripts/mermaid.min.js" defer></script>
+      
+        <script src="../../javascripts/mermaid-init.js"></script>
+      
+        <script src="../../javascripts/palette-init.js"></script>
+      
+        <script src="../../javascripts/lightbox.js"></script>
+      
+        <script src="../../javascripts/activity-heatmap.js"></script>
+      
+        <script src="../../javascripts/icon-rail.js"></script>
+      
+        <script src="../../javascripts/hub-stop.js"></script>
+      
+    
+  </body>
+</html>

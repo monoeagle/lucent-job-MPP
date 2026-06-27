@@ -1,0 +1,2082 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="IT-Service Marketplace Portal · Flask + React · TDD · v1.1.0">
+      
+      
+        <meta name="author" content="Lucent Trails">
+      
+      
+      
+        <link rel="prev" href="../arbeitspakete/">
+      
+      
+        <link rel="next" href="../../betrieb/stubs-mocks/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="zensical-0.0.31">
+    
+    
+      
+        <title>Changelog - MPP — Marketplace Portal</title>
+      
+    
+    
+      
+        
+      
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.53a7feaf.min.css">
+      
+        
+          
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,500,500i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,a=__md_scope)=>JSON.parse(t.getItem(a.pathname+"."+e)),__md_set=(e,t,a=localStorage,_=__md_scope)=>{try{a.setItem(_.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer" aria-label="Navigation"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../.." title="MPP — Marketplace Portal" class="md-header__button md-logo" aria-label="MPP — Marketplace Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-menu" viewBox="0 0 24 24"><path d="M4 5h16M4 12h16M4 19h16"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MPP — Marketplace Portal
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Dunkelmodus aktivieren"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dunkelmodus aktivieren" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Hellmodus aktivieren"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Hellmodus aktivieren" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search" aria-label="Suche">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-search" viewBox="0 0 24 24"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog" aria-label="Suche">
+  <button type="button" class="md-search__button">
+    Suche
+  </button>
+</div>
+      
+    
+    <div class="md-header__source">
+      
+    </div>
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MPP — Marketplace Portal" class="md-nav__button md-logo" aria-label="MPP — Marketplace Portal" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-book-open" viewBox="0 0 24 24"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+
+    </a>
+    MPP — Marketplace Portal
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Überblick
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Grundlagen
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Grundlagen
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/ueberblick/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projektüberblick
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/schnellstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schnellstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../grundlagen/architektur/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architektur
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referenz
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referenz/oberflaeche/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Oberflächen
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referenz/datenmodell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datenmodell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referenz/api-referenz/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API-Referenz
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referenz/services/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Services
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../referenz/frontend/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Entwicklung
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Entwicklung
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../projektstruktur/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Projektstruktur
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../conventions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conventions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../credentials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Credentials
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../arbeitspakete/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Arbeitspakete
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="././" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b1-identity-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B1: Identity &amp; Access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b2-service-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B2: Service Catalog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b3-order-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B3: Order Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b4-context-cmdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B4: Context &amp; CMDB
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b5-provisioning-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B5: Provisioning Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b6-approval-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B6: Approval Workflow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b7-cross-cutting-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B7: Cross-Cutting Concerns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f1-frontend-scaffold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F1: Frontend Scaffold
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f2-layout-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F2: Layout &amp; Routing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f3-service-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F3: Service Catalog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f4-order-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F4: Order Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f5-context-cmdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F5: Context &amp; CMDB
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f6-approvals-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F6: Approvals &amp; Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f7-admin-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F7: Admin &amp; Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrations-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrations-Phase
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b8-order-groups-quantity-per-instance-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B8: Order Groups, Quantity, Per-Instance Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sidebar-navigation-redesign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sidebar Navigation Redesign
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-9-shop-wizard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 9: Shop Wizard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard-redesign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard Redesign
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notifications-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-audit-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Audit + Fixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architektur-audit-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architektur-Audit Fixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui-consolidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Consolidation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-templates-abhaengigkeitsmatrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Templates + Abhaengigkeitsmatrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollen-dsgvo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollen + DSGVO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devops-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DevOps + Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dokumentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dokumentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-2026-06-19-produktionsreife-vm-install-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session 2026-06-19: Produktionsreife + VM-Install-Guide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statistik" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistik
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Betrieb
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Betrieb
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../betrieb/stubs-mocks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stubs & Mocks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../betrieb/troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../erkenntnisse/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Erkenntnisse
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  
+                    
+                    
+                    
+                      
+                    
+                    
+                      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+                      <div class="md-sidebar-button__wrapper">
+                        <label class="md-sidebar-button" for="__toc"></label>
+                      </div>
+                    
+                  
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b1-identity-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B1: Identity &amp; Access
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b2-service-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B2: Service Catalog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b3-order-lifecycle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B3: Order Lifecycle
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b4-context-cmdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B4: Context &amp; CMDB
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b5-provisioning-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B5: Provisioning Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b6-approval-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B6: Approval Workflow
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b7-cross-cutting-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B7: Cross-Cutting Concerns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f1-frontend-scaffold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F1: Frontend Scaffold
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f2-layout-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F2: Layout &amp; Routing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f3-service-catalog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F3: Service Catalog
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f4-order-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F4: Order Management
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f5-context-cmdb" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F5: Context &amp; CMDB
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f6-approvals-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F6: Approvals &amp; Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-f7-admin-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase F7: Admin &amp; Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrations-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrations-Phase
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-b8-order-groups-quantity-per-instance-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase B8: Order Groups, Quantity, Per-Instance Parameters
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sidebar-navigation-redesign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sidebar Navigation Redesign
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-9-shop-wizard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 9: Shop Wizard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dashboard-redesign" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard Redesign
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notifications-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#subscriptions-system" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions System
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-audit-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Audit + Fixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architektur-audit-fixes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architektur-Audit Fixes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ui-consolidation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UI Consolidation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-templates-abhaengigkeitsmatrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Templates + Abhaengigkeitsmatrix
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rollen-dsgvo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rollen + DSGVO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#devops-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DevOps + Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dokumentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dokumentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#session-2026-06-19-produktionsreife-vm-install-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session 2026-06-19: Produktionsreife + VM-Install-Guide
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statistik" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Statistik
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+<h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
+<p>Alle relevanten Aenderungen in chronologischer Reihenfolge, gruppiert nach Phasen.</p>
+<hr />
+<h2 id="phase-b1-identity-access">Phase B1: Identity &amp; Access<a class="headerlink" href="#phase-b1-identity-access" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>1fb48da</code> initial: Project Specs, Design Docs und Agent-Definitionen</li>
+<li><code>079c1ce</code> chore: Projekt-Abhaengigkeiten und pytest-Konfiguration</li>
+<li><code>8f1cda1</code> feat: Config-Modul mit Auth-Mode-Validierung</li>
+<li><code>0cd0179</code> feat: User-Domain-Modell und Role-Konstanten</li>
+<li><code>9f2e8c9</code> feat: AuthService mit Stub-Login und JWT-Token-Generierung</li>
+<li><code>bd9d9f3</code> feat: Flask-App-Factory, Error-Handling, Request-ID-Middleware, Health/Login/Stub-Users</li>
+<li><code>3bcb3a5</code> feat: JWT-Auth-Middleware (login_required, role_required)</li>
+<li><code>d0922bf</code> refactor: Shared Test-Fixtures in conftest.py extrahiert</li>
+<li><code>3b295ac</code> chore: .gitignore und <strong>pycache</strong>-Bereinigung</li>
+<li><code>cf64b23</code> chore: <strong>pycache</strong> aus Tracking entfernt</li>
+</ul>
+<h2 id="phase-b2-service-catalog">Phase B2: Service Catalog<a class="headerlink" href="#phase-b2-service-catalog" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>fa143b3</code> feat: Service-Catalog-Domain-Modelle (ServiceTemplate, ParameterDefinition, DependencyRule)</li>
+<li><code>02a72df</code> feat: TemplateValidator fuer Registrierungs-Validierung (VAL-47..71)</li>
+<li><code>a0e53c1</code> feat: ServiceTemplate-DB-Modell mit JSONB-Parameters und Unique-Constraint</li>
+<li><code>6c64c6c</code> feat: TemplateRepository mit CRUD, Filtering, Suche, Paginierung</li>
+<li><code>e698da4</code> feat: CatalogService mit Parameter-Validierung und Dependency-Resolution</li>
+<li><code>d06f5d6</code> feat: Catalog-API-Read-Endpoints mit DB-Session-Management</li>
+<li><code>43fe6db</code> feat: Admin-Catalog-Endpoints (Register, Status-Update)</li>
+<li><code>af2522d</code> feat: Parameter-Validierung und dynamische Option-Resolution</li>
+<li><code>00f2ceb</code> feat: Version-Diff-Endpoint</li>
+</ul>
+<h2 id="phase-b3-order-lifecycle">Phase B3: Order Lifecycle<a class="headerlink" href="#phase-b3-order-lifecycle" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>69fe25c</code> feat: OrderStatus und ItemValidationState Domain-Modelle</li>
+<li><code>961d0a5</code> feat: Order- und OrderItem-DB-Modelle mit Cascade-Delete</li>
+<li><code>aefb908</code> feat: OrderRepository mit CRUD, Items, Status-Transitions</li>
+<li><code>635a3a8</code> feat: OrderService mit Validierung, Submission, Tofu-Export</li>
+<li><code>4aaae9c</code> feat: Order-CRUD-API-Endpoints</li>
+<li><code>db3f728</code> feat: Order-Item-Management-Endpoints (Add, Update, Remove, Reorder)</li>
+<li><code>8c8c6cb</code> feat: Order-Validierung mit Catalog-basierter Parameter-Pruefung</li>
+<li><code>3680125</code> feat: Order-Submit mit Status-Machine und Polling</li>
+<li><code>074e08e</code> feat: OpenTofu-JSON-Export-Endpoints</li>
+</ul>
+<h2 id="phase-b4-context-cmdb">Phase B4: Context &amp; CMDB<a class="headerlink" href="#phase-b4-context-cmdb" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>a5812e7</code> feat: CMDB-Stub-Daten (Locations, Networks, Tenants, Security Zones)</li>
+<li><code>197fa0e</code> feat: CMDB-Stub-Client mit YAML-Daten und Filtering</li>
+<li><code>8df3a85</code> feat: CMDB-Stub-API-Endpoints</li>
+<li><code>ac001f2</code> feat: OrderContext-Domain und ContextService mit CMDB-Resolution</li>
+<li><code>df7d30c</code> feat: Context-Resolution-API-Endpoint mit CMDB-Validierung</li>
+<li><code>6034387</code> feat: AvailabilityRule, ContextRestriction, TenantAssignment DB-Modelle</li>
+<li><code>2647b27</code> feat: Admin-APIs fuer Availability-Rules, Restrictions, Tenant-Assignments</li>
+<li><code>2f8eb46</code> feat: OrderContext-Integration in Order-Erstellung</li>
+</ul>
+<h2 id="phase-b5-provisioning-engine">Phase B5: Provisioning Engine<a class="headerlink" href="#phase-b5-provisioning-engine" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>81312f4</code> feat: GitLab-Mock als separate Flask-App mit Pipeline-Simulation</li>
+<li><code>2035147</code> feat: ProvisioningStatus-Domain, DispatchLog-Modell, Provisioning-Spalten</li>
+<li><code>db2d57c</code> feat: GitLab-API-Client fuer Pipeline-Triggering und Status-Polling</li>
+<li><code>e1ef4c7</code> feat: ProvisioningService mit Dispatch, Status-Sync, Webhooks</li>
+<li><code>30639a2</code> feat: Provisioning-API-Endpoints, Dispatch in Order-Submit integriert</li>
+</ul>
+<h2 id="phase-b6-approval-workflow">Phase B6: Approval Workflow<a class="headerlink" href="#phase-b6-approval-workflow" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>d161afb</code> feat: ApprovalRule- und ApprovalRequest-DB-Modelle</li>
+<li><code>30a444f</code> feat: ApprovalRepository und ApprovalService mit Rule-Evaluation</li>
+<li><code>90b8dcd</code> feat: Approval-API-Endpoints, Integration in Order-Submit</li>
+</ul>
+<h2 id="phase-b7-cross-cutting-concerns">Phase B7: Cross-Cutting Concerns<a class="headerlink" href="#phase-b7-cross-cutting-concerns" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>613ef07</code> feat: Audit-Log-Modell, Service und Admin-API-Endpoint</li>
+<li><code>b7d9a87</code> feat: Notification-Service mit Fire-and-Forget-E-Mail-Stubs</li>
+<li><code>c4116e1</code> feat: Secure Credential Delivery mit One-Time-Token-Links</li>
+<li><code>10d2171</code> feat: Resource-Overview und Admin-Dashboard-API-Endpoints</li>
+</ul>
+<hr />
+<h2 id="phase-f1-frontend-scaffold">Phase F1: Frontend Scaffold<a class="headerlink" href="#phase-f1-frontend-scaffold" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>5d9543a</code> docs: Frontend-Design-Spec (React + TypeScript)</li>
+<li><code>9fb2e30</code> feat(frontend): Vite + React + TypeScript + TailwindCSS Scaffold</li>
+<li><code>2b0801d</code> feat(frontend): Common Types (User, ErrorResponse, ApiError)</li>
+<li><code>b2ac0f3</code> feat(frontend): API-Client mit Auth-Headers und Error-Handling</li>
+<li><code>d939e84</code> feat(frontend): Auth-Store mit localStorage-Persistierung</li>
+<li><code>eb49583</code> feat(frontend): Login-Seite</li>
+</ul>
+<h2 id="phase-f2-layout-routing">Phase F2: Layout &amp; Routing<a class="headerlink" href="#phase-f2-layout-routing" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>c55c90f</code> feat(frontend): AppLayout mit Sidebar, Header, ProtectedRoute, StatusBadge</li>
+<li><code>0b89be1</code> feat(frontend): Router mit Protected Routes und Sidebar-Layout</li>
+<li><code>596931d</code> fix(frontend): Unused Imports entfernt</li>
+<li><code>463718d</code> chore: .gitignore aktualisiert (venv/, dist/ entfernt)</li>
+</ul>
+<h2 id="phase-f3-service-catalog">Phase F3: Service Catalog<a class="headerlink" href="#phase-f3-service-catalog" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>87e008e</code> feat(frontend): Catalog TypeScript-Types</li>
+<li><code>b72b34d</code> feat(frontend): Catalog-API-Modul mit Tests</li>
+<li><code>84b13b2</code> feat(frontend): Catalog tanstack-query Hooks</li>
+<li><code>e85f7b5</code> feat(frontend): Reusable Drawer Slide-In-Komponente</li>
+<li><code>19bfb46</code> feat(frontend): Service-Catalog-Seite mit Template-Cards, Filtern, Detail-Drawer</li>
+</ul>
+<h2 id="phase-f4-order-management">Phase F4: Order Management<a class="headerlink" href="#phase-f4-order-management" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>09758c0</code> feat(frontend): Order TypeScript-Types</li>
+<li><code>3db0ef2</code> feat(frontend): Orders-API-Modul</li>
+<li><code>2e0e374</code> feat(frontend): Order-Hooks mit Mutations und Status-Polling</li>
+<li><code>26f4fd0</code> feat(frontend): Dynamisches ParameterForm mit Feld-Komponenten</li>
+<li><code>09f9902</code> feat(frontend): Order-Hub-Seiten (OrderNew, OrderDetail, OrderList, OrderExport)</li>
+</ul>
+<h2 id="phase-f5-context-cmdb">Phase F5: Context &amp; CMDB<a class="headerlink" href="#phase-f5-context-cmdb" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>6ae8ec6</code> feat(frontend): ContextSelector mit CMDB-Integration</li>
+</ul>
+<h2 id="phase-f6-approvals-resources">Phase F6: Approvals &amp; Resources<a class="headerlink" href="#phase-f6-approvals-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>185845e</code> feat(frontend): Approvals- und Resources-Seiten</li>
+</ul>
+<h2 id="phase-f7-admin-tests">Phase F7: Admin &amp; Tests<a class="headerlink" href="#phase-f7-admin-tests" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>888975b</code> feat(frontend): Admin-Seiten (Dashboard, Rules, AuditLog)</li>
+<li><code>f001e78</code> test(frontend): Tests fuer Approvals, Resources, Admin Dashboard</li>
+</ul>
+<hr />
+<h2 id="integrations-phase">Integrations-Phase<a class="headerlink" href="#integrations-phase" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>f366bfe</code> feat: Seed-Script mit Demo-Templates und run_dev.sh</li>
+<li><code>3066b76</code> test: End-to-End-Integrationstests fuer kompletten Demo-Flow</li>
+<li><code>39cb93c</code> feat: run_frontend.sh Dev-Helper-Script</li>
+<li><code>e58ae0a</code> feat: Unified Dev Launcher (scripts/mpp.sh)</li>
+</ul>
+<hr />
+<h2 id="phase-b8-order-groups-quantity-per-instance-parameters">Phase B8: Order Groups, Quantity, Per-Instance Parameters<a class="headerlink" href="#phase-b8-order-groups-quantity-per-instance-parameters" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>76dbfdbb</code> feat: add OrderItemGroup model and extend OrderItem with group_id, quantity, instance_parameters</li>
+<li><code>e8a71ca5</code> feat: add per_instance field to ParameterDefinition (false/true/auto)</li>
+<li><code>e5130a80</code> feat: add group CRUD API endpoints for orders (16 Tests)</li>
+<li><code>f6282644</code> feat: add quantity and instance_parameters support to order items API (5 Tests)</li>
+<li><code>fec79e33</code> feat: add per-instance parameter support to catalog and order validation (8 Tests)</li>
+<li><code>d870799c</code> test: add E2E test for groups + quantity + per-instance parameters</li>
+<li><code>a475f839</code> feat(frontend): extend order types and API for groups + quantity</li>
+<li><code>4654725a</code> feat(frontend): add group sections, quantity selector, and per-instance UI</li>
+</ul>
+<h2 id="sidebar-navigation-redesign">Sidebar Navigation Redesign<a class="headerlink" href="#sidebar-navigation-redesign" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>902a3bd4</code> feat(frontend): add Notifications placeholder page</li>
+<li><code>feed9b83</code> feat(frontend): rewrite Sidebar with collapsible layout, new menu structure, role-based sections (11 Tests)</li>
+<li><code>9e0490b7</code> feat(frontend): update AppLayout for collapsible sidebar, simplify Header</li>
+</ul>
+<h2 id="phase-9-shop-wizard">Phase 9: Shop Wizard<a class="headerlink" href="#phase-9-shop-wizard" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat(frontend)</code> add StepIndicator, RequestSummary, WizardView, FormView components</li>
+<li><code>feat(frontend)</code> add ServiceRequest page with wizard/form toggle</li>
+<li><code>feat(frontend)</code> add /shop/:slug/request route and Bestellen button</li>
+<li><code>feat(frontend)</code> add copy-shortcut — Aehnlichen Service hinzufuegen</li>
+</ul>
+<h2 id="dashboard-redesign">Dashboard Redesign<a class="headerlink" href="#dashboard-redesign" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat</code> add dashboard stats API endpoint (5 Tests)</li>
+<li><code>feat</code> add global search API endpoint (5 Tests)</li>
+<li><code>feat(frontend)</code> add recharts, StatCard, GlobalSearch, OrderStatusChart, OrderTimelineChart</li>
+<li><code>feat(frontend)</code> add RecentOrders, PopularServices, PendingApprovals widgets</li>
+<li><code>feat(frontend)</code> rewrite Dashboard with stat cards, charts, search, role-based widgets</li>
+</ul>
+<h2 id="notifications-system">Notifications System<a class="headerlink" href="#notifications-system" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat</code> add read/unread notification endpoints with read_at field (8 Tests)</li>
+<li><code>feat</code> add EmailSender interface and StubEmailSender (2 Tests)</li>
+<li><code>feat</code> add create_event_notification with templates and email sender (4 Tests)</li>
+<li><code>feat</code> trigger order_submitted notification on order submit</li>
+<li><code>feat(frontend)</code> add notifications API client, hooks with polling</li>
+<li><code>feat(frontend)</code> rewrite Notifications page with read/unread, sidebar badge</li>
+</ul>
+<h2 id="subscriptions-system">Subscriptions System<a class="headerlink" href="#subscriptions-system" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat</code> add SubscriptionModel and GroupSubscriptionModel</li>
+<li><code>feat</code> add SubscriptionRepository with CRUD, status, changes, groups (22 Tests)</li>
+<li><code>feat</code> add SubscriptionService with change/cancel/create lifecycle (30 Tests)</li>
+<li><code>feat</code> add subscription REST API endpoints (7 Tests)</li>
+<li><code>feat</code> create subscriptions automatically on order submit</li>
+<li><code>feat(frontend)</code> add subscription types, API, hooks, pages, components</li>
+</ul>
+<h2 id="security-audit-fixes">Security Audit + Fixes<a class="headerlink" href="#security-audit-fixes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>docs</code> add consolidated 3-way audit report (Security + Architecture + Quality)</li>
+<li><code>security</code> fix critical findings — webhook auth, credential auth, exception logging</li>
+<li><code>docs</code> add security-engineer, auditor, devops-engineer agents</li>
+</ul>
+<h2 id="architektur-audit-fixes">Architektur-Audit Fixes<a class="headerlink" href="#architektur-audit-fixes" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>fix</code> add pagination cap (max 200) to all paginated endpoints</li>
+<li><code>fix</code> use consistent AppError classes in catalog and context API</li>
+<li><code>refactor</code> split orders.py (679 lines) into 4 focused modules</li>
+<li><code>refactor</code> move post-submit orchestration to OrderService</li>
+<li><code>refactor</code> extract DashboardService, SearchService, ResourceService</li>
+</ul>
+<h2 id="ui-consolidation">UI Consolidation<a class="headerlink" href="#ui-consolidation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat(frontend)</code> consolidate into Workspace page (Bestellungen tabs)</li>
+<li><code>feat(frontend)</code> move page titles to Header bar with dynamic routes</li>
+<li><code>fix(frontend)</code> sidebar stays fixed, only content area scrolls</li>
+<li><code>feat(frontend)</code> split layout in FormView — form left, sticky summary right</li>
+</ul>
+<h2 id="vm-templates-abhaengigkeitsmatrix">VM Templates + Abhaengigkeitsmatrix<a class="headerlink" href="#vm-templates-abhaengigkeitsmatrix" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat</code> comprehensive Windows + Linux VM templates (30 params, 9 groups each)</li>
+<li><code>feat</code> T-Shirt Size auto-fill + metadata-based option filtering</li>
+<li><code>feat</code> comprehensive dependency matrix — 15 cross-field dependencies (~45K valid combos)</li>
+<li><code>feat(frontend)</code> red border on required empty/invalid fields, submit gate</li>
+</ul>
+<h2 id="rollen-dsgvo">Rollen + DSGVO<a class="headerlink" href="#rollen-dsgvo" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat</code> introduce superadmin role — Rules, Audit Log, DSGVO restricted</li>
+<li><code>feat</code> DSGVO anonymization middleware + admin toggle</li>
+<li><code>fix</code> approvals API supports all statuses (pending/approved/rejected)</li>
+<li><code>feat</code> show order details in review requests, Besteller column</li>
+</ul>
+<h2 id="devops-tools">DevOps + Tools<a class="headerlink" href="#devops-tools" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>feat</code> add Dockerfiles, docker-compose, nginx, offline installer scripts</li>
+<li><code>feat</code> add Screenshot-Tool (Playwright, WebP, per user role)</li>
+<li><code>feat</code> show demo credentials in launcher, version v1.0.0 on login</li>
+<li><code>feat</code> add DB Reset + Reseed option to dev launcher</li>
+<li><code>feat</code> 8 demo orders + notifications + approval requests in seed</li>
+</ul>
+<h2 id="dokumentation">Dokumentation<a class="headerlink" href="#dokumentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>docs</code> add comprehensive README.md</li>
+<li><code>docs</code> update CLAUDE.md to reflect current project state</li>
+<li><code>docs</code> comprehensive update of mpp-docs (11 files)</li>
+<li><code>docs</code> add design specs + implementation plans for all features</li>
+</ul>
+<hr />
+<h2 id="session-2026-06-19-produktionsreife-vm-install-guide">Session 2026-06-19: Produktionsreife + VM-Install-Guide<a class="headerlink" href="#session-2026-06-19-produktionsreife-vm-install-guide" title="Permanent link">&para;</a></h2>
+<ul>
+<li><code>0ed38136</code> docs: App-Look + TDD-Gate + Ein-Befehl-Release (Vorsession-Arbeit committet)</li>
+<li><code>e70b6f76</code> feat(appimage): App-AppRun mit Random-Ports + isolierter Chromium-Instanz</li>
+<li><code>5217bfc5</code> docs: Insights/Handoffs in Nav + run_mpp_docs.sh gehaertet + TDD-Regel R-ERKENNTNISSE</li>
+<li><code>117c5883</code> docs: VM-Installationsanleitung (Flask/React, Produktions-Ziel, 19 Abschnitte)</li>
+<li><code>9168f693</code> feat: Produktionsreife-Fixes (gunicorn, ProxyFix, Readiness <code>/ready</code>, alembic-DATABASE_URL)</li>
+</ul>
+<blockquote>
+<p><strong>Test-Stand:</strong> +7 Backend-Tests via TDD. Ein voller Lauf deckte <strong>23 pre-existing Failures</strong> auf
+(Stub-User-Count / Auth-403 / DSGVO / Audit-Log) — per <code>git stash</code> als Nicht-Regression bewiesen;
+Triage offen. Offener Prod-Blocker: LDAP-Auth (<code>auth_service.py</code> → <code>NotImplementedError</code>).</p>
+</blockquote>
+<hr />
+<h2 id="statistik">Statistik<a class="headerlink" href="#statistik" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>204 Commits</strong> insgesamt (77 Phase 1 + 122 Phase 2 + 5 Session 2026-06-19)</li>
+<li><strong>763 Backend-Tests</strong>, <strong>106 Frontend-Tests</strong> = <strong>869 Tests</strong> (davon 23 Backend aktuell rot, pre-existing — s. o.)</li>
+<li><strong>96 API-Endpoints</strong> in <strong>17 Modulen</strong></li>
+<li><strong>15 Datenbanktabellen</strong></li>
+<li><strong>13 Backend-Services</strong></li>
+<li><strong>17 Frontend-Seiten</strong></li>
+<li><strong>5 Rollen</strong> (requester, approver, admin, superadmin + multi)</li>
+<li><strong>15 Design-Specs</strong>, <strong>12 Implementation Plans</strong></li>
+<li><strong>Docker Offline-Installer</strong> (Backend + Frontend + PostgreSQL)</li>
+<li><strong>Screenshot-Tool</strong> (Playwright, WebP, 5 Benutzerrollen)</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-circle-arrow-up" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4M12 16V8"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Lucent Trails
+    </div>
+  
+  
+    Made with
+    <a href="https://zensical.org/" target="_blank" rel="noopener">
+      Zensical
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["navigation.sections","navigation.top","search.highlight","content.code.copy"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"In Zwischenablage kopiert","clipboard.copy":"In Zwischenablage kopieren","search.result.more.one":"1 weiteres Suchergebnis auf dieser Seite","search.result.more.other":"# weitere Suchergebnisse auf dieser Seite","search.result.none":"Keine Suchergebnisse","search.result.one":"1 Suchergebnis","search.result.other":"# Suchergebnisse","search.result.placeholder":"Suchbegriff eingeben","search.result.term.missing":"Es fehlt","select.version":"Version auswählen"},"version":null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.91a19a9e.min.js"></script>
+      
+        <script src="../../javascripts/mermaid.min.js" defer></script>
+      
+        <script src="../../javascripts/mermaid-init.js"></script>
+      
+        <script src="../../javascripts/palette-init.js"></script>
+      
+        <script src="../../javascripts/lightbox.js"></script>
+      
+        <script src="../../javascripts/activity-heatmap.js"></script>
+      
+        <script src="../../javascripts/icon-rail.js"></script>
+      
+        <script src="../../javascripts/hub-stop.js"></script>
+      
+    
+  </body>
+</html>
