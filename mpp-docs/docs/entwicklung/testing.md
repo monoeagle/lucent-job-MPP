@@ -1,8 +1,8 @@
 # Testing
 
-MPP wurde vollstaendig mit **Test-Driven Development (TDD)** entwickelt. 763 Backend-Tests + 106 Frontend-Tests = **869 Tests** insgesamt.
+MPP wurde vollstaendig mit **Test-Driven Development (TDD)** entwickelt. 771 Backend-Tests + 106 Frontend-Tests = **877 Tests** insgesamt.
 
-> **Stand 2026-06-19:** Ein voller Backend-Lauf (`tests/unit` + `tests/integration`) zeigt aktuell **23 rote Tests** (pre-existing Baseline-Drift: Stub-User-Count, Auth-403, DSGVO, Audit-Log) — nicht durch die letzten Aenderungen verursacht, Triage offen.
+> **Stand 2026-06-27:** Ein voller Backend-Lauf (`tests/`, inkl. e2e) zeigt **739 gruen / 32 rot** (771 gesamt). Die 32 sind **pre-existing Baseline-Drift** (`test_approval_rules_api` 9, `test_audit_log_api` 6, `test_dsgvo_api` 4, `test_approval_submit_integration` 2, `test_auth_stub_users`/`test_auth_service`/`test_auth_roles` u. a.) — diese Session hat **keinen** App-/Test-Code geaendert (reine Delivery/Doku-Session), Triage offen. Frontend (106) diese Session nicht erneut ausgefuehrt.
 
 ---
 
@@ -14,7 +14,7 @@ MPP wurde vollstaendig mit **Test-Driven Development (TDD)** entwickelt. 763 Bac
 | Backend Int. | pytest            | ~230   | `tests/integration/` |
 | Backend E2E  | pytest            | ~26    | `tests/e2e/`         |
 | Frontend     | vitest + RTL      | 106    | `frontend/tests/`    |
-| **Gesamt**   |                   | **869**|                      |
+| **Gesamt**   |                   | **877**|                      |
 
 ---
 

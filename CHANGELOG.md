@@ -4,6 +4,16 @@ Alle relevanten Aenderungen in chronologischer Reihenfolge, gruppiert nach Phase
 
 ---
 
+## v1.1.0 — Delivery & Doku-Paritaet (2026-06-27)
+
+Angleichung an den Stand des Django-Schwesterprojekts (Delivery + Doku-Site).
+
+- `32747e1` feat: Offline-Release-Workflow (`run.sh release` + `tools/build_release.py`, prebuilt SPA + Wheels) + Produktions-Installer `deploy/install.sh` (AlmaLinux 9: gunicorn-Factory, alembic, nginx-SPA + self-signed TLS, systemd; **kein** Celery/Redis) + `docs/deployment/vm-installation-offline.md`
+- `32747e1` feat(docs): Oberflaechen-Galerie, gh-pages-Deploy (`mpp-docs/deploy_ghpages.sh`), Architektur-Header-Badge (`index-1.svg`), Heatmap-Klick-Toggle, `.adb-shot-compare`-CSS; Versions-Bump v1.1.0
+- `20ad905` fix(docs): Galerie-Bestellformular links leer / rechts ausgefuellt (12 echte Playwright-Screenshots)
+- chore: Repo **public** + GitHub Pages live (<https://monoeagle.github.io/lucent-job-MPP/>); Roadmap/Gantt + `todos.md` nachgezogen
+- Tests (Stand 2026-06-27): **771 Backend (739 gruen / 32 pre-existing rot)** + 106 Frontend
+
 ## Phase B1: Identity & Access
 
 - `1fb48da` initial: Project Specs, Design Docs und Agent-Definitionen

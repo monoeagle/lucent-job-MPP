@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-27T16:48:04",
+  "generatedAt": "2026-06-27T17:18:50",
   "range": {
     "from": "2025-06-28",
     "to": "2026-06-27"
@@ -14,7 +14,7 @@
       },
       "list": [
         {
-          "sha": "cb968dfa",
+          "sha": "21732c83",
           "subject": "docs: Session-3-End-Handoff (1644) + KPI-Zeile aktualisiert (public + gh-pages, Screenshots)",
           "kind": "docs"
         },
