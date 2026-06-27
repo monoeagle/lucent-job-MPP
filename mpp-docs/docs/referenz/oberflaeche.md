@@ -46,24 +46,25 @@ Kurzbeschreibung, Parameter-Anzahl und Version.
 
 ---
 
-## Bestellformular (Windows VM / Linux VM)
+## Bestellformular (leer / ausgefüllt)
 
 <div class="adb-shot-compare">
   <figure>
     <img src="../../images/screenshots/Screenshot_04_mpp.png"
-         alt="Ausgefülltes Bestellformular für eine Windows-VM: dynamisch aus den Template-Parametern erzeugte Felder (Systemtyp, Mandant, Standort, Netzwerk, OS-Template, T-Shirt-Größe …) mit Live-Zusammenfassung.">
-    <figcaption>Windows VM — ausgefüllt</figcaption>
+         alt="Leeres Bestellformular einer Linux-VM: alle Pflichtfelder auf 'Bitte wählen…', rechts die Zusammenfassung mit Hinweis 'Pflichtfelder noch nicht vollständig'.">
+    <figcaption>Leeres Formular</figcaption>
   </figure>
   <figure>
     <img src="../../images/screenshots/Screenshot_05_mpp.png"
-         alt="Ausgefülltes Bestellformular für eine Linux-VM mit den entsprechenden Parametern und Live-Zusammenfassung der gewählten Werte.">
-    <figcaption>Linux VM — ausgefüllt</figcaption>
+         alt="Ausgefülltes Bestellformular einer Linux-VM mit gewählten Parametern und Live-Zusammenfassung der Werte inkl. geschätzter Kosten.">
+    <figcaption>Ausgefüllt mit Zusammenfassung</figcaption>
   </figure>
 </div>
 
-Das Formular wird dynamisch aus den Template-Parametern erzeugt; eine
-Live-Zusammenfassung zeigt die gewählten Werte vor dem Absenden. Windows- und
-Linux-VM unterscheiden sich in OS-Template und einzelnen Sizing-/Netzwerk-Optionen.
+Das Formular wird dynamisch aus den Template-Parametern erzeugt. **Links** das
+leere Formular mit markierten Pflichtfeldern, **rechts** dasselbe Formular
+ausgefüllt — die Zusammenfassung rechts aktualisiert live die gewählten Werte und
+die geschätzten Kosten vor dem Absenden.
 
 ---
 
