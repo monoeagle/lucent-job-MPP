@@ -870,6 +870,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v110-delivery-doku-paritaet-2026-06-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.1.0 — Delivery &amp; Doku-Paritaet (2026-06-27)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#phase-b1-identity-access" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1398,6 +1409,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#v110-delivery-doku-paritaet-2026-06-27" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v1.1.0 — Delivery &amp; Doku-Paritaet (2026-06-27)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#phase-b1-identity-access" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1745,6 +1767,15 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <p>Alle relevanten Aenderungen in chronologischer Reihenfolge, gruppiert nach Phasen.</p>
 <hr />
+<h2 id="v110-delivery-doku-paritaet-2026-06-27">v1.1.0 — Delivery &amp; Doku-Paritaet (2026-06-27)<a class="headerlink" href="#v110-delivery-doku-paritaet-2026-06-27" title="Permanent link">&para;</a></h2>
+<p>Angleichung an den Stand des Django-Schwesterprojekts (Delivery + Doku-Site).</p>
+<ul>
+<li><code>32747e1</code> feat: Offline-Release-Workflow (<code>run.sh release</code> + <code>tools/build_release.py</code>, prebuilt SPA + Wheels) + Produktions-Installer <code>deploy/install.sh</code> (AlmaLinux 9: gunicorn-Factory, alembic, nginx-SPA + self-signed TLS, systemd; <strong>kein</strong> Celery/Redis) + <code>deployment/vm-installation-offline.md</code></li>
+<li><code>32747e1</code> feat(docs): Oberflaechen-Galerie, gh-pages-Deploy, Architektur-Header-Badge (<code>index-1.svg</code>), Heatmap-Klick-Toggle, <code>.adb-shot-compare</code>-CSS; Versions-Bump v1.1.0</li>
+<li><code>20ad905</code> fix(docs): Galerie-Bestellformular links leer / rechts ausgefuellt (12 echte Playwright-Screenshots)</li>
+<li>chore: Repo <strong>public</strong> + GitHub Pages live (<a href="https://monoeagle.github.io/lucent-job-MPP/">https://monoeagle.github.io/lucent-job-MPP/</a>); Roadmap/Gantt + <code>todos.md</code> nachgezogen</li>
+<li>Tests (Stand 2026-06-27): <strong>771 Backend (739 gruen / 32 pre-existing rot)</strong> + 106 Frontend</li>
+</ul>
 <h2 id="phase-b1-identity-access">Phase B1: Identity &amp; Access<a class="headerlink" href="#phase-b1-identity-access" title="Permanent link">&para;</a></h2>
 <ul>
 <li><code>1fb48da</code> initial: Project Specs, Design Docs und Agent-Definitionen</li>
@@ -1986,8 +2017,8 @@ Triage offen. Offener Prod-Blocker: LDAP-Auth (<code>auth_service.py</code> → 
 <hr />
 <h2 id="statistik">Statistik<a class="headerlink" href="#statistik" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>204 Commits</strong> insgesamt (77 Phase 1 + 122 Phase 2 + 5 Session 2026-06-19)</li>
-<li><strong>763 Backend-Tests</strong>, <strong>106 Frontend-Tests</strong> = <strong>869 Tests</strong> (davon 23 Backend aktuell rot, pre-existing — s. o.)</li>
+<li><strong>207 Commits</strong> insgesamt (77 Phase 1 + 122 Phase 2 + 5 Session 2026-06-19 + 3 Session 2026-06-27)</li>
+<li><strong>771 Backend-Tests</strong>, <strong>106 Frontend-Tests</strong> = <strong>877 Tests</strong> (Stand 2026-06-27: voller Backend-Lauf 739 grün / 32 pre-existing rot)</li>
 <li><strong>96 API-Endpoints</strong> in <strong>17 Modulen</strong></li>
 <li><strong>15 Datenbanktabellen</strong></li>
 <li><strong>13 Backend-Services</strong></li>

@@ -431,8 +431,8 @@
     if (document.querySelector('.adb-status-badge')) return;  // idempotent
     const badge = document.createElement('span');
     badge.className = 'adb-status-badge';
-    badge.title = `${HEADER_PREFIX} — 869 Tests (763 Backend / 106 Frontend), TDD-Pflicht. Flask 3.1 + React 19. Stub-Modus (AUTH_MODE/CMDB_MODE=stub), nicht produktiv verifiziert. Stand 2026-06-19: 23 Backend-Tests pre-existing rot.`;
-    badge.innerHTML = '<span class="adb-status-badge__dot" aria-hidden="true"></span>869 Tests';
+    badge.title = `${HEADER_PREFIX} — 877 Tests (771 Backend / 106 Frontend), TDD-Pflicht. Flask 3.1 + React 19. Stub-Modus (AUTH_MODE/CMDB_MODE=stub), nicht produktiv verifiziert. Stand 2026-06-27: voller Backend-Lauf 739 grün / 32 pre-existing rot.`;
+    badge.innerHTML = '<span class="adb-status-badge__dot" aria-hidden="true"></span>877 Tests';
     search.parentNode.insertBefore(badge, search);
   }
 

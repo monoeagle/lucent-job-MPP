@@ -1449,9 +1449,9 @@
                   
 
 <h1 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h1>
-<p>MPP wurde vollstaendig mit <strong>Test-Driven Development (TDD)</strong> entwickelt. 763 Backend-Tests + 106 Frontend-Tests = <strong>869 Tests</strong> insgesamt.</p>
+<p>MPP wurde vollstaendig mit <strong>Test-Driven Development (TDD)</strong> entwickelt. 771 Backend-Tests + 106 Frontend-Tests = <strong>877 Tests</strong> insgesamt.</p>
 <blockquote>
-<p><strong>Stand 2026-06-19:</strong> Ein voller Backend-Lauf (<code>tests/unit</code> + <code>tests/integration</code>) zeigt aktuell <strong>23 rote Tests</strong> (pre-existing Baseline-Drift: Stub-User-Count, Auth-403, DSGVO, Audit-Log) — nicht durch die letzten Aenderungen verursacht, Triage offen.</p>
+<p><strong>Stand 2026-06-27:</strong> Ein voller Backend-Lauf (<code>tests/</code>, inkl. e2e) zeigt <strong>739 gruen / 32 rot</strong> (771 gesamt). Die 32 sind <strong>pre-existing Baseline-Drift</strong> (<code>test_approval_rules_api</code> 9, <code>test_audit_log_api</code> 6, <code>test_dsgvo_api</code> 4, <code>test_approval_submit_integration</code> 2, <code>test_auth_stub_users</code>/<code>test_auth_service</code>/<code>test_auth_roles</code> u. a.) — diese Session hat <strong>keinen</strong> App-/Test-Code geaendert (reine Delivery/Doku-Session), Triage offen. Frontend (106) diese Session nicht erneut ausgefuehrt.</p>
 </blockquote>
 <hr />
 <h2 id="uebersicht">Uebersicht<a class="headerlink" href="#uebersicht" title="Permanent link">&para;</a></h2>
@@ -1492,7 +1492,7 @@
 <tr>
 <td><strong>Gesamt</strong></td>
 <td></td>
-<td><strong>869</strong></td>
+<td><strong>877</strong></td>
 <td></td>
 </tr>
 </tbody>
