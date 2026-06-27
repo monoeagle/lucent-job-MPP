@@ -1,18 +1,30 @@
 {
-  "generatedAt": "2026-06-27T15:55:32",
+  "generatedAt": "2026-06-27T16:48:04",
   "range": {
     "from": "2025-06-28",
     "to": "2026-06-27"
   },
   "byDay": {
     "2026-06-27": {
-      "commits": 1,
+      "commits": 3,
       "kinds": {
+        "docs": 1,
+        "fix": 1,
         "feat": 1
       },
       "list": [
         {
-          "sha": "7c14bcff",
+          "sha": "cb968dfa",
+          "subject": "docs: Session-3-End-Handoff (1644) + KPI-Zeile aktualisiert (public + gh-pages, Screenshots)",
+          "kind": "docs"
+        },
+        {
+          "sha": "20ad905a",
+          "subject": "fix(docs): Galerie-Bestellformular links leer / rechts ausgefüllt (gleicher Service)",
+          "kind": "fix"
+        },
+        {
+          "sha": "32747e12",
           "subject": "feat: Delivery-/Doku-Parität zum Django-Schwesterprojekt (v1.1.0)",
           "kind": "feat"
         }
@@ -1317,7 +1329,7 @@
     }
   },
   "stats": {
-    "totalCommits": 238,
+    "totalCommits": 240,
     "activeDays": 13,
     "longestStreak": 3,
     "topKinds": [
@@ -1327,11 +1339,11 @@
       },
       {
         "kind": "docs",
-        "count": 29
+        "count": 30
       },
       {
         "kind": "fix",
-        "count": 23
+        "count": 24
       },
       {
         "kind": "chore",
